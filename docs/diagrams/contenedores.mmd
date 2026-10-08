@@ -1,0 +1,16 @@
+flowchart TB
+ W["Frontend web / React / JavaScript"] -->|HTTP| G["API Gateway: rutas, identidad, límites y balanceo"]
+ G --> U["Usuarios / capas"]
+ G --> E["Electrodomésticos / capas"]
+ G --> C["Consumo / capas: temporal y guardados"]
+ G --> S["Solar instancias 1 y 2 / hexagonal / round-robin entre saludables"]
+ U -->|Acceso privado| UD[(MySQL usuarios_db)]
+ E -->|Acceso privado| ED[(MySQL electrodomesticos_db)]
+ C -->|Acceso privado| CD[(MySQL consumo_db)]
+ S -->|Acceso privado| SD[(MongoDB solar_db: compartida solo entre réplicas Solar)]
+ E -->|Lecturas / índice| D["Dependencias del catálogo: Meilisearch, Valkey e indexador propio"]
+ E -. Evento catálogo .-> B["RabbitMQ: eventos durables, confirmaciones, idempotencia y DLQ"]
+ C -. ConsumoEvaluado .-> B
+ B -. Trabajo Solar .-> S
+ S -->|HTTP externo| P["Proveedor externo: asignación pendiente"]
+ N["REST adicional: Consumo a Electrodomésticos; Solar a Consumo y Usuarios; Electrodomésticos a Usuarios. Telemetría: OpenTelemetry, Prometheus, Grafana, Loki y Tempo. Eventos solo en flujo durable. Invitado sin escrituras de consumo/estudio."]

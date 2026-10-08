@@ -1,0 +1,25 @@
+{
+  "versionAlgoritmo": "consumo-v1",
+  "diasPeriodo": 30,
+  "desglose": [
+    {
+      "id": "iluminacion",
+      "energiaPeriodoKWh": 6
+    },
+    {
+      "id": "heladera",
+      "energiaPeriodoKWh": 32.4
+    },
+    {
+      "id": "lavarropas",
+      "energiaPeriodoKWh": 9
+    }
+  ],
+  "totalPeriodoKWh": 47.4,
+  "promedioDiarioKWh": 1.58,
+  "supuestos": [
+    "Estimación basada en equipos y hábitos declarados; no es una medición real.",
+    "El factor de funcionamiento se aplica una sola vez."
+  ],
+  "traceId": "entrega1-ejemplo-001"
+}

@@ -1,0 +1,6 @@
+{
+  "codigo": "LIMITE_DE_TRAFICO",
+  "mensaje": "Se alcanzó el límite de solicitudes del cliente.",
+  "traceId": "entrega1-ejemplo-429",
+  "detalles": []
+}

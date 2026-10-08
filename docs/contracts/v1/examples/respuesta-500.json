@@ -1,0 +1,6 @@
+{
+  "codigo": "ERROR_INTERNO",
+  "mensaje": "No fue posible completar la operación.",
+  "traceId": "entrega1-ejemplo-500",
+  "detalles": []
+}

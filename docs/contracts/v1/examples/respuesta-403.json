@@ -1,0 +1,6 @@
+{
+  "codigo": "SIN_PERMISO",
+  "mensaje": "El cliente no tiene permiso para estimar consumos.",
+  "traceId": "entrega1-ejemplo-403",
+  "detalles": []
+}

@@ -1,0 +1,6 @@
+{
+  "codigo": "TIPO_CONTENIDO_NO_SOPORTADO",
+  "mensaje": "Utilice Content-Type application/json.",
+  "traceId": "entrega1-ejemplo-415",
+  "detalles": []
+}

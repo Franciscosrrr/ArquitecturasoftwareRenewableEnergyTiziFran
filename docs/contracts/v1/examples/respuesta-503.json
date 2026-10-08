@@ -1,0 +1,6 @@
+{
+  "codigo": "SERVICIO_NO_DISPONIBLE",
+  "mensaje": "La capacidad no está disponible temporalmente.",
+  "traceId": "entrega1-ejemplo-503",
+  "detalles": []
+}

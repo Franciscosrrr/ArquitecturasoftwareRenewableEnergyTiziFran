@@ -1,0 +1,11 @@
+{
+  "codigo": "VALIDACION",
+  "mensaje": "Los datos de consumo no cumplen las reglas de la operación.",
+  "traceId": "entrega1-ejemplo-002",
+  "detalles": [
+    {
+      "campo": "equipos[0].diasUso",
+      "motivo": "No puede superar diasPeriodo (30)."
+    }
+  ]
+}

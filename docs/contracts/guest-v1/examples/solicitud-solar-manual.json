@@ -1,0 +1,11 @@
+{
+  "promedioDiarioKWh": 1.58,
+  "coberturaObjetivo": 1,
+  "rendimientoGlobal": 0.8,
+  "superficieUtilM2": 10,
+  "recursoSolar": {
+    "tipo": "MANUAL",
+    "hsp": 4,
+    "fuente": "Valor declarado para ejemplo, no medido"
+  }
+}

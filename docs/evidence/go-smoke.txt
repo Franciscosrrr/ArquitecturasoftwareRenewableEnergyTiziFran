@@ -1,0 +1,5 @@
+gateway: build OK; HTTP live=200, ready=503, negocio=501
+usuarios: build OK; HTTP live=200, ready=503, negocio=501
+electrodomesticos: build OK; HTTP live=200, ready=503, negocio=501
+consumo: build OK; HTTP live=200, ready=503, negocio=501
+solar: build OK; HTTP live=200, ready=503, negocio=501

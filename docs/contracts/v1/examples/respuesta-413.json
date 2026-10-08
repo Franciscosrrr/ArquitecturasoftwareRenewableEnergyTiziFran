@@ -1,0 +1,6 @@
+{
+  "codigo": "CUERPO_DEMASIADO_GRANDE",
+  "mensaje": "La solicitud supera 256 KiB.",
+  "traceId": "entrega1-ejemplo-413",
+  "detalles": []
+}

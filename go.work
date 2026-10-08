@@ -1,0 +1,9 @@
+go 1.26.0
+
+use (
+ ./gateway
+ ./services/usuarios
+ ./services/electrodomesticos
+ ./services/consumo
+ ./services/solar
+)

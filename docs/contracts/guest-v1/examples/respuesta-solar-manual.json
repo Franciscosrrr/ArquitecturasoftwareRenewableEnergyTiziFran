@@ -1,0 +1,26 @@
+{
+  "estado": "COMPLETADO",
+  "versionAlgoritmo": "solar-v1",
+  "alternativas": [
+    {
+      "panelId": "panel-demo-500",
+      "modelo": "Panel ilustrativo 500 W",
+      "versionFicha": 1,
+      "cantidad": 1,
+      "generacionDiariaKWh": 1.6,
+      "coberturaAlcanzada": 1.012658,
+      "superficieRequeridaM2": 2.5,
+      "cumpleObjetivo": true
+    }
+  ],
+  "totalAlternativas": 1,
+  "alternativasTruncadas": false,
+  "criterioSeleccion": "MENOR_SUPERFICIE",
+  "fuenteRecurso": "Manual: Valor declarado para ejemplo, no medido",
+  "hsp": 4,
+  "supuestos": [
+    "Catálogo de ejemplo: único panel activo, 500 W, superficie efectiva 2,5 m², sin precio.",
+    "Cobertura es balance energético; no autonomía horaria."
+  ],
+  "traceId": "invitado-ejemplo-001"
+}

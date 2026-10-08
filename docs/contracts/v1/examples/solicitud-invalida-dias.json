@@ -1,0 +1,30 @@
+{
+  "diasPeriodo": 30,
+  "equipos": [
+    {
+      "id": "iluminacion",
+      "modo": "POTENCIA",
+      "cantidad": 4,
+      "potenciaW": 10,
+      "horasPorDia": 5,
+      "diasUso": 31,
+      "factorFuncionamiento": 1
+    },
+    {
+      "id": "heladera",
+      "modo": "POTENCIA",
+      "cantidad": 1,
+      "potenciaW": 150,
+      "horasPorDia": 24,
+      "diasUso": 30,
+      "factorFuncionamiento": 0.3
+    },
+    {
+      "id": "lavarropas",
+      "modo": "CICLOS",
+      "cantidad": 1,
+      "energiaPorCicloKWh": 0.75,
+      "ciclosPeriodo": 12
+    }
+  ]
+}

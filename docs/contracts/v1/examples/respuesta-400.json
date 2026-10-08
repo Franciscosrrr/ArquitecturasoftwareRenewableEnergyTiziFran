@@ -1,0 +1,6 @@
+{
+  "codigo": "FORMATO_INVALIDO",
+  "mensaje": "El cuerpo no contiene JSON válido.",
+  "traceId": "entrega1-ejemplo-400",
+  "detalles": []
+}

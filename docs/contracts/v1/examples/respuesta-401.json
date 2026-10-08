@@ -1,0 +1,6 @@
+{
+  "codigo": "NO_AUTENTICADO",
+  "mensaje": "Se requiere una credencial M2M válida.",
+  "traceId": "entrega1-ejemplo-401",
+  "detalles": []
+}

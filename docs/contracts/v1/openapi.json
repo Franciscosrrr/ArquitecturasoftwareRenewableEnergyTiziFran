@@ -1,0 +1,605 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ArquitecturasoftwareRenewableEnergy - Estimaciones de consumo",
+    "version": "1.0.0",
+    "description": "Contrato propuesto para entrega 1. Implementación, mock ejecutable y URL pública pendientes. Capacidad sin persistencia de negocio; las reglas cruzadas, redondeo y límites están en docs/contracts/README.md."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Entrada local prevista; no disponible en esta entrega documental."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Estimaciones",
+      "description": "Capacidad pública del servicio Consumo."
+    }
+  ],
+  "paths": {
+    "/api/v1/estimaciones-consumo": {
+      "post": {
+        "tags": [
+          "Estimaciones"
+        ],
+        "operationId": "estimarConsumo",
+        "summary": "Estimar energía de un conjunto de equipos y hábitos",
+        "description": "Requiere X-API-Key provisionada al cliente. Máximo 100 equipos, 256 KiB y período 1–366 días. id único por equipo; diasUso <= diasPeriodo. POTENCIA y CICLOS son variantes excluyentes. Se rechazan campos extra. Calcula con precisión decimal y redondea salidas a seis decimales, mitad hacia arriba. No produce recomendaciones solares ni consulta lugares privados. No depende de un catálogo externo.",
+        "security": [
+          {
+            "ApiKeyM2M": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Correlación opcional; si se omite, se genera un identificador. No es clave de idempotencia.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudEstimacion"
+              },
+              "examples": {
+                "consumoMixto": {
+                  "value": {
+                    "diasPeriodo": 30,
+                    "equipos": [
+                      {
+                        "id": "iluminacion",
+                        "modo": "POTENCIA",
+                        "cantidad": 4,
+                        "potenciaW": 10,
+                        "horasPorDia": 5,
+                        "diasUso": 30,
+                        "factorFuncionamiento": 1
+                      },
+                      {
+                        "id": "heladera",
+                        "modo": "POTENCIA",
+                        "cantidad": 1,
+                        "potenciaW": 150,
+                        "horasPorDia": 24,
+                        "diasUso": 30,
+                        "factorFuncionamiento": 0.3
+                      },
+                      {
+                        "id": "lavarropas",
+                        "modo": "CICLOS",
+                        "cantidad": 1,
+                        "energiaPorCicloKWh": 0.75,
+                        "ciclosPeriodo": 12
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estimación calculada sin crear lugares, configuraciones o evaluaciones persistentes.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Identificador de correlación de la operación.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoEstimacion"
+                },
+                "examples": {
+                  "consumoMixto": {
+                    "summary": "Potencia y ciclos en un período de 30 días",
+                    "value": {
+                      "versionAlgoritmo": "consumo-v1",
+                      "diasPeriodo": 30,
+                      "desglose": [
+                        {
+                          "id": "iluminacion",
+                          "energiaPeriodoKWh": 6
+                        },
+                        {
+                          "id": "heladera",
+                          "energiaPeriodoKWh": 32.4
+                        },
+                        {
+                          "id": "lavarropas",
+                          "energiaPeriodoKWh": 9
+                        }
+                      ],
+                      "totalPeriodoKWh": 47.4,
+                      "promedioDiarioKWh": 1.58,
+                      "supuestos": [
+                        "Estimación basada en equipos y hábitos declarados; no es una medición real.",
+                        "El factor de funcionamiento se aplica una sola vez."
+                      ],
+                      "traceId": "entrega1-ejemplo-001"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo no contiene JSON válido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "FORMATO_INVALIDO",
+                  "mensaje": "El cuerpo no contiene JSON válido.",
+                  "traceId": "entrega1-ejemplo-400",
+                  "detalles": []
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Se requiere una credencial M2M válida.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "NO_AUTENTICADO",
+                  "mensaje": "Se requiere una credencial M2M válida.",
+                  "traceId": "entrega1-ejemplo-401",
+                  "detalles": []
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El cliente no tiene permiso para estimar consumos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "SIN_PERMISO",
+                  "mensaje": "El cliente no tiene permiso para estimar consumos.",
+                  "traceId": "entrega1-ejemplo-403",
+                  "detalles": []
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "La solicitud supera 256 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "CUERPO_DEMASIADO_GRANDE",
+                  "mensaje": "La solicitud supera 256 KiB.",
+                  "traceId": "entrega1-ejemplo-413",
+                  "detalles": []
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Utilice Content-Type application/json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "TIPO_CONTENIDO_NO_SOPORTADO",
+                  "mensaje": "Utilice Content-Type application/json.",
+                  "traceId": "entrega1-ejemplo-415",
+                  "detalles": []
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Los datos de consumo no cumplen las reglas de la operación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "VALIDACION",
+                  "mensaje": "Los datos de consumo no cumplen las reglas de la operación.",
+                  "traceId": "entrega1-ejemplo-002",
+                  "detalles": [
+                    {
+                      "campo": "equipos[0].diasUso",
+                      "motivo": "No puede superar diasPeriodo (30)."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Se alcanzó el límite de solicitudes del cliente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "LIMITE_DE_TRAFICO",
+                  "mensaje": "Se alcanzó el límite de solicitudes del cliente.",
+                  "traceId": "entrega1-ejemplo-429",
+                  "detalles": []
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Espera sugerida en segundos. Obligatorio en 429; opcional en 503 si se conoce.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "No fue posible completar la operación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "ERROR_INTERNO",
+                  "mensaje": "No fue posible completar la operación.",
+                  "traceId": "entrega1-ejemplo-500",
+                  "detalles": []
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "La capacidad no está disponible temporalmente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "codigo": "SERVICIO_NO_DISPONIBLE",
+                  "mensaje": "La capacidad no está disponible temporalmente.",
+                  "traceId": "entrega1-ejemplo-503",
+                  "detalles": []
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Espera sugerida en segundos. Obligatorio en 429; opcional en 503 si se conoce.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyM2M": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Credencial de integración con permiso estimar-consumo. No se publica una clave real ni se usa la contraseña de un usuario."
+      }
+    },
+    "schemas": {
+      "SolicitudEstimacion": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "diasPeriodo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 366
+          },
+          "equipos": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/EquipoPotencia"
+                },
+                {
+                  "$ref": "#/components/schemas/EquipoCiclos"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "modo",
+                "mapping": {
+                  "POTENCIA": "#/components/schemas/EquipoPotencia",
+                  "CICLOS": "#/components/schemas/EquipoCiclos"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "diasPeriodo",
+          "equipos"
+        ]
+      },
+      "EquipoPotencia": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "modo": {
+            "type": "string",
+            "enum": [
+              "POTENCIA"
+            ]
+          },
+          "potenciaW": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 1000000,
+            "exclusiveMinimum": true
+          },
+          "horasPorDia": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 24
+          },
+          "diasUso": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 366,
+            "description": "Debe ser menor o igual a diasPeriodo."
+          },
+          "factorFuncionamiento": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 1,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "id",
+          "modo",
+          "cantidad",
+          "potenciaW",
+          "horasPorDia",
+          "diasUso",
+          "factorFuncionamiento"
+        ]
+      },
+      "EquipoCiclos": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "modo": {
+            "type": "string",
+            "enum": [
+              "CICLOS"
+            ]
+          },
+          "energiaPorCicloKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 1000,
+            "exclusiveMinimum": true
+          },
+          "ciclosPeriodo": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000,
+            "description": "Cantidad de ciclos por unidad del equipo durante todo el período."
+          }
+        },
+        "required": [
+          "id",
+          "modo",
+          "cantidad",
+          "energiaPorCicloKWh",
+          "ciclosPeriodo"
+        ]
+      },
+      "ConsumoEquipo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+          },
+          "energiaPeriodoKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double"
+          }
+        },
+        "required": [
+          "id",
+          "energiaPeriodoKWh"
+        ]
+      },
+      "ResultadoEstimacion": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "versionAlgoritmo": {
+            "type": "string",
+            "enum": [
+              "consumo-v1"
+            ]
+          },
+          "diasPeriodo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 366
+          },
+          "desglose": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ConsumoEquipo"
+            }
+          },
+          "totalPeriodoKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double"
+          },
+          "promedioDiarioKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double"
+          },
+          "supuestos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "versionAlgoritmo",
+          "diasPeriodo",
+          "desglose",
+          "totalPeriodoKWh",
+          "promedioDiarioKWh",
+          "supuestos",
+          "traceId"
+        ]
+      },
+      "DetalleError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "campo": {
+            "type": "string",
+            "minLength": 1
+          },
+          "motivo": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "campo",
+          "motivo"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "enum": [
+              "FORMATO_INVALIDO",
+              "NO_AUTENTICADO",
+              "SIN_PERMISO",
+              "CUERPO_DEMASIADO_GRANDE",
+              "TIPO_CONTENIDO_NO_SOPORTADO",
+              "VALIDACION",
+              "LIMITE_DE_TRAFICO",
+              "ERROR_INTERNO",
+              "SERVICIO_NO_DISPONIBLE"
+            ]
+          },
+          "mensaje": {
+            "type": "string",
+            "minLength": 1
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "detalles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetalleError"
+            }
+          }
+        },
+        "required": [
+          "codigo",
+          "mensaje",
+          "traceId",
+          "detalles"
+        ]
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Formato OpenAPI 3.0.3",
+    "url": "https://spec.openapis.org/oas/v3.0.3"
+  }
+}
