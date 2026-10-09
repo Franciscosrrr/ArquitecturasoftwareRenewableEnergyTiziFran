@@ -1,12 +1,16 @@
+x-healthcheck-environment: &healthcheck-environment
+  HEALTHCHECK_TOKEN: ${HEALTHCHECK_TOKEN:?Usar scripts/compose para generar la credencial operativa}
+
 services:
   mock:
     build:
       context: .
       dockerfile: mock/Dockerfile
     ports: ["127.0.0.1:8080:8080"]
+    environment: *healthcheck-environment
     read_only: true
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health/live', timeout=2)"]
+      test: ["CMD", "python", "-c", "import os, urllib.request; request = urllib.request.Request('http://localhost:8080/health/live', headers={'Authorization': 'Bearer ' + os.environ['HEALTHCHECK_TOKEN']}); urllib.request.urlopen(request, timeout=2)"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -19,20 +23,25 @@ services:
   usuarios:
     profiles: ["estructura"]
     build: ./services/usuarios
+    environment: *healthcheck-environment
     ports: ["127.0.0.1:8101:8080"]
   electrodomesticos:
     profiles: ["estructura"]
     build: ./services/electrodomesticos
+    environment: *healthcheck-environment
     ports: ["127.0.0.1:8102:8080"]
   consumo:
     profiles: ["estructura"]
     build: ./services/consumo
+    environment: *healthcheck-environment
     ports: ["127.0.0.1:8103:8080"]
   solar:
     profiles: ["estructura"]
     build: ./services/solar
+    environment: *healthcheck-environment
     ports: ["127.0.0.1:8104:8080"]
   gateway:
     profiles: ["estructura"]
     build: ./gateway
+    environment: *healthcheck-environment
     ports: ["127.0.0.1:8105:8080"]

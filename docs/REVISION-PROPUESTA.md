@@ -1,6 +1,6 @@
 # Revisión de la propuesta de arquitectura
 
-8 de octubre de 2026. Alcance: primera entrega y coherencia del diseño futuro. No es aprobación docente ni una auditoría del sistema implementado.
+Alcance: primera entrega y coherencia del diseño futuro. No es aprobación docente ni una auditoría del sistema implementado.
 
 La propuesta tiene una base adecuada: dominio con reglas, cuatro responsabilidades claras, datos privados, capas para los servicios más directos y hexagonal para Solar. Mantendría Go/React, MySQL/MongoDB, el contrato de estimación y la separación entre invitado temporal y evaluación persistente. No agregaría CQRS, Event Sourcing ni Kubernetes por cumplir nombres de patrones.
 
@@ -14,7 +14,7 @@ La propuesta tiene una base adecuada: dominio con reglas, cuatro responsabilidad
 | Media | Ack posterior a persistir sin explicitar durabilidad reconocida | Write concern y journal explícitos; limitación de base/disco únicos reconocida |
 | Media | Invalidación tras commit sin recuperación detallada de esa ventana de falla | Reintento mediante outbox del dueño; TTL y validación autoritativa para decisiones críticas |
 | Media | Propuesta decía que OpenAPI y mock todavía no existían; enlaces apuntaban a Entrega-1 | Estado y enlaces actualizados; mock separado del backend productivo |
-| Baja | PNG y Mermaid mostraban distinta cantidad de nodos/flechas | Mermaid alineado con vista simplificada del PNG; notas explícitas para comunicaciones adicionales |
+| Baja | PNG y Mermaid mostraban distinta cantidad de nodos/flechas | Fuentes Mermaid canónicas y PNG generados desde ellas; vistas de diseño futuro y ejecución actual separadas |
 
 ## Qué reconsideraría antes de la segunda entrega
 

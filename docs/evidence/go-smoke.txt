@@ -1,5 +1,6 @@
-gateway: build OK; HTTP live=200, ready=503, negocio=501
-usuarios: build OK; HTTP live=200, ready=503, negocio=501
-electrodomesticos: build OK; HTTP live=200, ready=503, negocio=501
-consumo: build OK; HTTP live=200, ready=503, negocio=501
-solar: build OK; HTTP live=200, ready=503, negocio=501
+Revisión de seguridad
+gateway: build OK; sin credencial live=401, ready=401; credencial incorrecta=401; con credencial live=200, ready=503; HEAD protegido; negocio=501; arranque sin credencial/corta rechazado
+usuarios: build OK; sin credencial live=401, ready=401; credencial incorrecta=401; con credencial live=200, ready=503; HEAD protegido; negocio=501; arranque sin credencial/corta rechazado
+electrodomesticos: build OK; sin credencial live=401, ready=401; credencial incorrecta=401; con credencial live=200, ready=503; HEAD protegido; negocio=501; arranque sin credencial/corta rechazado
+consumo: build OK; sin credencial live=401, ready=401; credencial incorrecta=401; con credencial live=200, ready=503; HEAD protegido; negocio=501; arranque sin credencial/corta rechazado
+solar: build OK; sin credencial live=401, ready=401; credencial incorrecta=401; con credencial live=200, ready=503; HEAD protegido; negocio=501; arranque sin credencial/corta rechazado

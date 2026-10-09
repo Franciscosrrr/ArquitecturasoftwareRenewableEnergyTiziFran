@@ -4,13 +4,13 @@ Implementación: [mock/server.py](../../mock/server.py), Python estándar sin de
 
 ## Arranque
 
-Desde la raíz: `docker compose up --build`. URL: http://localhost:8080. Alternativa de desarrollo con Python 3.12 o superior: `python mock/server.py`. Escucha solo localhost fuera del contenedor; Compose publica únicamente en 127.0.0.1.
+Desde la raíz: `.\scripts\compose.ps1 up --build` en PowerShell o `sh scripts/compose.sh up --build` en Linux/macOS. Ambos generan automáticamente HEALTHCHECK_TOKEN sin guardarlo ni imprimirlo. URL: http://localhost:8080. Alternativa de desarrollo con Python 3.12 o superior: `python mock/server.py`, con HEALTHCHECK_TOKEN aleatorio ya definido en el entorno (mínimo 32 caracteres). Escucha solo localhost fuera del contenedor; Compose publica únicamente en 127.0.0.1.
 
 ## Rutas disponibles
 
 | Ruta | Comportamiento |
 |---|---|
-| GET /health/live | Estado del mock en español |
+| GET /health/live | Exige Authorization: Bearer con HEALTHCHECK_TOKEN; 401 sin credencial válida, 200 con estado mínimo en español si está autorizado |
 | GET /openapi.json | Contrato M2M original |
 | GET /guest-openapi.json | Contrato invitado original |
 | POST /api/v1/estimaciones-consumo | Cálculo decimal; exige X-API-Key de prueba |
@@ -42,7 +42,7 @@ curl -i http://localhost:8080/api/v1/estimaciones-consumo -H "Content-Type: appl
 
 ## Pruebas y límites
 
-`docker compose --profile verificar run --build --rm verificar` o `python -m unittest discover -s mock -p "test_*.py" -v`. Las pruebas inician un servidor HTTP en puerto efímero, envían solicitudes y contrastan respuestas con el subconjunto de esquemas usado y los ejemplos.
+`.\scripts\compose.ps1 --profile verificar run --build --rm verificar` (Linux/macOS: `sh scripts/compose.sh --profile verificar run --build --rm verificar`) o `python -m unittest discover -s mock -p "test_*.py" -v`. Las pruebas inician un servidor HTTP en puerto efímero, envían solicitudes y contrastan respuestas con el subconjunto de esquemas usado y los ejemplos.
 
 No hay BD, archivos de resultados, outbox, eventos, login real, frontend, historial ni endpoints de catálogo implementados. Los contadores técnicos expiran en memoria. La validación propia de esquemas no certifica conformidad integral OpenAPI; admite las restricciones utilizadas por estos contratos. Se requiere Content-Length, sin transferencia chunked. El servidor estándar es adecuado para esta simulación local, [no para producción](https://docs.python.org/3.12/library/http.server.html).
 

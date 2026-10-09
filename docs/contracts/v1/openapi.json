@@ -2,13 +2,13 @@
   "openapi": "3.0.3",
   "info": {
     "title": "ArquitecturasoftwareRenewableEnergy - Estimaciones de consumo",
-    "version": "1.0.0",
-    "description": "Contrato propuesto para entrega 1. Implementación, mock ejecutable y URL pública pendientes. Capacidad sin persistencia de negocio; las reglas cruzadas, redondeo y límites están en docs/contracts/README.md."
+    "version": "1.0.1",
+    "description": "Contrato de estimación de consumo con mock local ejecutable. Servicio productivo y URL cloud pendientes. Capacidad sin persistencia de negocio; reglas cruzadas, redondeo y límites en docs/contracts/README.md."
   },
   "servers": [
     {
       "url": "http://localhost:8080",
-      "description": "Entrada local prevista; no disponible en esta entrega documental."
+      "description": "Mock local ejecutable en localhost después de iniciar scripts/compose; no es un despliegue productivo."
     }
   ],
   "tags": [

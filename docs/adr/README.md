@@ -10,9 +10,11 @@
 
 Los estados de diseño adoptado o propuesto no implican aprobación docente ni verificación productiva. El formato contiene contexto, alternativas, decisión, consecuencias y validación. No se elimina historia al reemplazar una decisión.
 
-D4, D6, D7, D9, D10, D11, D12 y D13 se desarrollarán en sus hitos con evidencia de consistencia, búsqueda, caché, proveedor, resiliencia, observabilidad, balanceo y recursos/costos. El costo contratado seguirá siendo cero. No se inventan resultados de pruebas para cerrar esos ADR ahora.
+D4, D6, D7, D9, D10, D11, D12 y D13 siguen pendientes y requieren evidencia de consistencia, búsqueda, caché, proveedor, resiliencia, observabilidad, balanceo y recursos/costos. El costo contratado seguirá siendo cero. No se inventan resultados de pruebas para cerrar esos ADR ahora.
 
 - [ADR-GUEST — Calculadora anónima sin persistencia](ADR-GUEST.md). Complemento funcional; no sustituye ni renumera D1–D13 del enunciado.
 
 
 - [Precisiones de identidad, tiempos y disponibilidad](ADR-REVISION-1.md).
+
+- [Autenticación de comprobaciones de salud](ADR-HEALTH.md).

@@ -1,6 +1,6 @@
 # Sistema de Administración de Consumo Personalizado
 
-Propuesta de arquitectura y alcance del Trabajo Práctico Integrador de Arquitectura de Software 2026. Versión 4, revisada el 8 de octubre de 2026. Incluye precisiones de diseño y referencia al mock y estructura inicial adjuntos; el sistema productivo sigue pendiente. La documentación detallada vigente se encuentra en [../README.md](../README.md).
+Propuesta de arquitectura y alcance del Trabajo Práctico Integrador de Arquitectura de Software. Versión 4. Incluye precisiones de diseño y referencia al mock y estructura inicial adjuntos; el sistema productivo sigue pendiente. La documentación detallada vigente se encuentra en [../README.md](../README.md).
 
 ## 1. Decisión principal
 
@@ -86,7 +86,7 @@ Se incorpora un cuarto microservicio para separar identidad de los datos energé
 
 ### Responsabilidades y datos
 
-Registro, login, logout, consulta del perfil propio, renovación de sesión y administración de roles. usuarios_db contiene usuarios, roles/asignaciones y sesiones con hashes de refresh tokens. Un usuario tiene identificador estable, nombre, email normalizado único, hash de contraseña, estado, fechas y versión de seguridad.
+Registro, login, logout, consulta del perfil propio, renovación de sesión y administración de roles. usuarios_db contiene usuarios, roles/asignaciones y sesiones con hashes de refresh tokens. Un usuario tiene identificador estable, nombre, email normalizado único, hash de contraseña, estado y versión de seguridad.
 
 Las contraseñas se guardan como hashes Argon2id con salt, nunca como texto plano, y no se devuelven. Referencia: [OWASP Password Storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
 
@@ -128,7 +128,7 @@ Electrodoméstico, categoría, versión de ficha y registro outbox. MySQL es la 
 
 ### Reglas
 
-Solo un administrador puede crear, modificar o desactivar fichas del catálogo. La autorización se controla en el backend además de ocultar botones en la web. Se guardan autor, fecha y versión. Valores energéticos positivos, unidades explícitas, modelo de estimación válido y baja lógica. Un equipo desactivado no puede agregarse a un lugar, pero sus snapshots históricos se conservan. Toda modificación relevante incrementa la versión y produce un evento de actualización.
+Solo un administrador puede crear, modificar o desactivar fichas del catálogo. La autorización se controla en el backend además de ocultar botones en la web. Se guardan autor y versión. Valores energéticos positivos, unidades explícitas, modelo de estimación válido y baja lógica. Un equipo desactivado no puede agregarse a un lugar, pero sus snapshots históricos se conservan. Toda modificación relevante incrementa la versión y produce un evento de actualización.
 
 ## 5. Servicio Consumo: arquitectura en capas
 
@@ -151,9 +151,9 @@ Las reglas de cálculo se aíslan de HTTP y SQL para probarlas. MySQL InnoDB con
 ### Datos propios
 
 - Lugar: id, usuarioId, nombre, tipo, ubicación, superficie útil opcional y versión.
-- ConfiguraciónConsumo: id, lugarId, usuarioId, nombre, período, días del período, versión y fechas de guardado.
+- ConfiguraciónConsumo: id, lugarId, usuarioId, nombre, período, días del período, versión.
 - EquipoConfiguración: id, configuraciónId, referencia al catálogo, snapshot de ficha, cantidad, horas/días de uso o ciclos y factor de funcionamiento.
-- Evaluación: id, configuraciónId, versión de configuración y lugar, propietario, entradas congeladas, desglose y totales, fecha y versión del algoritmo.
+- Evaluación: id, configuraciónId, versión de configuración y lugar, propietario, entradas congeladas, desglose, totales y versión del algoritmo.
 - Idempotencia: propietario, operación, clave, huella de entrada y resultado.
 - Outbox: eventos pendientes, intentos y estado.
 
@@ -173,7 +173,7 @@ Toda lectura o modificación verifica propietario en el servicio, no solo en el 
 
 ### Responsabilidades
 
-Es dueño del catálogo de paneles, los perfiles de cobertura solar y los estudios generados. Solo un administrador puede crear, modificar y desactivar paneles; Solar persiste las fichas en solar_db y registra autor, fecha y versión. Los usuarios comunes seleccionan y consultan paneles, pero no modifican el catálogo. Recibe evaluaciones de consumo, obtiene el recurso solar, aplica restricciones, compara alternativas y guarda la recomendación con sus fundamentos.
+Es dueño del catálogo de paneles, los perfiles de cobertura solar y los estudios generados. Solo un administrador puede crear, modificar y desactivar paneles; Solar persiste las fichas en solar_db y registra autor y versión. Los usuarios comunes seleccionan y consultan paneles, pero no modifican el catálogo. Recibe evaluaciones de consumo, obtiene el recurso solar, aplica restricciones, compara alternativas y guarda la recomendación con sus fundamentos.
 
 ### Núcleo de dominio
 
@@ -221,7 +221,7 @@ Para un equipo modelado por ciclos:
 
 **Energía del período, en kWh = energía por ciclo en kWh × cantidad × ciclos del período.**
 
-El promedio diario es el total del período dividido por su cantidad de días. Se usará por defecto un período de 30 días, identificado como estimación mensual convencional. Si se usa un mes calendario, se utilizarán sus días reales.
+El promedio diario es el total del período dividido por su cantidad de días. Se usará por defecto un período de 30 días, identificado como estimación mensual convencional. El cálculo utiliza la cantidad de días indicada en diasPeriodo.
 
 El factor de funcionamiento representa la proporción de tiempo en la que el equipo demanda la potencia indicada, por ejemplo para un equipo que enciende y apaga su compresor. Si la ficha ya expresa potencia media, no se aplicará otra reducción por el mismo fenómeno. Debe indicarse la base del dato y evitar doble contabilización.
 
@@ -243,14 +243,14 @@ La superficie efectiva incluye una reserva documentada para separación y dispos
 
 El factor de rendimiento global será configurable y registrado en el estudio. Para ejemplos se puede usar 0,80 como hipótesis ilustrativa, sin presentarlo como valor universal. Si un proveedor devuelve directamente producción neta de un sistema, el adaptador usará esa producción y no volverá a aplicar las mismas pérdidas.
 
-Cada resultado guardará propietario, configuración/evaluación origen, fuente solar, fecha, período, ubicación, orientación/inclinación asumidas, pérdidas y versión del modelo. Las herramientas especializadas también explicitan supuestos e incertidumbre en este tipo de estimaciones: [PVWatts](https://pvwatts.nlr.gov/pvwatts.php/).
+Cada resultado guardará propietario, configuración/evaluación origen, fuente solar, período, ubicación, orientación/inclinación asumidas, pérdidas y versión del modelo. Las herramientas especializadas también explicitan supuestos e incertidumbre en este tipo de estimaciones: [PVWatts](https://pvwatts.nlr.gov/pvwatts.php/).
 
 ### Criterio de selección de paneles
 
 1. Excluir paneles inactivos o con datos inválidos.
 2. Calcular cantidad necesaria, generación, cobertura, superficie y costo de paneles para cada modelo.
 3. Separar las alternativas que cumplen cobertura y superficie de las que no cumplen.
-4. Si todas las alternativas factibles tienen precios comparables en la misma moneda y fecha de referencia, recomendar la de menor costo total de paneles; desempatar por menor superficie y luego identificador.
+4. Si todas las alternativas factibles tienen precios comparables en la misma moneda y catálogo de referencia, recomendar la de menor costo total de paneles; desempatar por menor superficie y luego identificador.
 5. Si faltan precios comparables, recomendar por menor superficie requerida y luego menor cantidad, explicando que el criterio fue físico y no económico.
 6. Si ninguna alternativa cumple la superficie, informar objetivo inviable con esa restricción y mostrar la mejor cobertura alcanzable, priorizando cobertura, superficie y luego identificador.
 
@@ -274,66 +274,33 @@ Si un lugar consume 300 kWh en 30 días, el promedio es 10 kWh/día. Un panel hi
 | Estudio solar | Pendiente → en procesamiento → completado, sin alternativa o error |
 | Estudio frente a cambios del lugar | Conserva su validez histórica; la UI indica si corresponde a una versión anterior |
 
-Reintentar un estudio cambia error a pendiente con trazabilidad. Una recomendación con fuente de respaldo se marca como degradada y muestra fecha y origen. No se confunde un estudio completado sin alternativa con un fallo de infraestructura.
+Reintentar un estudio cambia error a pendiente con trazabilidad. Una recomendación con fuente de respaldo se marca como degradada y muestra su origen. No se confunde un estudio completado sin alternativa con un fallo de infraestructura.
 
 El frontend podrá mostrar “Evaluación guardada; recomendación pendiente”. Hasta que Solar registre el evento, la ausencia del estudio se interpreta como espera de procesamiento, no como pérdida del consumo. Un retraso excesivo se refleja en métricas y en la interfaz.
 
 ## 9. Diagramas de contexto y contenedores
 
-Son diagramas Mermaid de diseño, no código de aplicación.
+Los diagramas canónicos se mantienen en docs/diagrams. Sus PNG se generan desde las mismas fuentes Mermaid para evitar diferencias entre versiones.
 
-### Contexto
+### Contexto previsto
 
-```mermaid
-flowchart LR
-    V[Invitado] -->|Resultados temporales sin guardar| S[Sistema de consumo personalizado]
-    U[Usuario registrado] -->|Guardados e historial propios| S
-    A[Administrador] --> S
-    C[Grupo consumidor] -->|Estimación de consumo| S
-    S -->|Capacidad externa en flujo relevante| P[Grupo proveedor asignado]
-```
+![Contexto del sistema previsto](diagrams/contexto.png)
 
-### Contenedores
+Fuente: [contexto.mmd](diagrams/contexto.mmd). Distingue invitado, usuario autenticado, administrador y grupos externos. El proveedor sigue pendiente de asignación.
 
-```mermaid
-flowchart TB
-    U[Invitado / usuario / administrador] --> W[React - JavaScript]
-    W --> G[Gateway - Go]
-    C[Grupo consumidor] --> G
-    G --> I[Usuarios - capas - Go]
-    I --> IDB[(MySQL usuarios_db)]
-    G --> E[Electrodomésticos - capas - Go]
-    G --> M[Consumo - capas - Go]
-    G -->|Round-robin entre saludables| S1[Solar 1 - hexagonal - Go]
-    G -->|Round-robin entre saludables| S2[Solar 2 - hexagonal - Go]
-    E --> EDB[(MySQL electrodomesticos_db)]
-    E --> ES[(Meilisearch)]
-    E --> R[(Valkey)]
-    M --> MDB[(MySQL consumo_db)]
-    M -->|REST: ficha al agregar equipos| E
-    E -->|Rol vigente en escrituras administrativas| I
-    S1 -->|Rol vigente en escrituras administrativas| I
-    S2 -->|Rol vigente en escrituras administrativas| I
-    M -->|Outbox: ConsumoEvaluado| B[RabbitMQ]
-    E -->|Outbox: ElectrodomesticoActualizado| B
-    B -->|Indexador del catálogo| E
-    B -->|Consumidores competidores| S1
-    B -->|Consumidores competidores| S2
-    S1 --> SDB[(MongoDB solar_db)]
-    S2 --> SDB
-    S1 -->|REST: evaluación histórica| M
-    S2 -->|REST: evaluación histórica| M
-    S1 -->|Adaptador directo| P[Grupo proveedor]
-    S2 -->|Adaptador directo| P
-    I -. Telemetría .-> O[Logs, métricas y trazas]
-    E -. Telemetría .-> O
-    M -. Telemetría .-> O
-    S1 -. Telemetría .-> O
-    S2 -. Telemetría .-> O
-    G -. Telemetría .-> O
-```
+### Contenedores previstos
 
-Usuarios publica claves públicas para validación JWT; su base solo la usa Usuarios. Meilisearch, Valkey y el worker de indexación pertenecen a Electrodomésticos. Los consumidores y workers solares pertenecen a Solar. El gateway no posee una base de negocio.
+![Contenedores de la arquitectura prevista](diagrams/contenedores.png)
+
+Fuente: [contenedores.mmd](diagrams/contenedores.mmd). Representa el diseño futuro, no los contenedores que ya funcionan. Los consumidores de eventos son parte de sus servicios dueños.
+
+### Sistema ejecutable actual
+
+![Componentes ejecutables actuales](diagrams/contenedores-actuales.png)
+
+Fuente: [contenedores-actuales.mmd](diagrams/contenedores-actuales.mmd). Compose inicia el mock por defecto; el perfil estructura agrega cinco servidores independientes. El gateway inicial no enruta al mock ni a los servicios. No hay frontend, bases, broker, caché ni buscador desplegados en esta configuración.
+
+Usuarios publica claves públicas para validación JWT en el diseño futuro; su base solo la usa Usuarios. Meilisearch, Valkey y el worker de indexación pertenecen a Electrodomésticos. Los consumidores y workers solares pertenecen a Solar. El gateway no posee una base de negocio.
 
 ## 10. Flujo persistente autenticado y comunicaciones
 
@@ -370,11 +337,11 @@ RabbitMQ tendrá colas durables, mensajes persistentes, confirmaciones de public
 
 ### Evento ConsumoEvaluado, versión 1
 
-Identificador de evento, versión de esquema, fecha, traceId, identificador de evaluación, propietario, configuración y versión, lugar y versión, período, consumo por equipo y total, ubicación, superficie útil opcional y versión del algoritmo. No se envían credenciales ni datos innecesarios.
+Identificador de evento, versión de esquema, traceId, identificador de evaluación, propietario, configuración y versión, lugar y versión, período, consumo por equipo y total, ubicación, superficie útil opcional y versión del algoritmo. No se envían credenciales ni datos innecesarios.
 
 ### Evento ElectrodomesticoActualizado, versión 1
 
-Identificador de evento, versión, fecha, identificador de electrodoméstico, versión del catálogo y proyección de los campos indexables. La desactivación también se publica.
+Identificador de evento, versión, identificador de electrodoméstico, versión del catálogo y proyección de los campos indexables. La desactivación también se publica.
 
 Meilisearch se actualiza automáticamente a partir de eventos. No se reconstruye únicamente cuando el usuario busca. El indexador aplica versiones para que un evento antiguo no sobrescriba uno reciente. Tendrá procesamiento serial inicial y un registro persistente de versiones/tareas en MySQL; no se presupone que Meilisearch aporte control de versión de negocio. Ante una reentrega, usará la ficha vigente de MySQL y confirmará que la tarea de indexación haya finalizado antes de marcar la proyección aplicada. Se configurarán automáticamente los campos buscables, filtrables, ordenables y las reglas para que el orden explícito del usuario tenga la prioridad acordada. Se propone un retraso máximo operativo de 5 segundos en condiciones saludables, medido desde el commit del cambio hasta su visibilidad en una consulta del índice, incluyendo la finalización efectiva de la tarea de indexación del motor.
 
@@ -427,7 +394,7 @@ Las dos instancias de Solar atienden sin estado de sesión local. El gateway man
 
 Se propone chequeo cada 5 segundos, timeout de 1 segundo, retirada tras dos fallos consecutivos y reincorporación tras dos éxitos. Si ninguna instancia está saludable, devolverá 503 sin enviar solicitudes a una instancia conocida como caída. Las escrituras no se repiten automáticamente por fallas de proxy; su reintento se basa en idempotencia cuando corresponde.
 
-Cada servicio expone liveness y readiness internos. La implementación prevista separa readiness por capacidades (publico, privado y admin), y el gateway selecciona réplicas aptas para cada familia de rutas. Una caída de RabbitMQ no retira las rutas de cálculo invitado. Los esqueletos actuales solo exponen liveness y readiness genérico, que devuelve 503 hasta implementar negocio. Readiness depende de las dependencias indispensables para atender sus rutas; Solar puede seguir consultando resultados guardados aunque falle el proveedor externo. Los endpoints operativos son internos y no exponen secretos.
+Cada servicio expone liveness y readiness internos. La implementación prevista separa readiness por capacidades (publico, privado y admin), y el gateway selecciona réplicas aptas para cada familia de rutas. Una caída de RabbitMQ no retira las rutas de cálculo invitado. Los esqueletos actuales solo exponen liveness y readiness genérico, que devuelve 503 hasta implementar negocio. Readiness depende de las dependencias indispensables para atender sus rutas; Solar puede seguir consultando resultados guardados aunque falle el proveedor externo. Los endpoints operativos son internos, exigen una credencial de monitoreo independiente y no exponen secretos. El mock y los esqueletos ya requieren Authorization: Bearer con HEALTHCHECK_TOKEN; scripts/compose la genera aleatoriamente, sin valor fijo ni archivo de secretos. Sin credencial válida devuelven 401 sin estado interno; sus respuestas autorizadas son mínimas y en español.
 
 La evidencia incluye solicitudes e instanceId de ambas réplicas, caída de una, tiempo de detección y retiro del tráfico. Los consumidores competidores RabbitMQ y la reclamación de trabajos MongoDB se verifican aparte del balanceo HTTP.
 
@@ -519,7 +486,7 @@ Los nombres definitivos, modelos de entrada y códigos de todas las operaciones 
 
 ## 18. Observabilidad y objetivos iniciales
 
-OpenTelemetry propagará contexto entre gateway, HTTP, publicaciones y consumidores. Se mantendrá la relación causal al retomar un trabajo asíncrono. Logs estructurados incluirán timestamp, nivel, servicio, instancia, traceId, evaluación/estudio y resultado. No se registrarán contraseñas, tokens ni ubicaciones detalladas innecesarias.
+OpenTelemetry propagará contexto entre gateway, HTTP, publicaciones y consumidores. Se mantendrá la relación causal al retomar un trabajo asíncrono. Logs estructurados incluirán nivel, servicio, instancia, traceId, evaluación/estudio y resultado. Para la línea temporal del POSTMORTEM exigido por el enunciado se registrarán el orden causal y el tiempo transcurrido desde el inicio del ensayo. No se registrarán contraseñas, tokens ni ubicaciones detalladas innecesarias.
 
 Prometheus recolectará métricas; Grafana mostrará tableros; Loki almacenará logs y Tempo las trazas. La interfaz permite seguir una evaluación mientras que la telemetría explica su recorrido interno.
 
@@ -611,7 +578,7 @@ Todos los componentes locales se ejecutarán con ediciones gratuitas y sin SaaS 
 
 ### Un solo comando
 
-El comando de arranque será **docker compose up --build**, ejecutado desde la raíz del repositorio. Se puede agregar -d para dejarlo en segundo plano. La opción --build construye las imágenes antes del arranque: [Docker Compose](https://docs.docker.com/reference/cli/docker/compose/up/).
+El arranque local se realiza desde la raíz con **.\scripts\compose.ps1 up --build** en PowerShell o **sh scripts/compose.sh up --build** en Linux/macOS. Estos scripts generan la credencial de monitoreo en memoria y ejecutan Docker Compose; la invocación directa exige HEALTHCHECK_TOKEN en el entorno. Se puede agregar -d para dejarlo en segundo plano. La opción --build construye las imágenes antes del arranque: [Docker Compose](https://docs.docker.com/reference/cli/docker/compose/up/).
 
 El único software necesario en la computadora será Docker con Compose v2 y un navegador, con recursos suficientes y conexión para descargar imágenes/dependencias en el primer build. No se requiere instalar Go, Node.js, npm, MySQL, MongoDB, RabbitMQ ni librerías por separado. Las imágenes también incluirán las compilaciones y herramientas necesarias para cada proceso.
 
@@ -668,26 +635,7 @@ Cada ADR incluirá estado, contexto, alternativas, decisión, consecuencias y ev
 
 Son decisiones propuestas, no ADR implementados ni verificaciones ya aprobadas. D9 se completa con la asignación docente; D13 con ensayos y revisión vigente de cuotas gratuitas. Los registros complementarios de Usuarios, permisos, historial y arranque se incorporarán cuando exista una decisión distinta que lo justifique, sin duplicar D1–D13. La revisión adjunta agrega ADR-REVISION-1 para identidad solar, tiempos, disponibilidad y persistencia antes del ack. Una decisión reemplazada conserva su archivo y enlaza la que la sustituye.
 
-## 22. Cronograma según el PDF
-
-| Fecha de 2026 | Entregable y aplicación al proyecto |
-|---|---|
-| 2 de octubre: instancia inicial | Integrantes, dominio/alcance aprobados y repositorio accesible; confirmar su estado con el grupo |
-| 9 de octubre: entrega 1 | README, alcance, arquitectura, contexto y contenedores, límites/datos, capacidad pública, estructura inicial y dependencias; D1 y D8, versiones iniciales D3 y D5 |
-| 23 de octubre: entrega 2 | Servicio y capacidad propia funcionando, almacenamiento real, logs correlacionados y primera traza; D2, D6, D7, D9, D10, D12 y D13; validar D1/D3/D5, iniciar D11 y revisar D8 |
-| 6 de noviembre | Comunicación del sorteo de la fecha grupal |
-| 11 o 13 de noviembre: presentación grupal | Frontend y gateway completos, tres servicios, capacidad propia cloud, proveedor integrado, dos tipos de almacenamiento, caché medida, estilos reconocibles, eventos idempotentes y búsqueda actualizada |
-| Defensa individual, sin fecha indicada | Consistencia/concurrencia, pruebas, contrato consumidor, carga, balanceo, fallas, logs/métricas/trazas, tablero, alerta y POSTMORTEM del ensayo |
-
-El título de la entrega 1 dice “Diseño y contrato con mock”. Aunque su lista no detalla todos los artefactos del mock, conviene preparar OpenAPI y un mock utilizable para esa fecha. El paquete revisado incorpora ese mock ejecutable local y una estructura inicial compilable.
-
-La prioridad de diseño corresponde a la primera entrega del 9 de octubre. El paquete adjunto incluye estructura ejecutable mínima y mock; no se da por publicada una actualización del repositorio ni por aprobada la propuesta por la cátedra.
-
-Orden sugerido de desarrollo: primero contrato y Consumo público; luego catálogo y configuración del lugar; después evaluación/outbox y Solar; incorporar búsqueda, caché y observabilidad junto con esos flujos; integrar proveedor, probar fallas y medir carga. No postergar documentación e instrumentación al cierre.
-
-Bonus: el PDF permite hasta dos, anunciados en entrega 2. Propuesta opcional: pruebas e2e y actualización de estados en tiempo real. No forman parte del alcance obligatorio inicial; antes de anunciarlos se evaluará capacidad del equipo.
-
-## 23. Matriz de cumplimiento y evidencia pendiente
+## 22. Matriz de cumplimiento y evidencia pendiente
 
 | Requisito | Diseño que lo cubre | Evidencia futura |
 |---|---|---|
@@ -713,7 +661,7 @@ Bonus: el PDF permite hasta dos, anunciados en entrega 2. Propuesta opcional: pr
 | Documentación y ADR | Archivos y D1–D13 definidos | Documentación actualizada durante el desarrollo |
 | Capacidad/costos | Pruebas y planes exclusivamente gratuitos | Resultados, recursos mínimos, cuotas y costo contratado 0 |
 
-## 24. Limitaciones y decisiones por cerrar
+## 23. Limitaciones y decisiones por cerrar
 
 La estimación depende de hábitos declarados y fichas orientativas. No mide demanda eléctrica real ni modela simultaneidad horaria. El recurso solar y las pérdidas tienen incertidumbre; una cobertura mensual no equivale a autonomía. La superficie por área no verifica estructura ni disposición geométrica.
 
@@ -723,9 +671,9 @@ La arquitectura aumenta la carga operativa respecto de un monolito por exigencia
 
 Antes de implementar deben cerrarse: aprobación de dominio, integrantes y estado del repositorio; contrato del proveedor asignado y su consecuencia de negocio; fuente solar para ubicaciones previstas; reglas de precios/moneda; dataset de equipos y paneles con sus fuentes; expectativa docente de cobertura y plantilla ADR; recursos mínimos de ejecución y compatibilidad del hosting gratuito con la disponibilidad académica. Estas cuestiones no impiden definir los límites, arquitecturas y flujos propuestos, pero sí condicionan la integración y la validación final.
 
-## 25. Fuentes
+## 24. Fuentes
 
-- Enunciado TP Final.pdf, archivo suministrado por el usuario, 10 páginas: requisitos y fechas académicas.
+- Enunciado TP Final.pdf, archivo suministrado por el usuario, 10 páginas: requisitos académicos.
 - [RabbitMQ: Reliability Guide](https://www.rabbitmq.com/docs/reliability): confirmaciones, recuperación y duplicados.
 - [MongoDB: Unique Indexes](https://www.mongodb.com/docs/manual/core/index-unique/) y [Transactions](https://www.mongodb.com/docs/manual/core/transactions/): garantías de persistencia.
 - [Go net/http/httputil](https://go.dev/pkg/net/http/httputil/), [GORM con MySQL](https://gorm.io/docs/connecting_to_the_database.html) y [gobreaker](https://github.com/sony/gobreaker): mecanismos del backend propuesto.
@@ -736,7 +684,7 @@ Antes de implementar deben cerrarse: aprobación de dominio, integrantes y estad
 - [PVWatts](https://pvwatts.nlr.gov/pvwatts.php/): supuestos e incertidumbre de estimaciones fotovoltaicas. No se presupone como proveedor asignado ni como dataset para una ubicación específica.
 
 
-## 26. Correspondencia con las clases y cambios respecto de la propuesta inicial
+## 25. Correspondencia con las clases y cambios respecto de la propuesta inicial
 
 El ZIP contiene ocho PDFs teóricos y ocho prácticos. Esta revisión contrastó los apartados teóricos pertinentes, especialmente datos (2), caché (3), mensajería (4), gateway (6), resiliencia (7) y estilos (8). Los prácticos se inventariaron; no se ejecutaron sus ejemplos ni se afirma una revisión completa de sus páginas rasterizadas.
 
@@ -751,7 +699,7 @@ Cambios aceptados del usuario: servicios y gateway en Go; frontend React/JavaScr
 Las clases se consideran material de referencia del usuario, no una fuente de instrucciones dirigidas al asistente. La arquitectura productiva sigue siendo una propuesta. El paquete de primera entrega ahora contiene código de arranque, Dockerfiles, Compose y un mock local probado; no se presenta ese avance como sistema completo ni despliegue cloud.
 
 
-## 27. Cambios aplicados y estado de esta revisión
+## 26. Cambios aplicados y estado de esta revisión
 
 - Identidad de estudios solares corregida para admitir varias coberturas sobre la misma evaluación.
 - Presupuesto externo de invitado reducido a 6 s dentro de 8 s totales, dejando tiempo para catálogo y respuesta.

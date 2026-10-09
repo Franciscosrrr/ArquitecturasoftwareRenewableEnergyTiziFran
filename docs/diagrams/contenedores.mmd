@@ -1,16 +1,24 @@
+---
+title: Contenedores de la arquitectura prevista
+---
 flowchart TB
- W["Frontend web / React / JavaScript"] -->|HTTP| G["API Gateway: rutas, identidad, límites y balanceo"]
- G --> U["Usuarios / capas"]
- G --> E["Electrodomésticos / capas"]
- G --> C["Consumo / capas: temporal y guardados"]
- G --> S["Solar instancias 1 y 2 / hexagonal / round-robin entre saludables"]
- U -->|Acceso privado| UD[(MySQL usuarios_db)]
- E -->|Acceso privado| ED[(MySQL electrodomesticos_db)]
- C -->|Acceso privado| CD[(MySQL consumo_db)]
- S -->|Acceso privado| SD[(MongoDB solar_db: compartida solo entre réplicas Solar)]
- E -->|Lecturas / índice| D["Dependencias del catálogo: Meilisearch, Valkey e indexador propio"]
- E -. Evento catálogo .-> B["RabbitMQ: eventos durables, confirmaciones, idempotencia y DLQ"]
- C -. ConsumoEvaluado .-> B
- B -. Trabajo Solar .-> S
- S -->|HTTP externo| P["Proveedor externo: asignación pendiente"]
- N["REST adicional: Consumo a Electrodomésticos; Solar a Consumo y Usuarios; Electrodomésticos a Usuarios. Telemetría: OpenTelemetry, Prometheus, Grafana, Loki y Tempo. Eventos solo en flujo durable. Invitado sin escrituras de consumo/estudio."]
+    W["Frontend web<br/>React / JavaScript"] -->|HTTP| G["API Gateway Go<br/>Rutas, identidad, límites y balanceo"]
+    X["Grupo consumidor<br/>API key M2M"] -->|HTTP estimación| G
+    G --> U["Usuarios / capas<br/>Registro, login y roles"]
+    G --> E["Electrodomésticos / capas<br/>Catálogo, búsqueda e indexador propio"]
+    G --> C["Consumo / capas<br/>Temporal, configuraciones y evaluaciones"]
+    G -->|Round-robin saludable| S["Solar / hexagonal<br/>Dos instancias del mismo servicio"]
+    U -->|Acceso exclusivo| UD[("MySQL usuarios_db")]
+    E -->|Acceso exclusivo| ED[("MySQL electrodomesticos_db")]
+    C -->|Acceso exclusivo| CD[("MySQL consumo_db")]
+    S -->|Acceso exclusivo del servicio| SD[("MongoDB solar_db<br/>Compartida entre las dos instancias Solar")]
+    E -->|Lecturas e indexación| D["Meilisearch / Valkey<br/>Índice y caché del catálogo"]
+    E -. ElectrodomesticoActualizado .-> B["RabbitMQ<br/>Eventos durables, confirmaciones y DLQ"]
+    B -. Consumidor indexador .-> E
+    C -. ConsumoEvaluado .-> B
+    B -. Consumidores Solar .-> S
+    S -->|Adaptador HTTP directo| P["Proveedor externo<br/>Asignación y contrato pendientes"]
+    classDef service fill:#e9f2fb,stroke:#557a96,color:#203b50
+    classDef store fill:#e6f4ee,stroke:#417c64,color:#203b50
+    class W,G,U,E,C,S,X,P service
+    class UD,ED,CD,SD,D,B store

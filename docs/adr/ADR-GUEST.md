@@ -4,7 +4,7 @@ Versión: 1.0.0. Estado: **Propuesto para implementación**. Complementa D1/D8; 
 
 ## Contexto
 
-El visitante debe usar la página y conocer consumo y paneles sin registrarse. Solo una cuenta puede conservar configuraciones e historial. El procesamiento solar durable existente crea documentos, por lo que no corresponde usarlo para el invitado.
+El visitante debe usar la página y conocer consumo y paneles sin registrarse. Solo una cuenta puede conservar configuraciones e historial. El procesamiento solar durable previsto creará documentos, por lo que no corresponde usarlo para el invitado.
 
 ## Decisión
 

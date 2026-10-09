@@ -2,9 +2,9 @@
 
 ## Estructura incluida
 
-README y SPEC en raíz; docs contiene arquitectura, diagramas, ADR y contratos. Cada servicio y gateway tiene go.mod, cmd/server/main.go, paquetes internal y Dockerfile. go.work reúne los cinco módulos sin compartir modelos de dominio. mock contiene servidor local y pruebas HTTP; compose.yaml define mock, verificación y el perfil estructura.
+README y SPEC en raíz; docs contiene arquitectura, diagramas, ADR y contratos. Cada servicio y gateway tiene go.mod, cmd/server/main.go, paquetes internal y Dockerfile. go.work reúne los cinco módulos sin compartir modelos de dominio. mock contiene servidor local y pruebas HTTP; compose.yaml define mock, verificación y el perfil estructura. scripts/compose.ps1 y scripts/compose.sh generan la credencial operativa antes de invocar Compose; los handlers incluyen pruebas de autenticación de healthchecks.
 
-Los paquetes internos contienen puntos de extensión documentados; el arranque y los handlers de estado compilan. Las capas y los puertos de negocio no están implementados. El frontend conserva su README: React pertenece a los hitos posteriores.
+Los paquetes internos contienen puntos de extensión documentados; el arranque y los handlers de estado compilan. Las capas y los puertos de negocio no están implementados. El frontend conserva su README: la aplicación React sigue pendiente de implementación.
 
 ## Organización prevista al implementar
 
@@ -16,7 +16,7 @@ Los paquetes internos contienen puntos de extensión documentados; el arranque y
 | Frontend | Vistas de identidad, lugares, Mis consumos, equipos, historial, paneles, estudios y administración |
 | Infra | Compose, Dockerfiles, inicialización, redes, volúmenes, observabilidad y perfil de integración |
 
-Se agregan archivos Go, Dockerfiles y Compose para el hito inicial. Cada servicio tiene módulo y build propios; sus migraciones reales siguen pendientes. El monorepo no obliga a desplegarlos juntos.
+Se agregan archivos Go, Dockerfiles y Compose como estructura inicial. Cada servicio tiene módulo y build propios; sus migraciones reales siguen pendientes. El monorepo no obliga a desplegarlos juntos.
 
 ## Dependencias externas previstas
 

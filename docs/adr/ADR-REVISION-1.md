@@ -1,6 +1,6 @@
 # ADR complementario: precisión del diseño para entrega 1
 
-Estado: adoptado para diseño, 8 de octubre de 2026. Complementa D1/D3/D5/D8; no sustituye una decisión anterior implementada.
+Estado: adoptado para diseño. Complementa D1/D3/D5/D8; no sustituye una decisión anterior implementada.
 
 ## Contexto
 

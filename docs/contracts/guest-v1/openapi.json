@@ -2,13 +2,13 @@
   "openapi": "3.0.3",
   "info": {
     "title": "ArquitecturasoftwareRenewableEnergy - Calculadora invitada",
-    "version": "1.0.0",
-    "description": "Contrato web anónimo propuesto. Sin JWT/API key ni persistencia de consumos/estudios. Implementación pendiente. Ver docs/GUEST-MODE.md."
+    "version": "1.0.1",
+    "description": "Contrato web anónimo con mock local de consumo y Solar manual. Frontend y servicios productivos pendientes. Sin JWT/API key ni persistencia de consumos/estudios. Ver docs/GUEST-MODE.md."
   },
   "servers": [
     {
       "url": "http://localhost:8080",
-      "description": "Entrada local prevista; no disponible en esta entrega documental."
+      "description": "Mock local ejecutable en localhost después de iniciar scripts/compose; no es un despliegue productivo."
     }
   ],
   "tags": [
@@ -928,7 +928,7 @@
           "superficieRequeridaM2": {
             "type": "number",
             "minimum": 0,
-            "maximum": 1000000000000000
+            "description": "Superficie calculada en m²; no se limita a la cota de superficie disponible de la solicitud. La cantidad requerida puede ser mayor cuando no se declara una superficie disponible."
           },
           "cumpleObjetivo": {
             "type": "boolean"

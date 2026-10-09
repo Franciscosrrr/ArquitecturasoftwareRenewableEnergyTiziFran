@@ -36,14 +36,14 @@ El permiso administrativo de catálogos no habilita lectura de consumos ajenos. 
 
 | ID | Requisito | Criterio de aceptación |
 |---|---|---|
-| RF01 | Registro | Un email normalizado único crea un usuario común; solicitudes concurrentes no crean duplicados |
-| RF02 | Login, refresh y logout | Credenciales válidas habilitan guardados/perfil; la calculadora no exige login; logout revoca refresh; access token tiene vencimiento acotado |
+| RF01 | Registro | Un email normalizado único crea un usuario común; solicitudes concurrentes no crean duplicados; solo se persiste un hash Argon2id con salt |
+| RF02 | Login, refresh y logout | Credenciales válidas habilitan guardados/perfil; la calculadora no exige login; logout revoca refresh; access token tiene vencimiento acotado; ninguna respuesta incluye contraseña ni hash de contraseña |
 | RF03 | Privacidad | Cambiar ids en una URL no permite acceder a lugares, guardados o estudios ajenos |
 | RF04 | Lugares | Crear, listar, editar y archivar lugares propios con ubicación y superficie opcional |
 | RF05 | Configuraciones guardadas | Guardar con nombre, listar en Mis consumos, abrir y restaurar todos los equipos y hábitos |
 | RF06 | Edición y duplicación | Editar incrementa versión; duplicar crea un escenario independiente sin cambiar el original |
 | RF07 | Catálogo precargado | El arranque inicial crea referencias genéricas con unidades y fuentes; posteriores arranques no duplican semillas |
-| RF08 | Búsqueda | Texto, categoría, modo, potencia cuando corresponda, páginas y orden; cambios aparecen automáticamente |
+| RF08 | Búsqueda | Texto, categoría, modo, potencia cuando corresponda, páginas y orden; altas, modificaciones y desactivaciones aparecen automáticamente incluso sin búsquedas; objetivo de atraso ≤5 s en condiciones saludables |
 | RF09 | Agregar equipos | Se valida ficha activa y cantidad/hábitos; el invitado mantiene datos en memoria y el guardado autenticado conserva snapshot |
 | RF10 | Evaluación autenticada | Se guarda un snapshot coherente con desglose, total y promedio diario; edición futura no lo altera |
 | RF11 | Idempotencia | Repetir evaluación con igual clave/entrada devuelve el mismo resultado; distinta entrada con igual clave produce conflicto |
@@ -67,7 +67,7 @@ Para potencia: **E_período_kWh = potenciaW × cantidad × horasPorDia × diasUs
 
 Para ciclos: **E_período_kWh = energiaPorCicloKWh × cantidad × ciclosPeriodo**. ciclosPeriodo se refiere a cada unidad del equipo, por eso se multiplica por cantidad.
 
-**E_total = suma de equipos; promedioDiario = E_total / diasPeriodo**. Se estima un período convencional de 30 días por defecto. Un mes calendario usa sus días reales si esa modalidad se selecciona.
+**E_total = suma de equipos; promedioDiario = E_total / diasPeriodo**. Se estima un período convencional de 30 días por defecto. El cálculo utiliza la cantidad de días indicada en diasPeriodo.
 
 El factor representa la proporción de demanda durante el tiempo declarado. Una potencia ya expresada como media no recibe otra reducción por el mismo ciclo de funcionamiento. Las fuentes del catálogo y las hipótesis se muestran en el resultado.
 
@@ -85,11 +85,11 @@ Los valores de API y límites de carga de la capacidad externa se especifican de
 
 Si hay superficie: **cantidad que cabe = piso(superficieUtil / superficieEfectivaPanel)**. La superficie efectiva registra la reserva por disposición; no verifica geometría ni resistencia estructural.
 
-La cobertura admitida inicialmente es mayor que 0 y hasta 100 %. Se descartan fichas inactivas o inválidas. Se comparan candidatos por cumplimiento de energía/superficie; si todos los factibles tienen precios comparables en igual moneda y referencia temporal, gana menor costo de paneles, luego menor superficie e id. Si faltan precios comparables, gana menor superficie requerida, luego menor cantidad e id. Se informa el criterio aplicado.
+La cobertura admitida inicialmente es mayor que 0 y hasta 100 %. Se descartan fichas inactivas o inválidas. Se comparan candidatos por cumplimiento de energía/superficie; si todos los factibles tienen precios comparables en igual moneda y catálogo de referencia, gana menor costo de paneles, luego menor superficie e id. Si faltan precios comparables, gana menor superficie requerida, luego menor cantidad e id. Se informa el criterio aplicado.
 
 Si nadie cumple superficie, se muestra la mayor cobertura alcanzable sin presentarla como cumplimiento del objetivo. Consumo cero produce cero paneles. Sin candidatos se completa con resultado sin alternativa. Sin ubicación/recurso confiable se requiere información adicional o se informa un error recuperable; un recurso manual se etiqueta con su fuente.
 
-Si el proveedor ya devuelve generación neta, no se aplican otra vez sus pérdidas. Cada estudio persistente conserva parámetros, fichas y versiones, fuente/fecha, orientación e inclinación asumidas. La recomendación invitada incluye esa información en la respuesta temporal, sin escribirla en una base. La cobertura del período no equivale a autonomía horaria ni alimentación durante cortes.
+Si el proveedor ya devuelve generación neta, no se aplican otra vez sus pérdidas. Cada estudio persistente conserva parámetros, fichas y versiones, fuente del recurso, orientación e inclinación asumidas. La recomendación invitada incluye esa información en la respuesta temporal, sin escribirla en una base. La cobertura del período no equivale a autonomía horaria ni alimentación durante cortes.
 
 El modo invitado utiliza las mismas reglas de consumo y selección solar. Un valor declarado para simular no es un alta de catálogo; los paneles candidatos siempre se obtienen del catálogo activo de Solar. Para la promoción del borrador se vuelven a validar fichas activas y permisos. No se acepta un resultado calculado por el navegador como evaluación confirmada.
 
@@ -112,7 +112,7 @@ Reintentar error vuelve a pendiente con auditoría. Un respaldo solar válido se
 |---|---|---|
 | RNF01 | Cuatro servicios y gateway; capas/hexagonal distinguibles | Despliegues y revisión de dependencias |
 | RNF02 | Base privada por servicio; MySQL + MongoDB | Credenciales y pruebas sin acceso cruzado |
-| RNF03 | Arranque docker compose up --build sin instalación extra | Máquina limpia con Docker/Compose |
+| RNF03 | Arranque mediante scripts/compose con credencial operativa generada automáticamente, sin instalación extra | Máquina limpia con Docker/Compose |
 | RNF04 | Persistencia tras reinicios | Reabrir usuarios/guardados con volúmenes preservados |
 | RNF05 | REST con deadlines y RabbitMQ durable/idempotente | Integración, duplicados y recuperación |
 | RNF06 | Consistencia de evaluación y outbox local | Transacciones, rollback, concurrencia y respuesta perdida |
@@ -133,3 +133,7 @@ Objetivos iniciales, todavía no medidos: p95 de catálogo <500 ms; p95 de confi
 No se incluye IoT, facturación/pagos, venta, instalación, baterías, diseño eléctrico/estructural, normativa de conexión, autonomía, imágenes adjuntas ni importación masiva. “Subir un equipo/panel” significa alta de ficha por formulario administrativo.
 
 Pendientes externos: aprobación docente, número de grupo/comisión, proveedor/consumidor asignados y contrato, fuente solar para ubicaciones reales, dataset con fuentes, reglas de precio/moneda y validación del hosting gratuito. Los resultados de carga/fallas y la integración no se declaran ya realizados.
+
+## Protección operativa
+
+Las rutas /health/ requieren una credencial de monitoreo independiente de JWT de usuario y de la API key M2M. Sin credencial válida responden 401 sin estado interno. La credencial se genera al arrancar y nunca se fija en el repositorio; las respuestas son mínimas, en español y con Cache-Control: no-store. El arranque rechaza credenciales ausentes o de menos de 32 caracteres.

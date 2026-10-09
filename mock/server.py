@@ -1,4 +1,6 @@
 """Mock local de contrato; sin BD, proveedores ni persistencia de negocio."""
+import hashlib
+import hmac
 import json
 import os
 import re
@@ -17,6 +19,13 @@ SOLAR = '/api/v1/publico/recomendaciones-solares'
 ERRORS = {400: 'FORMATO_INVALIDO', 401: 'NO_AUTENTICADO', 403: 'SIN_PERMISO', 413: 'CUERPO_DEMASIADO_GRANDE', 415: 'TIPO_CONTENIDO_NO_SOPORTADO', 422: 'VALIDACION', 429: 'LIMITE_DE_TRAFICO', 500: 'ERROR_INTERNO', 503: 'SERVICIO_NO_DISPONIBLE'}
 
 
+class ValidationError(ValueError):
+    def __init__(self, field, reason):
+        self.field = field[2:] if field.startswith('$.') else field
+        self.reason = reason
+        super().__init__(self.field + ': ' + reason)
+
+
 def validate(value, schema, doc, path='$'):
     """Comprueba el subconjunto de schemas usado aquí; no es un validador OpenAPI general."""
     if '$ref' in schema:
@@ -33,47 +42,47 @@ def validate(value, schema, doc, path='$'):
             except ValueError:
                 pass
         if matches != 1:
-            raise ValueError(path + ': variante inválida o campos incompatibles')
+            raise ValidationError(path, 'variante inválida o campos incompatibles')
         return
     kind = schema.get('type')
     numeric = isinstance(value, (int, float, Decimal)) and not isinstance(value, bool)
     valid = {'object': isinstance(value, dict), 'array': isinstance(value, list), 'string': isinstance(value, str), 'number': numeric, 'integer': numeric and (kind != 'integer' or value == value // 1), 'boolean': isinstance(value, bool)}
     if kind and not valid[kind]:
-        raise ValueError(path + ': tipo inválido')
+        raise ValidationError(path, 'tipo inválido')
     if 'enum' in schema and value not in schema['enum']:
-        raise ValueError(path + ': valor no admitido')
+        raise ValidationError(path, 'valor no admitido')
     if kind == 'object':
         props = schema.get('properties', {})
         if any(k not in value for k in schema.get('required', [])):
-            raise ValueError(path + ': faltan campos obligatorios')
+            raise ValidationError(path, 'faltan campos obligatorios')
         if schema.get('additionalProperties') is False and set(value) - set(props):
-            raise ValueError(path + ': campos desconocidos')
+            raise ValidationError(path, 'campos desconocidos')
         for key, item in value.items():
             if key in props:
                 validate(item, props[key], doc, path + '.' + key)
     elif kind == 'array':
         if not schema.get('minItems', 0) <= len(value) <= schema.get('maxItems', float('inf')):
-            raise ValueError(path + ': tamaño inválido')
+            raise ValidationError(path, 'tamaño inválido')
         for i, item in enumerate(value):
             validate(item, schema['items'], doc, f'{path}[{i}]')
     elif kind == 'string':
         if not schema.get('minLength', 0) <= len(value) <= schema.get('maxLength', float('inf')):
-            raise ValueError(path + ': longitud inválida')
+            raise ValidationError(path, 'longitud inválida')
         if 'pattern' in schema and not re.fullmatch(schema['pattern'], value):
-            raise ValueError(path + ': formato inválido')
+            raise ValidationError(path, 'formato inválido')
     elif kind in ('number', 'integer'):
         for key, exclusive, sign in [('minimum', 'exclusiveMinimum', -1), ('maximum', 'exclusiveMaximum', 1)]:
             if key in schema and ((value - schema[key]) * sign > 0 or (schema.get(exclusive) and value == schema[key])):
-                raise ValueError(path + ': fuera de rango')
+                raise ValidationError(path, 'fuera de rango')
 
 
-def precision(value):
+def precision(value, path='$'):
     if isinstance(value, Decimal) and value != value.quantize(Decimal('0.000001')):
-        raise ValueError('Se admiten como máximo seis decimales')
+        raise ValidationError(path, 'Se admiten como máximo seis decimales')
     if isinstance(value, dict):
-        for v in value.values(): precision(v)
+        for key, item in value.items(): precision(item, path + '.' + key)
     if isinstance(value, list):
-        for v in value: precision(v)
+        for index, item in enumerate(value): precision(item, f'{path}[{index}]')
 
 
 def rounded(value):
@@ -82,11 +91,11 @@ def rounded(value):
 
 def consumo(data, trace):
     seen, rows, total = set(), [], Decimal(0)
-    for e in data['equipos']:
-        if e['id'] in seen: raise ValueError('equipos.id: identificador repetido')
+    for index, e in enumerate(data['equipos']):
+        if e['id'] in seen: raise ValidationError(f'equipos[{index}].id', 'Identificador repetido')
         seen.add(e['id'])
         if e['modo'] == 'POTENCIA':
-            if e['diasUso'] > data['diasPeriodo']: raise ValueError('equipos.diasUso: supera diasPeriodo')
+            if e['diasUso'] > data['diasPeriodo']: raise ValidationError(f'equipos[{index}].diasUso', 'No puede superar diasPeriodo')
             energy = Decimal(e['potenciaW']) * e['cantidad'] * e['horasPorDia'] * e['diasUso'] * e['factorFuncionamiento'] / 1000
         else:
             energy = Decimal(e['energiaPorCicloKWh']) * e['cantidad'] * e['ciclosPeriodo']
@@ -135,19 +144,30 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(raw)))
         self.send_header('X-Mock', 'entrega-1')
+        if self.path.startswith('/health/'):
+            self.send_header('Cache-Control', 'no-store')
+            if code == 401: self.send_header('WWW-Authenticate', 'Bearer realm="healthcheck"')
         if trace: self.send_header('X-Request-Id', trace)
         if code in (429, 503): self.send_header('Retry-After', '6')
         self.end_headers()
-        self.wfile.write(raw)
+        if self.command != 'HEAD': self.wfile.write(raw)
 
-    def error(self, code, trace, message=None):
-        self.send_json(code, dict(codigo=ERRORS[code], mensaje=message or ERRORS[code], traceId=trace, detalles=[]), trace)
+    def error(self, code, trace, message=None, details=None):
+        self.send_json(code, dict(codigo=ERRORS[code], mensaje=message or ERRORS[code], traceId=trace, detalles=details or []), trace)
 
     def do_GET(self):
-        if self.path == '/health/live': self.send_json(200, {'estado': 'disponible', 'tipo': 'mock'})
+        if self.path.startswith('/health/'):
+            supplied = hashlib.sha256(self.headers.get('Authorization', '').encode('utf-8')).digest()
+            if not hmac.compare_digest(supplied, self.server.healthcheck_auth_digest):
+                return self.send_json(401, {'mensaje': 'No autenticado'})
+            if self.path == '/health/live': return self.send_json(200, {'estado': 'disponible'})
+            return self.send_json(404, {'mensaje': 'Ruta de salud no disponible'})
         elif self.path in ('/openapi.json', '/guest-openapi.json'):
             self.send_json(200, DOCS['v1' if self.path == '/openapi.json' else 'guest-v1'])
         else: self.send_json(404, {'mensaje': 'Ruta no incluida en el mock'})
+
+    def do_HEAD(self):
+        self.do_GET()
 
     def do_POST(self):
         trace = self.headers.get('X-Request-Id') or str(uuid.uuid4())
@@ -185,6 +205,8 @@ class Handler(BaseHTTPRequestHandler):
                 ctx.prec = 80
                 precision(data)
                 result = solar(data, trace) if self.path == SOLAR else consumo(data, trace)
+        except ValidationError as error:
+            return self.error(422, trace, 'Entrada inválida', [{'campo': error.field, 'motivo': error.reason}])
         except (ValueError, ArithmeticError): return self.error(422, trace, 'Entrada inválida: revisar esquema, ids, precisión y días')
         scenario = self.headers.get('X-Mock-Scenario', '')
         if scenario in ('429', '500', '503'): return self.error(int(scenario), trace)
@@ -192,8 +214,13 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, result, trace)
 
 
-def create_server(host='127.0.0.1', port=8080):
-    return ThreadingHTTPServer((host, port), Handler)
+def create_server(host='127.0.0.1', port=8080, healthcheck_token=None):
+    token = os.getenv('HEALTHCHECK_TOKEN', '') if healthcheck_token is None else healthcheck_token
+    if len(token) < 32:
+        raise ValueError('HEALTHCHECK_TOKEN debe tener al menos 32 caracteres; usar scripts/compose para el arranque local')
+    server = ThreadingHTTPServer((host, port), Handler)
+    server.healthcheck_auth_digest = hashlib.sha256(('Bearer ' + token).encode('utf-8')).digest()
+    return server
 
 
 if __name__ == '__main__':

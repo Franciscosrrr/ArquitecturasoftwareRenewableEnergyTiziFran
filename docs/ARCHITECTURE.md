@@ -8,13 +8,19 @@ Entrega 1 · versión 1.2.0. Arquitectura decidida para la propuesta; implementa
 
 El invitado calcula consumo y recomendación solar sin cuenta ni persistencia. El usuario autenticado gestiona consumos propios y el administrador mantiene catálogos. El grupo consumidor obtiene estimaciones de energía desde una capacidad pública. La capacidad del proveedor asignado se incorporará a un flujo relevante; se propone recurso solar, sin presumir su disponibilidad ni la asignación.
 
-Fuente editable del diagrama: [contexto.mmd](diagrams/contexto.mmd). Las identidades de los grupos externos están pendientes.
+Fuente editable del diagrama: [contexto.mmd](diagrams/contexto.mmd). Esta vista describe el sistema previsto; distingue invitado, usuario autenticado y administrador. Las identidades de los grupos externos están pendientes.
 
 ## 2. Contenedores
 
 ![Diagrama de contenedores](diagrams/contenedores.png)
 
-Representación Mermaid equivalente: [contenedores.mmd](diagrams/contenedores.mmd). PNG y Mermaid usan la misma vista simplificada; comunicaciones REST adicionales y telemetría se indican en una nota. El PNG no fue generado automáticamente desde Mermaid. Las flechas sólidas representan solicitudes/acceso a almacenamiento; las discontinuas, eventos. Toda entrada de negocio de la web pasa por el gateway.
+Representación Mermaid equivalente: [contenedores.mmd](diagrams/contenedores.mmd). PNG y Mermaid usan la misma vista simplificada; comunicaciones REST adicionales y telemetría se describen en la guía de diagramas y en las secciones siguientes. Los PNG se generan directamente desde sus fuentes Mermaid con Mermaid CLI; [instrucciones de diagramas](diagrams/README.md). Las flechas sólidas representan solicitudes/acceso a almacenamiento; las discontinuas, eventos. Toda entrada de negocio de la web pasará por el gateway en la arquitectura completa. El evento ElectrodomesticoActualizado vuelve al indexador del servicio Electrodomésticos, que actualiza Meilisearch; el cambio no depende de una búsqueda.
+
+### Componentes actuales
+
+![Componentes ejecutables actuales](diagrams/contenedores-actuales.png)
+
+Fuente: [contenedores-actuales.mmd](diagrams/contenedores-actuales.mmd). El mock es independiente del backend productivo. El perfil estructura agrega los cinco servidores Go sin proxy entre ellos; no existe frontend ni almacenamiento integrado. Esta vista corresponde al compose.yaml actual.
 
 ## 3. Límites y propiedad
 
@@ -69,13 +75,14 @@ Las modificaciones de equipos bloquean la misma configuración e incrementan ver
 | Consumo → Electrodomésticos | REST, conexión 500 ms, 2 s/intento, una repetición de lectura transitoria, presupuesto total 5 s |
 | Solar → Consumo | REST de evaluación inmutable con igual presupuesto |
 | Solar/Electrodomésticos → Usuarios | REST de rol vigente antes de una mutación administrativa; 2 s máximo, sin escritura si falla |
-| Solar → grupo proveedor | Adaptador directo HTTP; conexión 1 s, 3 s/intento, una repetición de lectura, presupuesto total 8 s |
+| Solar durable → grupo proveedor | Adaptador directo HTTP; conexión incluida de hasta 1 s, 3 s/intento, una repetición de lectura, presupuesto total 8 s |
+| Solar invitado → grupo proveedor | Dos intentos como máximo de 2,5 s, conexión incluida y jitter; subpresupuesto 6 s dentro de los 8 s totales de Solar |
 | Consumo → RabbitMQ → Solar | Evento durable ConsumoEvaluado.v1; entrega al menos una vez; trabajo idempotente |
 | Electrodomésticos → RabbitMQ → su indexador | ElectrodomesticoActualizado.v1; cambios y desactivaciones |
 
 Gateway: deadline normal 10 s; no espera terminar un estudio solar ni reintenta escrituras ciegamente. Los reintentos se hacen en una sola capa dueña de la llamada, con jitter y presupuesto total. Una respuesta vencida no confirma un trabajo con lease perdido.
 
-Eventos: eventId, tipo/schemaVersion, fecha y traceId; ConsumoEvaluado incluye propietario, evaluación, configuración/versiones, lugar, período, consumos, ubicación y superficie opcional. Son eventos de hecho confirmado, no el registro canónico de Event Sourcing. Su contrato procesable se formalizará al implementar mensajería; esta entrega formaliza la capacidad HTTP pública.
+Eventos: eventId, tipo/schemaVersion y traceId; ConsumoEvaluado incluye propietario, evaluación, configuración/versiones, lugar, período, consumos, ubicación y superficie opcional. Son eventos de hecho confirmado, no el registro canónico de Event Sourcing. Su contrato procesable se formalizará al implementar mensajería; esta entrega formaliza la capacidad HTTP pública.
 
 Outbox con polling, colas durables, mensajes persistentes, publisher confirms y ack manual. Reintentos iniciales de mensajes: 1, 5 y 30 s; inválidos/agotados van a DLQ con alerta, diagnóstico y redrive auditado. Si Solar ya confirmó el trabajo al broker, su recuperación depende de pendientes/leases MongoDB, no de que el mensaje siga en la cola.
 
@@ -91,7 +98,7 @@ Readiness cada 5 s, timeout 1 s, retirar tras dos fallos y reincorporar tras dos
 
 Usuarios almacena hashes Argon2id con salt y email normalizado único. Registro crea USUARIO. Las claves privadas JWT pertenecen a Usuarios; otros servicios verifican con claves públicas, emisor, audiencia y vencimiento. Access token inicial 15 min, refresh rotativo 7 días y hash en la BD. Access token en memoria del navegador; refresh en cookie HttpOnly, SameSite y CSRF; Secure en HTTPS. Logout revoca refresh; JWT vigente puede durar hasta su expiración.
 
-El gateway define una lista explícita de rutas anónimas de solo lectura/cálculo. No aplica JWT globalmente a toda la web y tampoco publica guardados o administración al abrir el modo invitado. La API M2M mantiene su X-API-Key independiente; ninguna clave se incrusta en React. Cada servicio protege también sus rutas privadas y autoriza por propietario. Altas/modificaciones de catálogos consultan rol/estado vigente; falla de Usuarios impide la escritura administrativa. El administrador no obtiene acceso automático a consumos ajenos. Credenciales M2M de otro grupo solo habilitan la capacidad publicada. No se registran tokens/contraseñas en logs.
+El gateway define una lista explícita de rutas anónimas de solo lectura/cálculo. No aplica JWT globalmente a toda la web y tampoco publica guardados o administración al abrir el modo invitado. La API M2M mantiene su X-API-Key independiente; ninguna clave se incrusta en React. Cada servicio protege también sus rutas privadas y autoriza por propietario. Altas/modificaciones de catálogos consultan rol/estado vigente; falla de Usuarios impide la escritura administrativa. El administrador no obtiene acceso automático a consumos ajenos. Credenciales M2M de otro grupo solo habilitan la capacidad publicada. No se registran tokens/contraseñas en logs. Las contraseñas y sus hashes tampoco se devuelven en respuestas de login, registro o perfil.
 
 ## 9. Búsqueda y caché
 
@@ -124,7 +131,7 @@ Pruebas futuras: invitado sin credenciales, rutas privadas rechazadas, ausencia 
 
 Compose contendrá frontend, gateway, cuatro servicios (dos réplicas Solar), tres MySQL, MongoDB, RabbitMQ, Meilisearch, Valkey y observabilidad. Un inicializador idempotente generará secretos locales, migraciones, seeds, índices, colas y administrador inicial aleatorio con cambio obligatorio de contraseña. Se mostrará su credencial solo en la salida local inicial. No habrá pasos manuales obligatorios ni dependencias instaladas en el host fuera de Docker/Compose.
 
-Datos en volúmenes nombrados; compose down sin borrar volúmenes no elimina guardados. Solo la entrada necesaria será pública. El modo local de demostración inicia un proveedor simulado y marca sus datos; la integración real con otro grupo debe verificarse aparte y no queda satisfecha por el mock.
+Datos en volúmenes nombrados; compose down sin borrar volúmenes no elimina guardados. Solo la entrada necesaria será pública. El modo local completo previsto iniciará un proveedor simulado y marcará sus datos; la integración real con otro grupo debe verificarse aparte y no queda satisfecha por el mock.
 
 La capacidad pública stateless puede publicarse en Docker con Render Free sin medio de pago, usando una fachada gateway limitada y el mismo cálculo de Consumo; un artefacto cloud podría supervisar ambos procesos en una imagen, manteniendo separados sus roles. No utiliza usuarios/guardados privados ni disco efímero para persistencia. El sistema completo local conserva su despliegue por contenedores separados.
 
@@ -148,7 +155,7 @@ El evento inicial determina una configuracionSolarVersion inicial estable. Su re
 
 El gateway permite 10 s, Solar temporal tiene 8 s totales y su adaptador externo como máximo 6 s (hasta dos intentos de 2,5 s con conexión incluida y jitter dentro del límite). Quedan hasta 2 s compartidos entre catálogo, cómputo y serialización. Cada etapa respeta el deadline restante y cancela al agotarlo; no suma un nuevo presupuesto desde cero. El worker durable conserva su presupuesto externo de hasta 8 s por ejecución.
 
-La salud futura se consulta por capacidad: `/health/ready/publico`, `/health/ready/privado` y `/health/ready/admin`. El gateway mantiene conjuntos de instancias aptas por familia de rutas. La ruta temporal no se retira por una caída de RabbitMQ o de Consumo; Solar manual requiere su catálogo, Solar por ubicación además evalúa disponibilidad del recurso y devuelve 503 si falta. La salud del proceso se separa de readiness de negocio. Los esqueletos de esta entrega solo tienen `/health/live` y `/health/ready` genérico: este último devuelve 503 hasta implementar los casos reales.
+La salud futura se consulta por capacidad: `/health/ready/publico`, `/health/ready/privado` y `/health/ready/admin`. El gateway mantiene conjuntos de instancias aptas por familia de rutas. La ruta solar temporal no se retira por una caída de RabbitMQ o de consumo_db; una caída de la API Consumo sí impide calcular un consumo nuevo, pero no recomendar paneles con un promedio ya disponible; Solar manual requiere su catálogo, Solar por ubicación además evalúa disponibilidad del recurso y devuelve 503 si falta. La salud del proceso se separa de readiness de negocio. Los esqueletos de esta entrega solo tienen `/health/live` y `/health/ready` genérico: este último devuelve 503 hasta implementar los casos reales.
 
 ### Persistencia del trabajo antes del ack
 
@@ -159,3 +166,7 @@ Solar confirma RabbitMQ después de la escritura MongoDB reconocida con journal 
 La invalidación del catálogo se reintenta desde el outbox del servicio dueño: un fallo entre commit y borrar la caché no queda silencioso. TTL 5 minutos acota lecturas obsoletas; las decisiones críticas verifican fuente autoritativa. La medición de utilidad sigue pendiente, como exigen las clases y el enunciado.
 
 La implementación se organiza en perfiles: mock (entrega 1), estructura, y posteriormente sistema/observabilidad. Evita exigir todas las dependencias para probar el contrato. Los tres MySQL separados se mantienen como decisión de aislamiento físico; la clase 2 también admite aislamiento lógico. Se reconsiderarán únicamente con medidas de memoria y sin acceso cruzado a bases.
+
+## 14. Protección de healthchecks implementada
+
+El mock y los cinco componentes Go protegen /health/ mediante Authorization: Bearer y una credencial HEALTHCHECK_TOKEN de monitoreo. No se reutilizan sesiones de usuario ni la clave M2M. Sin credencial válida responden 401 sin informar estado; respuestas mínimas en español y Cache-Control: no-store. Se comparan digests SHA-256 de longitud fija en tiempo constante. Esto no es hashing de contraseñas: la credencial es un secreto aleatorio de alta entropía. El arranque rechaza valores ausentes o de menos de 32 caracteres. scripts/compose.ps1 y scripts/compose.sh generan 32 bytes aleatorios en memoria y los pasan por entorno a Compose; la comprobación del mock usa la misma credencial sin incluir su valor en el comando. Los puertos siguen publicados solo en 127.0.0.1 para desarrollo. Fuera del entorno local, monitoreo y balanceador usarán red interna y transporte cifrado; el proxy público no expondrá estas rutas. Readiness de Go sigue siendo 503 con credencial válida mientras falte negocio.

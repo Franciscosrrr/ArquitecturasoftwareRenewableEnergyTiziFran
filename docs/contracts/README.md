@@ -1,6 +1,6 @@
 # Capacidad pública: estimación de consumo
 
-Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.0; ruta mayor /v1. Estado: contrato con mock local ejecutable; servicio productivo y URL cloud pendientes.
+Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado: contrato con mock local ejecutable; servicio productivo y URL cloud pendientes.
 
 ## Contrato formal
 
@@ -62,16 +62,20 @@ Misma entrada y algoritmo producen igual energía. traceId es metadato variable.
 | 500 | ERROR_INTERNO | Falla inesperada; diagnóstico privado por traceId |
 | 503 | SERVICIO_NO_DISPONIBLE | Indisponibilidad temporal; Retry-After si se conoce |
 
-Todos los errores generados por la aplicación siguen codigo, mensaje, traceId y detalles. No exponen SQL, stack traces ni credenciales. Una plataforma cloud/proxy puede responder por sí misma durante cold start o antes de llegar a la aplicación; el consumidor debe validar tipo de contenido y tolerar una respuesta de infraestructura ajena al esquema, sin tratarla como 200 de negocio.
+Todos los errores de estas operaciones de negocio siguen codigo, mensaje, traceId y detalles. No exponen SQL, stack traces ni credenciales. Una plataforma cloud/proxy puede responder por sí misma durante cold start o antes de llegar a la aplicación; el consumidor debe validar tipo de contenido y tolerar una respuesta de infraestructura ajena al esquema, sin tratarla como 200 de negocio.
 
 Presupuesto propuesto con instancia activa: 5 s; ante fallo de conexión o 503, una repetición con jitter dentro del presupuesto. No repetir 4xx de validación/permiso. Si se acuerda Render Free, la primera activación puede exceder ese presupuesto: acordar un sondeo de disponibilidad separado antes del flujo o mostrar indisponibilidad temporal y reintento explícito. No se simula un éxito para ocultar cold start.
 
 ## Compatibilidad y verificación
 
-Cambios de significado, unidades, fórmula, campos obligatorios o errores incompatibles requieren /v2 y transición acordada. La fecha/versionAlgoritmo del cálculo no se cambia silenciosamente dentro de v1. Se conserva v1 hasta que el consumidor pueda migrar. Campos nuevos de respuesta solo se incorporan con acuerdo y actualización de contrato; los consumidores no deben aplicar validación rígida que impida extensiones acordadas.
+Cambios de significado, unidades, fórmula, campos obligatorios o errores incompatibles requieren /v2 y transición acordada. La semántica de versionAlgoritmo y las reglas del cálculo no se cambian silenciosamente dentro de v1. Se conserva v1 hasta que el consumidor pueda migrar. Los esquemas actuales rechazan campos desconocidos. Cualquier campo nuevo de respuesta requiere un contrato acordado y la actualización de los consumidores antes de enviarlo; una extensión no acordada no se considera compatible con estos esquemas.
 
 El proveedor verificará implementación contra OpenAPI, ejemplos y casos límite; el grupo consumidor tendrá tests que detecten incompatibilidades. La [guía de mock](MOCK.md) explica arranque, credenciales de prueba y escenarios ejecutables. La asignación del consumidor y su caso concreto todavía no fueron comunicados.
 
 ## Distinción respecto del modo invitado web
 
 Este contrato es la integración M2M de otro grupo y conserva X-API-Key. La calculadora web no exige registro ni dicha clave: usa rutas anónimas separadas de consumo y recomendación solar, documentadas en [GUEST-MODE.md](../GUEST-MODE.md) y [OpenAPI invitado](guest-v1/openapi.json). No se elimina seguridad M2M ni se expone una credencial en React al habilitar visitas sin cuenta.
+
+## Revisión compatible 1.0.1
+
+Aclara que el mock local ya es ejecutable y que la implementación productiva sigue pendiente. El contrato invitado retira una cota de salida de superficie que rechazaba resultados matemáticos de solicitudes válidas; no cambian campos, rutas, fórmulas ni unidades. Los errores de validación del mock ahora señalan el campo observado.

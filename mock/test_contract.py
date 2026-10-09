@@ -7,10 +7,14 @@ from decimal import Decimal
 from server import ROOT, DOCS, Handler, Limiter, create_server, validate, M2M, CONSUMO, SOLAR
 
 
+# Credencial ficticia exclusiva de pruebas, no un secreto de despliegue.
+TEST_HEALTH_TOKEN = 'credencial-ficticia-solo-para-pruebas-123456'
+
+
 class ContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.server = create_server(port=0)
+        cls.server = create_server(port=0, healthcheck_token=TEST_HEALTH_TOKEN)
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
         cls.valid = json.loads((ROOT / 'docs/contracts/v1/examples/solicitud-valida.json').read_text(encoding='utf-8'))
@@ -40,6 +44,42 @@ class ContractTest(unittest.TestCase):
         validate(result, schema, doc)
         self.assertEqual(response_headers['X-Mock'], 'entrega-1')
         return status, result, response_headers
+
+    def health_request(self, auth=None, method='GET', path='/health/live'):
+        conn = http.client.HTTPConnection(*self.server.server_address, timeout=5)
+        headers = {} if auth is None else {'Authorization': auth}
+        conn.request(method, path, headers=headers)
+        response = conn.getresponse()
+        result = (response.status, dict(response.getheaders()), response.read())
+        conn.close()
+        return result
+
+    def test_health_rejects_missing_or_wrong_credentials(self):
+        for method in ('GET', 'HEAD'):
+            for auth in (None, 'Bearer incorrecta', 'Bearer mock-consumidor', 'Basic ' + TEST_HEALTH_TOKEN):
+                with self.subTest(method=method, auth=auth):
+                    code, headers, body = self.health_request(auth, method)
+                    self.assertEqual(code, 401)
+                    self.assertEqual(headers['Cache-Control'], 'no-store')
+                    self.assertIn('WWW-Authenticate', headers)
+                    self.assertNotIn(b'estado', body)
+                    self.assertNotIn(TEST_HEALTH_TOKEN.encode(), body)
+        for path in ('/health/live?token=' + TEST_HEALTH_TOKEN, '/health/ready'):
+            self.assertEqual(self.health_request(path=path)[0], 401)
+
+    def test_health_with_operational_credential(self):
+        code, headers, body = self.health_request('Bearer ' + TEST_HEALTH_TOKEN)
+        self.assertEqual(code, 200)
+        self.assertEqual(json.loads(body), {'estado': 'disponible'})
+        self.assertEqual(headers['Cache-Control'], 'no-store')
+        code, _, body = self.health_request('Bearer ' + TEST_HEALTH_TOKEN, 'HEAD')
+        self.assertEqual(code, 200)
+        self.assertEqual(body, b'')
+
+    def test_server_requires_operational_credential(self):
+        for token in ('', 'corta'):
+            with self.subTest(token=token), self.assertRaises(ValueError):
+                create_server(port=0, healthcheck_token=token)
 
     def test_reference_calculation(self):
         code, result, _ = self.request()
@@ -107,6 +147,27 @@ class ContractTest(unittest.TestCase):
         expected['traceId'] = 'prueba-001'
         self.assertEqual(result,expected)
         self.assertNotIn('estudioId',result)
+
+    def test_solar_valid_extreme_inputs_conform_to_response_contract(self):
+        data = dict(self.sun, promedioDiarioKWh=1000000000000, coberturaObjetivo=1, rendimientoGlobal=0.000001,
+                    recursoSolar={'tipo': 'MANUAL', 'hsp': 0.000001, 'fuente': 'Caso límite de contrato'})
+        data.pop('superficieUtilM2', None)
+        code, result, _ = self.request(data, SOLAR, key=None)
+        self.assertEqual(code, 200)
+        self.assertEqual(result['alternativas'][0]['cantidad'], 2000000000000000000000000)
+        self.assertTrue(result['alternativas'][0]['cumpleObjetivo'])
+
+    def test_validation_identifies_observed_field(self):
+        data = copy.deepcopy(self.valid)
+        data['equipos'][0]['diasUso'] = 31
+        code, result, _ = self.request(data)
+        self.assertEqual(code, 422)
+        self.assertEqual(result['detalles'][0]['campo'], 'equipos[0].diasUso')
+        data = copy.deepcopy(self.valid)
+        data['equipos'][0]['factorFuncionamiento'] = 0.1234567
+        code, result, _ = self.request(data)
+        self.assertEqual(code, 422)
+        self.assertEqual(result['detalles'][0]['campo'], 'equipos[0].factorFuncionamiento')
 
     def test_solar_zero(self):
         data = dict(self.sun, promedioDiarioKWh=0)

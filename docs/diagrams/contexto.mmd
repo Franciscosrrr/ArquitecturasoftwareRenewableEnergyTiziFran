@@ -1,5 +1,13 @@
+---
+title: Contexto del sistema previsto
+---
 flowchart LR
- V["Visitante / usuario: sin cuenta resultados; con cuenta guardados"] -->|Calculadora| S["Sistema de consumo personalizado: lugares, evaluaciones y recomendaciones solares"]
- A["Administrador: catálogos y roles"] -->|Catálogos| S
- C["Grupo consumidor"] -->|Estimación API| S
- S -->|Capacidad externa| P["Grupo proveedor: asignación pendiente"]
+    V["Invitado<br/>Calcula sin cuenta ni guardado"] -->|Calculadora temporal| S["Sistema de consumo personalizado<br/>Consumos, configuraciones y recomendaciones solares"]
+    U["Usuario autenticado<br/>Configuraciones e historial propios"] -->|Guardados e historial| S
+    A["Administrador<br/>Catálogos y roles"] -->|Administración| S
+    C["Grupo consumidor<br/>Asignación pendiente"] -->|API de estimación de consumo| S
+    S -->|Capacidad externa en un flujo relevante| P["Grupo proveedor<br/>Asignación y contrato pendientes"]
+    classDef actor fill:#e9f2fb,stroke:#557a96,color:#203b50
+    classDef system fill:#e6f4ee,stroke:#417c64,color:#203b50
+    class V,U,A,C,P actor
+    class S system

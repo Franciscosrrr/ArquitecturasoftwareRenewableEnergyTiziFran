@@ -2,9 +2,9 @@
 
 Sistema de Administración de Consumo Personalizado
 
-**Trabajo Práctico Integrador · Arquitectura de Software 2026 · Entrega 1: diseño, estructura y mock**
+**Trabajo Práctico Integrador · Arquitectura de Software · Entrega 1: diseño, estructura y mock**
 
-Fecha de entrega indicada en el enunciado: 9 de octubre de 2026. Versión documental: 1.2.0.
+Versión documental: 1.2.0.
 
 | Dato académico | Estado |
 |---|---|
@@ -62,9 +62,19 @@ Ver [verificación](docs/REVIEW.md), [mock](docs/contracts/MOCK.md) y [estructur
 
 Desde la raíz, con Docker Desktop iniciado y Compose v2:
 
-```sh
-docker compose up --build
+Windows (PowerShell):
+
+```powershell
+.\scripts\compose.ps1 up --build
 ```
+
+Linux/macOS:
+
+```sh
+sh scripts/compose.sh up --build
+```
+
+El script genera una credencial aleatoria HEALTHCHECK_TOKEN de 32 bytes en memoria y la pasa a los contenedores. No crea .env, no la imprime y no usa una clave fija. Si ya está definida, la conserva; para invocar Docker Compose directamente debe suministrarse esa variable.
 
 Inicia el mock en http://localhost:8080. No inicia todavía la aplicación completa ni una interfaz web. Contrato M2M: http://localhost:8080/openapi.json; contrato invitado: http://localhost:8080/guest-openapi.json. En navegador se pueden abrir estos contratos; las operaciones de negocio requieren POST.
 
@@ -77,17 +87,17 @@ curl -i http://localhost:8080/api/v1/estimaciones-consumo -H "Content-Type: appl
 Resultado esperado: HTTP 200, total 47,4 kWh y promedio 1,58 kWh/día. Las claves `mock-consumidor` y `mock-sin-permiso` son datos públicos de simulación sin acceso a sistemas reales.
 
 ```sh
-docker compose --profile verificar run --build --rm verificar
-docker compose --profile estructura up --build
+sh scripts/compose.sh --profile verificar run --build --rm verificar
+sh scripts/compose.sh --profile estructura up --build
 ```
 
-El primer comando ejecuta pruebas HTTP aisladas dentro del contenedor. El segundo inicia también los esqueletos: Usuarios 8101, Electrodomésticos 8102, Consumo 8103, Solar 8104 y gateway 8105. `/health/live` devuelve 200; `/health/ready` devuelve 503 y negocio 501 porque no está implementado. El gateway inicial todavía no enruta al mock ni implementa balanceo.
+En PowerShell, reemplazar `sh scripts/compose.sh` por `.\scripts\compose.ps1`. El primer comando ejecuta pruebas HTTP aisladas dentro del contenedor. El segundo inicia también los esqueletos: Usuarios 8101, Electrodomésticos 8102, Consumo 8103, Solar 8104 y gateway 8105. `/health/live` y `/health/ready` exigen `Authorization: Bearer <HEALTHCHECK_TOKEN>`; sin credencial válida responden 401 sin revelar estado. Con credencial válida devuelven 200 y 503 respectivamente; negocio devuelve 501 porque no está implementado. Las respuestas de salud permanecen en español y no se almacenan en caché. El gateway inicial todavía no enruta al mock ni implementa balanceo.
 
-Para detener: `docker compose --profile estructura down`. El mock no tiene volúmenes ni guarda información de negocio. Arranque completo con bases, seeds, colas e interfaz: pendiente para los hitos siguientes. La validación Docker de esta revisión cubre configuración Compose; el build y arranque en Docker quedan pendientes porque el motor no estaba activo.
+Para detener: `.\scripts\compose.ps1 --profile estructura down` en Windows o `sh scripts/compose.sh --profile estructura down` en Linux/macOS. El mock no tiene volúmenes ni guarda información de negocio. Arranque completo con bases, seeds, colas e interfaz: pendiente de implementación. La validación Docker de esta revisión cubre configuración Compose; el build y arranque en Docker quedan pendientes porque el motor no estaba activo.
 
 ## Capacidad para otro grupo
 
-Consumo publicará **POST /api/v1/estimaciones-consumo** para estimar energía de equipos y hábitos sin acceder a guardados privados. El contrato v1.0.0, errores, autenticación M2M, ejemplos y alcance del mock están en [docs/contracts/README.md](docs/contracts/README.md). URL cloud: pendiente de publicación; no existe aún un entorno productivo; el mock local sí está incluido.
+Consumo publicará **POST /api/v1/estimaciones-consumo** para estimar energía de equipos y hábitos sin acceder a guardados privados. El contrato v1.0.1, errores, autenticación M2M, ejemplos y alcance del mock están en [docs/contracts/README.md](docs/contracts/README.md). URL cloud: pendiente de publicación; no existe aún un entorno productivo; el mock local sí está incluido.
 
 Todos los componentes locales serán gratuitos. La publicación elegirá un plan gratuito sin medio de pago ni mejoras pagas; la propuesta Render Free requiere validar activación en frío y cuotas. No se contratarán servicios pagos.
 
@@ -100,6 +110,8 @@ Todos los componentes locales serán gratuitos. La publicación elegirá un plan
 - [Contrato público y ejemplos](docs/contracts/README.md).
 - [Matriz de la primera entrega y pendientes](docs/DELIVERY-1.md).
 - [Revisión documental realizada](docs/REVIEW.md).
+- [Coherencia del proyecto y correcciones](docs/CONSISTENCY-REVIEW.md).
+- [Auditoría de seguridad y resumen del proyecto](docs/SECURITY-AUDIT.md).
 - [Modo invitado y guardado opcional](docs/GUEST-MODE.md).
 - [Fuentes](docs/REFERENCES.md).
 - [Propuesta revisada](docs/PROPUESTA-REVISADA.md).
