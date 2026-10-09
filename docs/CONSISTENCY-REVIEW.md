@@ -13,6 +13,8 @@ Se corrigieron las inconsistencias encontradas entre documentos, diagramas, cont
 | Planificación y referencias de calendario añadidas al proyecto | Se retiraron la tabla de entregas, el orden sugerido de desarrollo y los campos de datación no exigidos por el enunciado. |
 | La propuesta de la raíz enlazaba una carpeta inexistente y duplicaba la propuesta de docs | La raíz ahora apunta a una única propuesta canónica y a las guías vigentes. |
 | OpenAPI decía que el mock y la entrada local estaban pendientes | Ambos contratos describen correctamente el mock en localhost y distinguen la implementación productiva pendiente. Revisión de contrato 1.0.1. |
+| D8 todavía citaba solamente la versión inicial 1.0.0 del contrato | Se indica 1.0.1 como versión vigente y se conserva la referencia a la versión inicial. |
+| La propuesta hablaba de crear el repositorio y agrupaba documentación existente como futura | Se distinguen los documentos locales incluidos de los artefactos pendientes. |
 | Diagramas duplicados en propuestas, fuentes Mermaid y PNG mantenidos por separado | Las propuestas y arquitectura usan las mismas imágenes y fuentes canónicas. Los PNG se generaron desde Mermaid y se inspeccionaron. |
 | El diagrama simplificado no mostraba el consumo de cambios del catálogo | Se añadió RabbitMQ → indexador de Electrodomésticos. El servicio sigue siendo dueño de su índice y su base. |
 | La vista de contenedores futuros podía confundirse con el Compose actual | Se añadieron títulos explícitos y una vista de los componentes ejecutables actuales, sin conexiones de negocio ficticias. |

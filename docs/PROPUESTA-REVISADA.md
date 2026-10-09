@@ -600,9 +600,9 @@ Se mantiene un único repositorio público, main protegida, ramas cortas por tar
 
 ## 21. Documentación y ADR
 
-Esta propuesta reúne el material de diseño. Al crear el repositorio se distribuirá en los archivos exigidos, evitando tener decisiones contradictorias en documentos distintos.
+Esta propuesta reúne el material de diseño. README, SPEC, arquitectura, contrato propio y ADR iniciales ya están incluidos en el repositorio local. El contrato del proveedor, los esquemas procesables de eventos, POSTMORTEM y docs/testing siguen pendientes de integración o evidencia real. Los documentos deben mantenerse coherentes entre sí.
 
-| Archivo futuro | Contenido |
+| Archivo | Contenido previsto o incluido |
 |---|---|
 | README.md | Dominio, objetivo, flujo, ejecución única, accesos y navegación de documentación |
 | SPEC.md o backlog equivalente | Alcance, actores, reglas, historias y aceptación |
