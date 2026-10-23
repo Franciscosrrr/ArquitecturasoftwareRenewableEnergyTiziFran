@@ -1,5 +1,6 @@
 # Revisión de coherencia del proyecto
 
+> Antecedente histórico de entrega 1. El estado operativo actual y sus evidencias están en [DELIVERY-2](DELIVERY-2.md).
 ## Resultado
 
 La documentación no incluye planificación de entregas ni referencias de calendario. Se retiraron también los campos de datación añadidos al diseño de usuarios, catálogos, evaluaciones, estudios y eventos. Las versiones, los propietarios y los identificadores conservan la trazabilidad. Los períodos de consumo, los tiempos de espera, los TTL y los vencimientos de credenciales son parámetros de funcionamiento. La línea temporal del POSTMORTEM requerido por el enunciado se expresa como orden causal y tiempo transcurrido desde el inicio del ensayo.

@@ -3,18 +3,18 @@
   "info": {
     "title": "ArquitecturasoftwareRenewableEnergy - Estimaciones de consumo",
     "version": "1.0.1",
-    "description": "Contrato de estimación de consumo con mock local ejecutable. Servicio productivo y URL cloud pendientes. Capacidad sin persistencia de negocio; reglas cruzadas, redondeo y límites en docs/contracts/README.md."
+    "description": "Capacidad de estimación de consumo implementada en Go y operativa localmente en entrega 2, sin persistencia de negocio. URL cloud pendiente. Reglas cruzadas, redondeo y límites en docs/contracts/README.md."
   },
   "servers": [
     {
       "url": "http://localhost:8080",
-      "description": "Mock local ejecutable en localhost después de iniciar scripts/compose; no es un despliegue productivo."
+      "description": "Gateway local del sistema real de entrega 2. Mock histórico opcional en localhost:8081; no es un despliegue cloud."
     }
   ],
   "tags": [
     {
       "name": "Estimaciones",
-      "description": "Capacidad pública del servicio Consumo."
+      "description": "Capacidad pÃºblica del servicio Consumo."
     }
   ],
   "paths": {
@@ -24,8 +24,8 @@
           "Estimaciones"
         ],
         "operationId": "estimarConsumo",
-        "summary": "Estimar energía de un conjunto de equipos y hábitos",
-        "description": "Requiere X-API-Key provisionada al cliente. Máximo 100 equipos, 256 KiB y período 1–366 días. id único por equipo; diasUso <= diasPeriodo. POTENCIA y CICLOS son variantes excluyentes. Se rechazan campos extra. Calcula con precisión decimal y redondea salidas a seis decimales, mitad hacia arriba. No produce recomendaciones solares ni consulta lugares privados. No depende de un catálogo externo.",
+        "summary": "Estimar energÃ­a de un conjunto de equipos y hÃ¡bitos",
+        "description": "Requiere X-API-Key provisionada al cliente. MÃ¡ximo 100 equipos, 256 KiB y perÃ­odo 1â€“366 dÃ­as. id Ãºnico por equipo; diasUso <= diasPeriodo. POTENCIA y CICLOS son variantes excluyentes. Se rechazan campos extra. Calcula con precisiÃ³n decimal y redondea salidas a seis decimales, mitad hacia arriba. No produce recomendaciones solares ni consulta lugares privados. No depende de un catÃ¡logo externo.",
         "security": [
           {
             "ApiKeyM2M": []
@@ -36,7 +36,7 @@
             "name": "X-Request-Id",
             "in": "header",
             "required": false,
-            "description": "Correlación opcional; si se omite, se genera un identificador. No es clave de idempotencia.",
+            "description": "CorrelaciÃ³n opcional; si se omite, se genera un identificador. No es clave de idempotencia.",
             "schema": {
               "type": "string",
               "minLength": 1,
@@ -91,10 +91,10 @@
         },
         "responses": {
           "200": {
-            "description": "Estimación calculada sin crear lugares, configuraciones o evaluaciones persistentes.",
+            "description": "EstimaciÃ³n calculada sin crear lugares, configuraciones o evaluaciones persistentes.",
             "headers": {
               "X-Request-Id": {
-                "description": "Identificador de correlación de la operación.",
+                "description": "Identificador de correlaciÃ³n de la operaciÃ³n.",
                 "schema": {
                   "type": "string"
                 }
@@ -107,7 +107,7 @@
                 },
                 "examples": {
                   "consumoMixto": {
-                    "summary": "Potencia y ciclos en un período de 30 días",
+                    "summary": "Potencia y ciclos en un perÃ­odo de 30 dÃ­as",
                     "value": {
                       "versionAlgoritmo": "consumo-v1",
                       "diasPeriodo": 30,
@@ -128,7 +128,7 @@
                       "totalPeriodoKWh": 47.4,
                       "promedioDiarioKWh": 1.58,
                       "supuestos": [
-                        "Estimación basada en equipos y hábitos declarados; no es una medición real.",
+                        "EstimaciÃ³n basada en equipos y hÃ¡bitos declarados; no es una mediciÃ³n real.",
                         "El factor de funcionamiento se aplica una sola vez."
                       ],
                       "traceId": "entrega1-ejemplo-001"
@@ -139,7 +139,7 @@
             }
           },
           "400": {
-            "description": "El cuerpo no contiene JSON válido.",
+            "description": "El cuerpo no contiene JSON vÃ¡lido.",
             "content": {
               "application/json": {
                 "schema": {
@@ -147,7 +147,7 @@
                 },
                 "example": {
                   "codigo": "FORMATO_INVALIDO",
-                  "mensaje": "El cuerpo no contiene JSON válido.",
+                  "mensaje": "El cuerpo no contiene JSON vÃ¡lido.",
                   "traceId": "entrega1-ejemplo-400",
                   "detalles": []
                 }
@@ -155,7 +155,7 @@
             }
           },
           "401": {
-            "description": "Se requiere una credencial M2M válida.",
+            "description": "Se requiere una credencial M2M vÃ¡lida.",
             "content": {
               "application/json": {
                 "schema": {
@@ -163,7 +163,7 @@
                 },
                 "example": {
                   "codigo": "NO_AUTENTICADO",
-                  "mensaje": "Se requiere una credencial M2M válida.",
+                  "mensaje": "Se requiere una credencial M2M vÃ¡lida.",
                   "traceId": "entrega1-ejemplo-401",
                   "detalles": []
                 }
@@ -219,7 +219,7 @@
             }
           },
           "422": {
-            "description": "Los datos de consumo no cumplen las reglas de la operación.",
+            "description": "Los datos de consumo no cumplen las reglas de la operaciÃ³n.",
             "content": {
               "application/json": {
                 "schema": {
@@ -227,7 +227,7 @@
                 },
                 "example": {
                   "codigo": "VALIDACION",
-                  "mensaje": "Los datos de consumo no cumplen las reglas de la operación.",
+                  "mensaje": "Los datos de consumo no cumplen las reglas de la operaciÃ³n.",
                   "traceId": "entrega1-ejemplo-002",
                   "detalles": [
                     {
@@ -240,7 +240,7 @@
             }
           },
           "429": {
-            "description": "Se alcanzó el límite de solicitudes del cliente.",
+            "description": "Se alcanzÃ³ el lÃ­mite de solicitudes del cliente.",
             "content": {
               "application/json": {
                 "schema": {
@@ -248,7 +248,7 @@
                 },
                 "example": {
                   "codigo": "LIMITE_DE_TRAFICO",
-                  "mensaje": "Se alcanzó el límite de solicitudes del cliente.",
+                  "mensaje": "Se alcanzÃ³ el lÃ­mite de solicitudes del cliente.",
                   "traceId": "entrega1-ejemplo-429",
                   "detalles": []
                 }
@@ -265,7 +265,7 @@
             }
           },
           "500": {
-            "description": "No fue posible completar la operación.",
+            "description": "No fue posible completar la operaciÃ³n.",
             "content": {
               "application/json": {
                 "schema": {
@@ -273,7 +273,7 @@
                 },
                 "example": {
                   "codigo": "ERROR_INTERNO",
-                  "mensaje": "No fue posible completar la operación.",
+                  "mensaje": "No fue posible completar la operaciÃ³n.",
                   "traceId": "entrega1-ejemplo-500",
                   "detalles": []
                 }
@@ -281,7 +281,7 @@
             }
           },
           "503": {
-            "description": "La capacidad no está disponible temporalmente.",
+            "description": "La capacidad no estÃ¡ disponible temporalmente.",
             "content": {
               "application/json": {
                 "schema": {
@@ -289,7 +289,7 @@
                 },
                 "example": {
                   "codigo": "SERVICIO_NO_DISPONIBLE",
-                  "mensaje": "La capacidad no está disponible temporalmente.",
+                  "mensaje": "La capacidad no estÃ¡ disponible temporalmente.",
                   "traceId": "entrega1-ejemplo-503",
                   "detalles": []
                 }
@@ -315,7 +315,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "X-API-Key",
-        "description": "Credencial de integración con permiso estimar-consumo. No se publica una clave real ni se usa la contraseña de un usuario."
+        "description": "Credencial de integraciÃ³n con permiso estimar-consumo. No se publica una clave real ni se usa la contraseÃ±a de un usuario."
       }
     },
     "schemas": {
@@ -365,7 +365,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
           },
           "cantidad": {
             "type": "integer",
@@ -424,7 +424,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
           },
           "cantidad": {
             "type": "integer",
@@ -448,7 +448,7 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 10000,
-            "description": "Cantidad de ciclos por unidad del equipo durante todo el período."
+            "description": "Cantidad de ciclos por unidad del equipo durante todo el perÃ­odo."
           }
         },
         "required": [
@@ -468,7 +468,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
           },
           "energiaPeriodoKWh": {
             "type": "number",

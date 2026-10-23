@@ -3,3 +3,7 @@ __pycache__/
 .env
 *.exe
 coverage.out
+node_modules/
+dist/
+*.log
+go.work.sum

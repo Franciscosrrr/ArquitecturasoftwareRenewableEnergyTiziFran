@@ -63,8 +63,8 @@ func TestAuthenticatedHealthReportsActualReadiness(t *testing.T) {
 	}
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/v1/pendiente", nil))
-	if response.Code != http.StatusNotImplemented {
-		t.Fatalf("business status = %d, want 501", response.Code)
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("private business status = %d, want 401", response.Code)
 	}
 }
 

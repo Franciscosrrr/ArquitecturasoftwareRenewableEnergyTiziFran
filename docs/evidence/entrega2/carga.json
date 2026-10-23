@@ -1,0 +1,240 @@
+{
+  "at_utc": "2026-10-23T00:05:36.718289+00:00",
+  "environment": "Docker Desktop local; gateway, Consumo, Electrodomésticos, MySQL y Jaeger en un host; sin límite de recursos fijado",
+  "endpoint": "POST /api/v1/publico/consumo",
+  "low_rate_0_5_rps": {
+    "requests": 12,
+    "status": {
+      "200": 12
+    },
+    "p50_ms": 6.8805,
+    "p95_ms": 24.433,
+    "samples": [
+      {
+        "status": 200,
+        "ms": 28.826
+      },
+      {
+        "status": 200,
+        "ms": 3.159
+      },
+      {
+        "status": 200,
+        "ms": 3.225
+      },
+      {
+        "status": 200,
+        "ms": 5.628
+      },
+      {
+        "status": 200,
+        "ms": 6.769
+      },
+      {
+        "status": 200,
+        "ms": 20.645
+      },
+      {
+        "status": 200,
+        "ms": 6.992
+      },
+      {
+        "status": 200,
+        "ms": 24.433
+      },
+      {
+        "status": 200,
+        "ms": 20.344
+      },
+      {
+        "status": 200,
+        "ms": 4.982
+      },
+      {
+        "status": 200,
+        "ms": 11.125
+      },
+      {
+        "status": 200,
+        "ms": 6.033
+      }
+    ]
+  },
+  "burst_40_concurrency_5": {
+    "requests": 40,
+    "status": {
+      "200": 10,
+      "429": 30
+    },
+    "p50_ms": 4.728,
+    "p95_ms": 9.65,
+    "samples": [
+      {
+        "status": 200,
+        "ms": 9.432
+      },
+      {
+        "status": 200,
+        "ms": 10.72
+      },
+      {
+        "status": 200,
+        "ms": 10.948
+      },
+      {
+        "status": 200,
+        "ms": 9.545
+      },
+      {
+        "status": 200,
+        "ms": 9.65
+      },
+      {
+        "status": 200,
+        "ms": 6.198
+      },
+      {
+        "status": 200,
+        "ms": 5.834
+      },
+      {
+        "status": 200,
+        "ms": 4.555
+      },
+      {
+        "status": 200,
+        "ms": 5.002
+      },
+      {
+        "status": 200,
+        "ms": 4.08
+      },
+      {
+        "status": 429,
+        "ms": 5.428
+      },
+      {
+        "status": 429,
+        "ms": 5.812
+      },
+      {
+        "status": 429,
+        "ms": 8.253
+      },
+      {
+        "status": 429,
+        "ms": 4.901
+      },
+      {
+        "status": 429,
+        "ms": 4.515
+      },
+      {
+        "status": 429,
+        "ms": 3.976
+      },
+      {
+        "status": 429,
+        "ms": 5.784
+      },
+      {
+        "status": 429,
+        "ms": 3.252
+      },
+      {
+        "status": 429,
+        "ms": 2.75
+      },
+      {
+        "status": 429,
+        "ms": 3.717
+      },
+      {
+        "status": 429,
+        "ms": 2.875
+      },
+      {
+        "status": 429,
+        "ms": 3.592
+      },
+      {
+        "status": 429,
+        "ms": 3.45
+      },
+      {
+        "status": 429,
+        "ms": 3.091
+      },
+      {
+        "status": 429,
+        "ms": 3.668
+      },
+      {
+        "status": 429,
+        "ms": 3.664
+      },
+      {
+        "status": 429,
+        "ms": 5.728
+      },
+      {
+        "status": 429,
+        "ms": 2.762
+      },
+      {
+        "status": 429,
+        "ms": 3.351
+      },
+      {
+        "status": 429,
+        "ms": 3.557
+      },
+      {
+        "status": 429,
+        "ms": 3.628
+      },
+      {
+        "status": 429,
+        "ms": 3.636
+      },
+      {
+        "status": 429,
+        "ms": 6.554
+      },
+      {
+        "status": 429,
+        "ms": 5.769
+      },
+      {
+        "status": 429,
+        "ms": 7.308
+      },
+      {
+        "status": 429,
+        "ms": 6.709
+      },
+      {
+        "status": 429,
+        "ms": 5.874
+      },
+      {
+        "status": 429,
+        "ms": 3.945
+      },
+      {
+        "status": 429,
+        "ms": 5.006
+      },
+      {
+        "status": 429,
+        "ms": 4.217
+      }
+    ]
+  },
+  "limitations": [
+    "Muestra de 12 solicitudes calientes; no es ensayo de larga duración.",
+    "La ráfaga verifica política de tráfico: 1 req/s y burst 10.",
+    "No mide throughput máximo de negocio ni saturación de CPU/DB.",
+    "M2M usa las mismas reglas y otra identidad de limitador; este ensayo no estima capacidad cloud."
+  ]
+}

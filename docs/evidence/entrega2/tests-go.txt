@@ -1,0 +1,15 @@
+	renewable.local/platform		coverage: 0.0% of statements
+	renewable.local/platform/cmd/healthcheck		coverage: 0.0% of statements
+	renewable.local/gateway/cmd/server		coverage: 0.0% of statements
+ok  	renewable.local/gateway/internal/http	0.008s	coverage: 19.7% of statements
+	renewable.local/usuarios/cmd/server		coverage: 0.0% of statements
+ok  	renewable.local/usuarios/internal/http	0.004s	coverage: 100.0% of statements
+	renewable.local/electrodomesticos/cmd/server		coverage: 0.0% of statements
+ok  	renewable.local/electrodomesticos/internal/http	0.007s	coverage: 17.1% of statements
+ok  	renewable.local/electrodomesticos/internal/repository	0.041s	coverage: 82.8% of statements
+	renewable.local/consumo/cmd/server		coverage: 0.0% of statements
+ok  	renewable.local/consumo/internal/application	0.005s	coverage: 93.6% of statements
+ok  	renewable.local/consumo/internal/http	0.007s	coverage: 21.0% of statements
+ok  	renewable.local/consumo/internal/integration	0.012s	coverage: 94.6% of statements
+	renewable.local/solar/cmd/server		coverage: 0.0% of statements
+ok  	renewable.local/solar/internal/adapters/http	0.005s	coverage: 100.0% of statements

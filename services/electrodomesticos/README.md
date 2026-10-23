@@ -1,29 +1,7 @@
-# Estado ejecutable de entrega 1
+# Electrodomésticos - Entrega 2
 
-Módulo Go independiente con cmd/server, paquetes internos y Dockerfile. Liveness y readiness exigen Authorization: Bearer con HEALTHCHECK_TOKEN (mínimo 32 caracteres, sin valor por defecto). Con credencial válida, liveness devuelve 200 y readiness 503; negocio responde 501. Sin credencial operativa válida, las rutas /health/ devuelven 401 sin informar estado. Ver scripts/compose para generar la credencial local automáticamente. El transporte inicial usa net/http sin dependencias externas; Gin y los drivers se incorporarán al implementar los casos reales. No es evidencia de persistencia ni del patrón completo en funcionamiento.
+Catálogo público de lectura en MySQL 8.4. Listado/búsqueda literal, filtros categoría/modo, paginación, orden y detalle de fichas activas. Endpoint interno de resolución por lote autenticado con Bearer técnico, usado por Consumo. Sin mantenimiento administrativo público.
 
-Dentro de esta carpeta: `go test ./...` y `go run ./cmd/server`. Con Docker, usar el perfil `estructura` de la raíz.
+schema.sql embebido define la tabla e índices; la inicialización crea seis referencias didácticas mediante INSERT IGNORE transaccional, sin duplicar ni sobrescribir filas existentes. Cada ficha informa fuente y versión. Solo este servicio recibe las credenciales de su base. Las migraciones incrementales posteriores y el índice Meilisearch permanecen pendientes.
 
-## Diseño previsto
-
-# electrodomesticos
-
-Estado del negocio: diseño pendiente de implementación; el arranque mínimo ejecutable está descrito arriba.
-
-## Responsabilidad
-
-Catálogo precargado, altas administrativas, búsqueda y proyección del índice.
-
-## Organización
-
-En capas: Handler → servicio de catálogo → repositorios/integraciones.
-
-## Dependencias
-
-MySQL electrodomesticos_db, Meilisearch, Valkey, RabbitMQ; Usuarios para rol vigente.
-
-Ver [estructura general](../../docs/STRUCTURE.md). Las dependencias y el código se construirán dentro de Docker. No se declara un módulo, una imagen ni una API ya funcionando.
-
-## Lectura anónima
-
-Las consultas paginadas de fichas activas y sus detalles son públicas y pasan por gateway con límites. Datos administrativos, auditoría y todas las mutaciones requieren los permisos establecidos. Elegir una ficha para una simulación no modifica el catálogo.
+Prueba con base real: perfil verificar-go de Compose. Dockerfile desde raíz mediante infra/backend.Dockerfile y ARG SERVICE=services/electrodomesticos.

@@ -1,0 +1,11 @@
+test_authentication (test_real.RealServices.test_authentication) ... ok
+test_catalog_flow_uses_mysql (test_real.RealServices.test_catalog_flow_uses_mysql) ... ok
+test_catalog_read_search_pagination (test_real.RealServices.test_catalog_read_search_pagination) ... ok
+test_guest_requires_no_account (test_real.RealServices.test_guest_requires_no_account) ... ok
+test_invalid_days_and_client_power (test_real.RealServices.test_invalid_days_and_client_power) ... ok
+test_json_and_size_limits (test_real.RealServices.test_json_and_size_limits) ... ok
+test_m2m_matches_contract (test_real.RealServices.test_m2m_matches_contract) ... ok
+test_private_routes_and_health (test_real.RealServices.test_private_routes_and_health) ... ok
+test_web_and_published_contract (test_real.RealServices.test_web_and_published_contract) ... ok
+Ran 9 tests in 10.002s
+OK

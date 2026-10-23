@@ -1,0 +1,78 @@
+{
+  "timezone": "America/Buenos_Aires (UTC-03:00)",
+  "scope": "Solo mysql y electrodomesticos del proyecto renewable-energy-entrega2; no se borraron volúmenes.",
+  "timeline": [
+    {
+      "time": "2026-10-22T21:03:50.636842-03:00",
+      "event": "baseline",
+      "response": {
+        "status": 200,
+        "ms": 41.789,
+        "traceId": "1d35116b2427876ef519cbacd0cc68ea"
+      },
+      "rows": 6
+    },
+    {
+      "time": "2026-10-22T21:03:52.298126-03:00",
+      "event": "mysql_stopped"
+    },
+    {
+      "time": "2026-10-22T21:04:02.514593-03:00",
+      "event": "catalog_unavailable",
+      "responses": [
+        {
+          "status": 503,
+          "ms": 2013.956,
+          "traceId": "32e2b8ec48710217ff3ed57a349bf736"
+        },
+        {
+          "status": 503,
+          "ms": 2014.714,
+          "traceId": "fe53f6ff1491d3578a25c5f741bab725"
+        },
+        {
+          "status": 503,
+          "ms": 1761.045,
+          "traceId": "43d8619cc6eb99a352b54ff64e09da53"
+        },
+        {
+          "status": 503,
+          "ms": 24.369,
+          "traceId": "a104f465d36cd8a688ff3120c7067de3"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-22T21:04:02.521643-03:00",
+      "event": "m2m_remains_available",
+      "response": {
+        "status": 200,
+        "ms": 6.253,
+        "traceId": "b324ce2b7b04dea8b6702fbc2329b1b1"
+      }
+    },
+    {
+      "time": "2026-10-22T21:04:03.060800-03:00",
+      "event": "mysql_start_requested"
+    },
+    {
+      "time": "2026-10-22T21:04:13.163034-03:00",
+      "event": "catalog_recovered",
+      "response": {
+        "status": 200,
+        "ms": 24.657,
+        "traceId": "ea5e5b3ecc7bad8c2e6422463681d1ce"
+      }
+    },
+    {
+      "time": "2026-10-22T21:04:13.856629-03:00",
+      "event": "catalog_restart_requested"
+    },
+    {
+      "time": "2026-10-22T21:04:14.354946-03:00",
+      "event": "catalog_restart_idempotent",
+      "rows": 6
+    }
+  ],
+  "conclusion": "Cuatro errores 503 controlados; capacidad M2M aislada responde 200; recuperación tras volver MySQL; semillas sin duplicados."
+}

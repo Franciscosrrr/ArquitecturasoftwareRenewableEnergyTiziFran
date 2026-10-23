@@ -32,3 +32,13 @@ La existencia de herramientas gratuitas no prueba la disponibilidad cloud ni los
 Material aportado: Enunciado TP Final.pdf (§6.2, páginas 7–8), Propuesta-arquitectura.md versión 3 y Clases.zip (teóricos 1–8, apartados pertinentes). Los prácticos se inventariaron, sin ejecución de sus ejemplos.
 
 La herramienta mock utiliza la [biblioteca HTTP estándar de Python](https://docs.python.org/3.12/library/http.server.html) únicamente en local. Los esqueletos emplean [módulos Go](https://go.dev/ref/mod) y biblioteca estándar, sin descargar dependencias durante esta revisión.
+
+## Fuentes técnicas consultadas para entrega 2
+
+- Gin: https://gin-gonic.com/en/docs/middleware/ y https://github.com/gin-gonic/gin.
+- Driver MySQL para database/sql: https://github.com/go-sql-driver/mysql.
+- OpenTelemetry Go: https://opentelemetry.io/docs/languages/go/getting-started/ y https://opentelemetry.io/docs/languages/go/exporters/.
+- otelhttp: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.
+- Playwright: https://playwright.dev/docs/docker.
+
+Las versiones fijadas y los resultados de pruebas constan en los archivos de dependencias y las evidencias del repositorio. No se atribuyen a estas fuentes mediciones realizadas en el equipo local.

@@ -1,0 +1,10 @@
+flowchart LR
+  Visitante --> React[React servido por gateway]
+  React --> Gateway
+  Gateway --> Consumo
+  Gateway --> Electrodomesticos
+  Consumo -->|HTTP por lote autenticado| Electrodomesticos
+  Electrodomesticos --> MySQL[(electrodomesticos_db)]
+  Gateway -. OTLP .-> Jaeger
+  Consumo -. OTLP .-> Jaeger
+  Electrodomesticos -. OTLP .-> Jaeger

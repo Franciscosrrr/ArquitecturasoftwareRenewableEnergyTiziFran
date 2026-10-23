@@ -1,6 +1,6 @@
 # Especificación de alcance y requisitos
 
-Versión 1.2.0 · Entrega 1. Estado: especificación de diseño; criterios pendientes de implementación y prueba.
+Versión 2.0.0 · Entrega 2. Los requisitos siguientes describen el objetivo completo. El alcance implementado del hito se delimita en la sección «Estado de entrega 2» y en docs/DELIVERY-2.md; no todos los criterios finales están implementados.
 
 ## 1. Objetivo y vocabulario
 
@@ -137,3 +137,13 @@ Pendientes externos: aprobación docente, número de grupo/comisión, proveedor/
 ## Protección operativa
 
 Las rutas /health/ requieren una credencial de monitoreo independiente de JWT de usuario y de la API key M2M. Sin credencial válida responden 401 sin estado interno. La credencial se genera al arrancar y nunca se fija en el repositorio; las respuestas son mínimas, en español y con Cache-Control: no-store. El arranque rechaza credenciales ausentes o de menos de 32 caracteres.
+
+## Estado de entrega 2 y bonus anunciado
+
+Dominio aprobado y grupos asignados por la cátedra, según confirmación del equipo. Contrato/documentación del proveedor aún no recibidos. Se anuncia un único bonus: tests e2e con navegador, integrados al flujo real y documentados en docs/BONUS-E2E.md.
+
+Implementado: cálculo M2M RF19; cálculo temporal de consumo de RF21/RF22; consulta del catálogo precargado RF07; búsqueda SQL inicial de RF08 con paginación/filtros/orden; protección de entrada anónima a rutas privadas, todavía sin identidad; primera observabilidad distribuida y timeout/circuit breaker. RF08 aún requiere el índice especializado y actualización de la final. La recomendación solar de RF21 sigue pendiente.
+
+No se afirma implementación de registro, login, administración, lugares, guardados, evaluaciones durables, idempotencia de escritura, estudios solares, evento/broker ni integración externa. El cálculo por catálogo agrega POST /api/v1/publico/consumo-catalogo, formalizado en docs/contracts/catalog-v1/openapi.json. La API compartida v1.0.1 conserva su contrato.
+
+El parser normaliza ceros y notación exponencial antes de construir racionales, y aplica los rangos de negocio y seis decimales efectivos. Esto evita enteros de tamaño desproporcionado sin cambiar las fórmulas ni añadir límites de representación al contrato.

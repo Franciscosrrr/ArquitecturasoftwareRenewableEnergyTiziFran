@@ -1,6 +1,6 @@
 # Capacidad pública: estimación de consumo
 
-Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado: contrato con mock local ejecutable; servicio productivo y URL cloud pendientes.
+Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado: implementación real Go operativa en el sistema local de entrega 2; URL cloud pendiente. El mock histórico sigue disponible por separado.
 
 ## Contrato formal
 
@@ -14,7 +14,7 @@ Otro grupo envía equipos y hábitos para utilizar el consumo calculado en una c
 
 POST /api/v1/estimaciones-consumo. Content-Type: application/json. Header X-API-Key: credencial M2M que el equipo proveedor entregará por un canal privado. X-Request-Id es opcional para correlación, con hasta 64 letras, números, guion o guion bajo; no es clave de idempotencia.
 
-Mock local: http://localhost:8080 después de ejecutar Compose; no es una URL productiva. URL HTTPS cloud: pendiente de publicar. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplicará inicialmente 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
+Sistema real local: http://localhost:8080 después de ejecutar Compose. Mock histórico opcional: http://localhost:8081 con el perfil mock; no es una URL productiva. URL HTTPS cloud: pendiente de publicar. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplicará inicialmente 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
 
 ## Entrada
 
@@ -79,3 +79,13 @@ Este contrato es la integración M2M de otro grupo y conserva X-API-Key. La calc
 ## Revisión compatible 1.0.1
 
 Aclara que el mock local ya es ejecutable y que la implementación productiva sigue pendiente. El contrato invitado retira una cota de salida de superficie que rechazaba resultados matemáticos de solicitudes válidas; no cambian campos, rutas, fórmulas ni unidades. Los errores de validación del mock ahora señalan el campo observado.
+
+## Implementación real de entrega 2
+
+El arranque predeterminado usa gateway y Consumo Go, no el mock. Las credenciales M2M se generan aleatoriamente en el .env local excluido de Git. `scripts/demo-m2m.ps1` invoca el ejemplo sin imprimir la clave. No usar `mock-consumidor` en el sistema real. M2M_DENIED_KEY es una segunda credencial de demostración sin el permiso estimar-consumo, utilizada para verificar 403.
+
+POST /api/v1/estimaciones-consumo aplica el mismo caso de uso que las rutas temporales web. No necesita MySQL para la entrada externa ni modifica datos de negocio. Se ejecutaron pruebas de contrato sobre sus respuestas reales y ejemplos. Ninguna de esas pruebas pretende sustituir el test del contrato que todavía no recibimos del proveedor asignado.
+
+La traza usa un traceId W3C de 32 caracteres hexadecimales. X-Request-Id, si se suministra válido, se conserva como referencia del consumidor; ambos se registran en logs. El cliente no debe asumir que son iguales. El parser normaliza ceros y exponentes antes de crear los racionales y rechaza los valores fuera del rango o con más de seis decimales efectivos.
+
+El [contrato adicional del catálogo](catalog-v1/openapi.json) define lectura pública y POST /api/v1/publico/consumo-catalogo. Es una API separada: usa ids propios, resuelve la potencia en MySQL y no acepta potencias enviadas por el navegador. No cambia la entrada M2M externa ni exige claves en React.

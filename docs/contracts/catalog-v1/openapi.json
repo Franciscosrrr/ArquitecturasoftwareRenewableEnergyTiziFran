@@ -1,0 +1,726 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Catálogo y consumo por fichas - Entrega 2",
+    "version": "1.0.0",
+    "description": "Contrato adicional del flujo local. No cambia la API M2M v1.0.1 ni requiere una clave en el navegador."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "paths": {
+    "/api/v1/publico/electrodomesticos": {
+      "get": {
+        "summary": "Leer catálogo activo en MySQL",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "categoria",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          {
+            "name": "modo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "POTENCIA",
+                "CICLOS"
+              ]
+            }
+          },
+          {
+            "name": "orden",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "nombre",
+                "potencia",
+                "-potencia"
+              ],
+              "default": "nombre"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de fichas activas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaCatalogo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Filtros inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de tráfico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Catálogo no disponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/publico/electrodomesticos/{id}": {
+      "get": {
+        "summary": "Consultar una ficha activa",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ficha activa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ficha"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ficha inexistente o inactiva."
+          },
+          "429": {
+            "description": "Límite de tráfico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Catálogo no disponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/publico/consumo-catalogo": {
+      "post": {
+        "summary": "Resolver potencias desde MySQL y calcular sin guardar",
+        "description": "Los equipos no pueden repetir catalogoId. Se usan potencias/energía de fichas vigentes; hábitos declarados por el visitante. Precisión máxima de seis decimales. Sin escrituras de consumo ni eventos.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudCatalogo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estimación temporal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoEstimacion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON mal formado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Más de 256 KiB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Requiere application/json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entrada inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de tráfico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Catálogo no disponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SolicitudEstimacion": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "diasPeriodo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 366
+          },
+          "equipos": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/EquipoPotencia"
+                },
+                {
+                  "$ref": "#/components/schemas/EquipoCiclos"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "modo",
+                "mapping": {
+                  "POTENCIA": "#/components/schemas/EquipoPotencia",
+                  "CICLOS": "#/components/schemas/EquipoCiclos"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "diasPeriodo",
+          "equipos"
+        ]
+      },
+      "EquipoPotencia": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "modo": {
+            "type": "string",
+            "enum": [
+              "POTENCIA"
+            ]
+          },
+          "potenciaW": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 1000000,
+            "exclusiveMinimum": true
+          },
+          "horasPorDia": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 24
+          },
+          "diasUso": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 366,
+            "description": "Debe ser menor o igual a diasPeriodo."
+          },
+          "factorFuncionamiento": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 1,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "id",
+          "modo",
+          "cantidad",
+          "potenciaW",
+          "horasPorDia",
+          "diasUso",
+          "factorFuncionamiento"
+        ]
+      },
+      "EquipoCiclos": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "modo": {
+            "type": "string",
+            "enum": [
+              "CICLOS"
+            ]
+          },
+          "energiaPorCicloKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double",
+            "maximum": 1000,
+            "exclusiveMinimum": true
+          },
+          "ciclosPeriodo": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000,
+            "description": "Cantidad de ciclos por unidad del equipo durante todo el perÃ­odo."
+          }
+        },
+        "required": [
+          "id",
+          "modo",
+          "cantidad",
+          "energiaPorCicloKWh",
+          "ciclosPeriodo"
+        ]
+      },
+      "ConsumoEquipo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
+          },
+          "energiaPeriodoKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double"
+          }
+        },
+        "required": [
+          "id",
+          "energiaPeriodoKWh"
+        ]
+      },
+      "ResultadoEstimacion": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "versionAlgoritmo": {
+            "type": "string",
+            "enum": [
+              "consumo-v1"
+            ]
+          },
+          "diasPeriodo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 366
+          },
+          "desglose": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ConsumoEquipo"
+            }
+          },
+          "totalPeriodoKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double"
+          },
+          "promedioDiarioKWh": {
+            "type": "number",
+            "minimum": 0,
+            "format": "double"
+          },
+          "supuestos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "versionAlgoritmo",
+          "diasPeriodo",
+          "desglose",
+          "totalPeriodoKWh",
+          "promedioDiarioKWh",
+          "supuestos",
+          "traceId"
+        ]
+      },
+      "DetalleError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "campo": {
+            "type": "string",
+            "minLength": 1
+          },
+          "motivo": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "campo",
+          "motivo"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "enum": [
+              "FORMATO_INVALIDO",
+              "NO_AUTENTICADO",
+              "SIN_PERMISO",
+              "CUERPO_DEMASIADO_GRANDE",
+              "TIPO_CONTENIDO_NO_SOPORTADO",
+              "VALIDACION",
+              "LIMITE_DE_TRAFICO",
+              "ERROR_INTERNO",
+              "SERVICIO_NO_DISPONIBLE"
+            ]
+          },
+          "mensaje": {
+            "type": "string",
+            "minLength": 1
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "detalles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetalleError"
+            }
+          }
+        },
+        "required": [
+          "codigo",
+          "mensaje",
+          "traceId",
+          "detalles"
+        ]
+      },
+      "Ficha": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "categoria": {
+            "type": "string"
+          },
+          "modo": {
+            "type": "string",
+            "enum": [
+              "POTENCIA",
+              "CICLOS"
+            ]
+          },
+          "potenciaW": {
+            "type": "number",
+            "minimum": 0
+          },
+          "energiaPorCicloKWh": {
+            "type": "number",
+            "minimum": 0
+          },
+          "factorFuncionamiento": {
+            "type": "number",
+            "exclusiveMinimum": true,
+            "minimum": 0,
+            "maximum": 1
+          },
+          "fuente": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "nombre",
+          "categoria",
+          "modo",
+          "potenciaW",
+          "energiaPorCicloKWh",
+          "factorFuncionamiento",
+          "fuente",
+          "version"
+        ]
+      },
+      "SolicitudCatalogo": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "diasPeriodo",
+          "equipos"
+        ],
+        "properties": {
+          "diasPeriodo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 366
+          },
+          "equipos": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cantidad": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1000
+                    },
+                    "horasPorDia": {
+                      "type": "number",
+                      "minimum": 0,
+                      "format": "double",
+                      "maximum": 24
+                    },
+                    "diasUso": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 366,
+                      "description": "Debe ser menor o igual a diasPeriodo."
+                    },
+                    "factorFuncionamiento": {
+                      "type": "number",
+                      "minimum": 0,
+                      "format": "double",
+                      "maximum": 1,
+                      "exclusiveMinimum": true
+                    },
+                    "catalogoId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z0-9_-]+$",
+                      "description": "Identificador de una ficha activa del catálogo propio."
+                    }
+                  },
+                  "required": [
+                    "cantidad",
+                    "horasPorDia",
+                    "diasUso",
+                    "factorFuncionamiento",
+                    "catalogoId"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cantidad": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1000
+                    },
+                    "ciclosPeriodo": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000,
+                      "description": "Cantidad de ciclos por unidad del equipo durante todo el perÃ­odo."
+                    },
+                    "catalogoId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z0-9_-]+$",
+                      "description": "Identificador de una ficha activa del catálogo propio."
+                    }
+                  },
+                  "required": [
+                    "cantidad",
+                    "ciclosPeriodo",
+                    "catalogoId"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "PaginaCatalogo": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "total",
+          "pagina",
+          "tamano"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ficha"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pagina": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tamano": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      }
+    }
+  }
+}

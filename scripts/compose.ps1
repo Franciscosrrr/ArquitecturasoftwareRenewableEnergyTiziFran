@@ -1,18 +1,21 @@
-# Reenvía argumentos a Compose y genera una credencial efímera sin imprimirla.
+# Genera secretos locales una sola vez; .env está excluido de Git.
 $ErrorActionPreference = 'Stop'
-$originalToken = $env:HEALTHCHECK_TOKEN
 $repo = Split-Path $PSScriptRoot -Parent
-if ([string]::IsNullOrEmpty($originalToken)) {
-    $bytes = New-Object byte[] 32
-    $generator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
-    try { $generator.GetBytes($bytes) } finally { $generator.Dispose() }
-    $env:HEALTHCHECK_TOKEN = [Convert]::ToBase64String($bytes)
+$envPath = Join-Path $repo '.env'
+if (-not (Test-Path -LiteralPath $envPath)) {
+    $keys = @('HEALTHCHECK_TOKEN','INTERNAL_TOKEN','M2M_API_KEY','M2M_DENIED_KEY','MYSQL_ROOT_PASSWORD','MYSQL_PASSWORD')
+    $lines = foreach ($key in $keys) {
+        $bytes = New-Object byte[] 32
+        $generator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+        try { $generator.GetBytes($bytes) } finally { $generator.Dispose() }
+        $value = [BitConverter]::ToString($bytes).Replace('-','').ToLowerInvariant()
+        "$key=$value"
+    }
+    [System.IO.File]::WriteAllLines($envPath, $lines, (New-Object System.Text.UTF8Encoding($false)))
+    Write-Host 'Credenciales locales generadas en .env (no se muestran ni se versionan).'
 }
+Push-Location $repo
 try {
-    if ($env:HEALTHCHECK_TOKEN.Length -lt 32) { throw 'HEALTHCHECK_TOKEN debe tener al menos 32 caracteres' }
-    Push-Location $repo
-    try {
-        & docker compose @args
-        if ($LASTEXITCODE -ne 0) { throw "Docker Compose terminó con código $LASTEXITCODE" }
-    } finally { Pop-Location }
-} finally { $env:HEALTHCHECK_TOKEN = $originalToken }
+    & docker compose @args
+    if ($LASTEXITCODE -ne 0) { throw "Docker Compose terminó con código $LASTEXITCODE" }
+} finally { Pop-Location }

@@ -1,5 +1,6 @@
 # Verificación de la primera entrega revisada
 
+> Antecedente histórico de entrega 1. El estado operativo actual y sus evidencias están en [DELIVERY-2](DELIVERY-2.md).
 Versión documental 1.2.0; contratos 1.0.1; rutas, fórmulas y campos conservados, con corrección de la cota de superficie solar.
 
 ## Evidencia ejecutada

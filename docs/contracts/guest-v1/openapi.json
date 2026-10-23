@@ -3,18 +3,18 @@
   "info": {
     "title": "ArquitecturasoftwareRenewableEnergy - Calculadora invitada",
     "version": "1.0.1",
-    "description": "Contrato web anónimo con mock local de consumo y Solar manual. Frontend y servicios productivos pendientes. Sin JWT/API key ni persistencia de consumos/estudios. Ver docs/GUEST-MODE.md."
+    "description": "Contrato de entrega 2. Implementación Go local para consumo; las reglas cruzadas, redondeo y límites se describen en docs/contracts/README.md. La recomendación solar del contrato invitado permanece pendiente; el mock histórico la simula por separado. URL cloud pendiente."
   },
   "servers": [
     {
       "url": "http://localhost:8080",
-      "description": "Mock local ejecutable en localhost después de iniciar scripts/compose; no es un despliegue productivo."
+      "description": "Gateway local del sistema real de entrega 2. Mock histórico opcional en localhost:8081; no es un despliegue cloud."
     }
   ],
   "tags": [
     {
       "name": "Invitado",
-      "description": "Cálculos temporales sin cuenta"
+      "description": "CÃ¡lculos temporales sin cuenta"
     }
   ],
   "paths": {
@@ -24,15 +24,15 @@
           "Invitado"
         ],
         "operationId": "estimarConsumoInvitado",
-        "summary": "Estimar energía de un conjunto de equipos y hábitos",
-        "description": "Mismas validaciones y reglas consumo-v1; cálculo sin persistencia, sin sesión ni API key. ids únicos; diasUso <= diasPeriodo; precisión decimal y salidas a seis decimales. Límites y privacidad en GUEST-MODE.md.",
+        "summary": "Estimar energÃ­a de un conjunto de equipos y hÃ¡bitos",
+        "description": "Mismas validaciones y reglas consumo-v1; cÃ¡lculo sin persistencia, sin sesiÃ³n ni API key. ids Ãºnicos; diasUso <= diasPeriodo; precisiÃ³n decimal y salidas a seis decimales. LÃ­mites y privacidad en GUEST-MODE.md.",
         "security": [],
         "parameters": [
           {
             "name": "X-Request-Id",
             "in": "header",
             "required": false,
-            "description": "Correlación opcional; si se omite, se genera un identificador. No es clave de idempotencia.",
+            "description": "CorrelaciÃ³n opcional; si se omite, se genera un identificador. No es clave de idempotencia.",
             "schema": {
               "type": "string",
               "minLength": 1,
@@ -87,10 +87,10 @@
         },
         "responses": {
           "200": {
-            "description": "Estimación calculada sin crear lugares, configuraciones o evaluaciones persistentes.",
+            "description": "EstimaciÃ³n calculada sin crear lugares, configuraciones o evaluaciones persistentes.",
             "headers": {
               "X-Request-Id": {
-                "description": "Identificador de correlación de la operación.",
+                "description": "Identificador de correlaciÃ³n de la operaciÃ³n.",
                 "schema": {
                   "type": "string"
                 }
@@ -103,7 +103,7 @@
                 },
                 "examples": {
                   "consumoMixto": {
-                    "summary": "Potencia y ciclos en un período de 30 días",
+                    "summary": "Potencia y ciclos en un perÃ­odo de 30 dÃ­as",
                     "value": {
                       "versionAlgoritmo": "consumo-v1",
                       "diasPeriodo": 30,
@@ -124,7 +124,7 @@
                       "totalPeriodoKWh": 47.4,
                       "promedioDiarioKWh": 1.58,
                       "supuestos": [
-                        "Estimación basada en equipos y hábitos declarados; no es una medición real.",
+                        "EstimaciÃ³n basada en equipos y hÃ¡bitos declarados; no es una mediciÃ³n real.",
                         "El factor de funcionamiento se aplica una sola vez."
                       ],
                       "traceId": "entrega1-ejemplo-001"
@@ -135,7 +135,7 @@
             }
           },
           "400": {
-            "description": "El cuerpo no contiene JSON válido.",
+            "description": "El cuerpo no contiene JSON vÃ¡lido.",
             "content": {
               "application/json": {
                 "schema": {
@@ -143,7 +143,7 @@
                 },
                 "example": {
                   "codigo": "FORMATO_INVALIDO",
-                  "mensaje": "El cuerpo no contiene JSON válido.",
+                  "mensaje": "El cuerpo no contiene JSON vÃ¡lido.",
                   "traceId": "entrega1-ejemplo-400",
                   "detalles": []
                 }
@@ -183,7 +183,7 @@
             }
           },
           "422": {
-            "description": "Los datos de consumo no cumplen las reglas de la operación.",
+            "description": "Los datos de consumo no cumplen las reglas de la operaciÃ³n.",
             "content": {
               "application/json": {
                 "schema": {
@@ -191,7 +191,7 @@
                 },
                 "example": {
                   "codigo": "VALIDACION",
-                  "mensaje": "Los datos de consumo no cumplen las reglas de la operación.",
+                  "mensaje": "Los datos de consumo no cumplen las reglas de la operaciÃ³n.",
                   "traceId": "entrega1-ejemplo-002",
                   "detalles": [
                     {
@@ -204,7 +204,7 @@
             }
           },
           "429": {
-            "description": "Se alcanzó el límite anónimo por origen; Retry-After indica cuándo reintentar.",
+            "description": "Se alcanzÃ³ el lÃ­mite anÃ³nimo por origen; Retry-After indica cuÃ¡ndo reintentar.",
             "content": {
               "application/json": {
                 "schema": {
@@ -212,7 +212,7 @@
                 },
                 "example": {
                   "codigo": "LIMITE_DE_TRAFICO",
-                  "mensaje": "Se alcanzó el límite anónimo por origen.",
+                  "mensaje": "Se alcanzÃ³ el lÃ­mite anÃ³nimo por origen.",
                   "traceId": "entrega1-ejemplo-429",
                   "detalles": []
                 }
@@ -229,7 +229,7 @@
             }
           },
           "500": {
-            "description": "No fue posible completar la operación.",
+            "description": "No fue posible completar la operaciÃ³n.",
             "content": {
               "application/json": {
                 "schema": {
@@ -237,7 +237,7 @@
                 },
                 "example": {
                   "codigo": "ERROR_INTERNO",
-                  "mensaje": "No fue posible completar la operación.",
+                  "mensaje": "No fue posible completar la operaciÃ³n.",
                   "traceId": "entrega1-ejemplo-500",
                   "detalles": []
                 }
@@ -245,7 +245,7 @@
             }
           },
           "503": {
-            "description": "La capacidad no está disponible temporalmente.",
+            "description": "La capacidad no estÃ¡ disponible temporalmente.",
             "content": {
               "application/json": {
                 "schema": {
@@ -253,7 +253,7 @@
                 },
                 "example": {
                   "codigo": "SERVICIO_NO_DISPONIBLE",
-                  "mensaje": "La capacidad no está disponible temporalmente.",
+                  "mensaje": "La capacidad no estÃ¡ disponible temporalmente.",
                   "traceId": "entrega1-ejemplo-503",
                   "detalles": []
                 }
@@ -279,14 +279,14 @@
         ],
         "operationId": "recomendarSolarInvitado",
         "summary": "Recomendar paneles sin guardar estudio",
-        "description": "Lee paneles activos y recurso; mismas reglas solar-v1 del flujo durable. Ordena alternativas por el criterio indicado; la primera es la recomendación. Cantidad ceil(objetivo/generación por panel); superficie limita factibilidad. Si nadie cumple, SIN_ALTERNATIVA presenta mayor cobertura alcanzable primero. coberturaAlcanzada es fracción, puede superar 1; cero consumo -> cero. Nunca guarda documentos ni eventos. Deadline 8 s; fuente indisponible 503. Body 256 KiB; 10/minuto por origen, ráfaga 2. Máximo 20 alternativas; totalAlternativas y alternativasTruncadas describen el conjunto antes del truncamiento.",
+        "description": "Lee paneles activos y recurso; mismas reglas solar-v1 del flujo durable. Ordena alternativas por el criterio indicado; la primera es la recomendaciÃ³n. Cantidad ceil(objetivo/generaciÃ³n por panel); superficie limita factibilidad. Si nadie cumple, SIN_ALTERNATIVA presenta mayor cobertura alcanzable primero. coberturaAlcanzada es fracciÃ³n, puede superar 1; cero consumo -> cero. Nunca guarda documentos ni eventos. Deadline 8 s; fuente indisponible 503. Body 256 KiB; 10/minuto por origen, rÃ¡faga 2. MÃ¡ximo 20 alternativas; totalAlternativas y alternativasTruncadas describen el conjunto antes del truncamiento.",
         "security": [],
         "parameters": [
           {
             "name": "X-Request-Id",
             "in": "header",
             "required": false,
-            "description": "Correlación opcional; si se omite, se genera un identificador. No es clave de idempotencia.",
+            "description": "CorrelaciÃ³n opcional; si se omite, se genera un identificador. No es clave de idempotencia.",
             "schema": {
               "type": "string",
               "minLength": 1,
@@ -322,7 +322,7 @@
         },
         "responses": {
           "200": {
-            "description": "Resultado temporal; SIN_ALTERNATIVA también usa 200. Sin estudioId ni persistencia. Para demanda cero, cantidad/generación/cobertura son cero y cumpleObjetivo=true; sin paneles activos se devuelve lista vacía.",
+            "description": "Resultado temporal; SIN_ALTERNATIVA tambiÃ©n usa 200. Sin estudioId ni persistencia. Para demanda cero, cantidad/generaciÃ³n/cobertura son cero y cumpleObjetivo=true; sin paneles activos se devuelve lista vacÃ­a.",
             "content": {
               "application/json": {
                 "schema": {
@@ -351,8 +351,8 @@
                       "fuenteRecurso": "Manual: Valor declarado para ejemplo, no medido",
                       "hsp": 4,
                       "supuestos": [
-                        "Catálogo de ejemplo: único panel activo, 500 W, superficie efectiva 2,5 m², sin precio.",
-                        "Cobertura es balance energético; no autonomía horaria."
+                        "CatÃ¡logo de ejemplo: Ãºnico panel activo, 500 W, superficie efectiva 2,5 mÂ², sin precio.",
+                        "Cobertura es balance energÃ©tico; no autonomÃ­a horaria."
                       ],
                       "traceId": "invitado-ejemplo-001"
                     }
@@ -362,7 +362,7 @@
             }
           },
           "400": {
-            "description": "El cuerpo no contiene JSON válido.",
+            "description": "El cuerpo no contiene JSON vÃ¡lido.",
             "content": {
               "application/json": {
                 "schema": {
@@ -370,7 +370,7 @@
                 },
                 "example": {
                   "codigo": "FORMATO_INVALIDO",
-                  "mensaje": "El cuerpo no contiene JSON válido.",
+                  "mensaje": "El cuerpo no contiene JSON vÃ¡lido.",
                   "traceId": "entrega1-ejemplo-400",
                   "detalles": []
                 }
@@ -410,7 +410,7 @@
             }
           },
           "422": {
-            "description": "Los datos de consumo no cumplen las reglas de la operación.",
+            "description": "Los datos de consumo no cumplen las reglas de la operaciÃ³n.",
             "content": {
               "application/json": {
                 "schema": {
@@ -418,7 +418,7 @@
                 },
                 "example": {
                   "codigo": "VALIDACION",
-                  "mensaje": "Los datos de consumo no cumplen las reglas de la operación.",
+                  "mensaje": "Los datos de consumo no cumplen las reglas de la operaciÃ³n.",
                   "traceId": "entrega1-ejemplo-002",
                   "detalles": [
                     {
@@ -431,7 +431,7 @@
             }
           },
           "429": {
-            "description": "Se alcanzó el límite anónimo por origen; Retry-After indica cuándo reintentar.",
+            "description": "Se alcanzÃ³ el lÃ­mite anÃ³nimo por origen; Retry-After indica cuÃ¡ndo reintentar.",
             "content": {
               "application/json": {
                 "schema": {
@@ -439,7 +439,7 @@
                 },
                 "example": {
                   "codigo": "LIMITE_DE_TRAFICO",
-                  "mensaje": "Se alcanzó el límite anónimo por origen.",
+                  "mensaje": "Se alcanzÃ³ el lÃ­mite anÃ³nimo por origen.",
                   "traceId": "entrega1-ejemplo-429",
                   "detalles": []
                 }
@@ -456,7 +456,7 @@
             }
           },
           "500": {
-            "description": "No fue posible completar la operación.",
+            "description": "No fue posible completar la operaciÃ³n.",
             "content": {
               "application/json": {
                 "schema": {
@@ -464,7 +464,7 @@
                 },
                 "example": {
                   "codigo": "ERROR_INTERNO",
-                  "mensaje": "No fue posible completar la operación.",
+                  "mensaje": "No fue posible completar la operaciÃ³n.",
                   "traceId": "entrega1-ejemplo-500",
                   "detalles": []
                 }
@@ -472,7 +472,7 @@
             }
           },
           "503": {
-            "description": "La capacidad no está disponible temporalmente.",
+            "description": "La capacidad no estÃ¡ disponible temporalmente.",
             "content": {
               "application/json": {
                 "schema": {
@@ -480,7 +480,7 @@
                 },
                 "example": {
                   "codigo": "SERVICIO_NO_DISPONIBLE",
-                  "mensaje": "La capacidad no está disponible temporalmente.",
+                  "mensaje": "La capacidad no estÃ¡ disponible temporalmente.",
                   "traceId": "entrega1-ejemplo-503",
                   "detalles": []
                 }
@@ -548,7 +548,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
           },
           "cantidad": {
             "type": "integer",
@@ -607,7 +607,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
           },
           "cantidad": {
             "type": "integer",
@@ -631,7 +631,7 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 10000,
-            "description": "Cantidad de ciclos por unidad del equipo durante todo el período."
+            "description": "Cantidad de ciclos por unidad del equipo durante todo el perÃ­odo."
           }
         },
         "required": [
@@ -651,7 +651,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Identificador del consumidor, único dentro de equipos; no es un id del catálogo interno."
+            "description": "Identificador del consumidor, Ãºnico dentro de equipos; no es un id del catÃ¡logo interno."
           },
           "energiaPeriodoKWh": {
             "type": "number",
@@ -928,7 +928,7 @@
           "superficieRequeridaM2": {
             "type": "number",
             "minimum": 0,
-            "description": "Superficie calculada en m²; no se limita a la cota de superficie disponible de la solicitud. La cantidad requerida puede ser mayor cuando no se declara una superficie disponible."
+            "description": "Superficie calculada en mÂ²; no se limita a la cota de superficie disponible de la solicitud. La cantidad requerida puede ser mayor cuando no se declara una superficie disponible."
           },
           "cumpleObjetivo": {
             "type": "boolean"

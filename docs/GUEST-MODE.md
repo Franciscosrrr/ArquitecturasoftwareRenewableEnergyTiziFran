@@ -54,3 +54,9 @@ Se mantienen Usuarios, Electrodomésticos y Consumo en capas y Solar hexagonal, 
 La publicación gratuita prevista de la capacidad M2M stateless no implica que el sitio completo ni la ruta solar estén ya desplegados en cloud. El modo invitado forma parte del sistema local completo arrancado con Docker.
 
 Pruebas futuras: navegación sin cuenta, misma aritmética en ambos modos, 401 en rutas privadas sin sesión, 403 administrativo, ausencia de escrituras/eventos, pérdida al recargar, login sin guardado automático, guardado confirmado con propietario, timeout solar sin perder consumo visible y 429. Esta entrega también prueba el mock de las rutas de cálculo. No se atribuyen esas pruebas a la interfaz React, la persistencia ni a un proveedor real.
+
+## Implementación parcial de entrega 2
+
+La sección anterior conserva el diseño completo. En este hito existen React y cálculo temporal de consumo, por parámetros completos o desde fichas activas de MySQL. Editar elimina el resultado anterior; recargar elimina borrador y resultados. Los tests e2e verifican ese comportamiento. El consumo no se guarda ni emite eventos.
+
+El flujo por catálogo usa POST /api/v1/publico/consumo-catalogo. La recomendación solar, el login y el guardado siguen pendientes; la interfaz actual lo informa y no ofrece acciones que parezcan ejecutarlos. Los plazos/rutas Solar del diseño no deben leerse como operativos en esta entrega.

@@ -1,29 +1,5 @@
-# Estado ejecutable de entrega 1
+# Consumo - Entrega 2
 
-Módulo Go independiente con cmd/server, paquetes internos y Dockerfile. Liveness y readiness exigen Authorization: Bearer con HEALTHCHECK_TOKEN (mínimo 32 caracteres, sin valor por defecto). Con credencial válida, liveness devuelve 200 y readiness 503; negocio responde 501. Sin credencial operativa válida, las rutas /health/ devuelven 401 sin informar estado. Ver scripts/compose para generar la credencial local automáticamente. El transporte inicial usa net/http sin dependencias externas; Gin y los drivers se incorporarán al implementar los casos reales. No es evidencia de persistencia ni del patrón completo en funcionamiento.
+Go/Gin con application independiente del transporte. POST /api/v1/estimaciones-consumo conserva contrato M2M 1.0.1; POST /api/v1/publico/consumo admite simulación anónima con parámetros completos; POST /api/v1/publico/consumo-catalogo resuelve fichas vigentes por HTTP interno y aplica el mismo cálculo decimal.
 
-Dentro de esta carpeta: `go test ./...` y `go run ./cmd/server`. Con Docker, usar el perfil `estructura` de la raíz.
-
-## Diseño previsto
-
-# consumo
-
-Estado del negocio: diseño pendiente de implementación; el arranque mínimo ejecutable está descrito arriba.
-
-## Responsabilidad
-
-Lugares, configuraciones privadas editables, snapshots, evaluaciones, outbox y capacidad pública.
-
-## Organización
-
-En capas: Handler → servicio de consumo/reglas → repositorios/integraciones.
-
-## Dependencias
-
-MySQL consumo_db, Electrodomésticos HTTP y RabbitMQ.
-
-Ver [estructura general](../../docs/STRUCTURE.md). Las dependencias y el código se construirán dentro de Docker. No se declara un módulo, una imagen ni una API ya funcionando.
-
-## Cálculo invitado
-
-POST /api/v1/publico/consumo calcula entradas temporales sin sesión y sin consultar/escribir consumo_db ni generar outbox/eventos. Comparte reglas con evaluación autenticada y con la capacidad M2M; sus handlers y autorizaciones son distintos. Guardados e historial siguen requiriendo JWT y propietario. Ver [modo invitado](../../docs/GUEST-MODE.md).
+No escribe consumos, evaluaciones ni eventos. No recibe credenciales MySQL. Timeouts y circuit breaker protegen la llamada al catálogo. HEALTHCHECK_TOKEN, INTERNAL_TOKEN, M2M_API_KEY y M2M_DENIED_KEY se suministran por entorno desde el .env local ignorado. Dockerfile se construye desde raíz usando infra/backend.Dockerfile y ARG SERVICE=services/consumo.

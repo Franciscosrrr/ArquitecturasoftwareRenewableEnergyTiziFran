@@ -1,3 +1,9 @@
 .git
 **/__pycache__
 **/*.pyc
+.env
+**/node_modules
+**/dist
+**/coverage.out
+**/*.log
+docs/evidence

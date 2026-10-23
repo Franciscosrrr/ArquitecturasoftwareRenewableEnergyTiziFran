@@ -1,47 +1,127 @@
-x-healthcheck-environment: &healthcheck-environment
-  HEALTHCHECK_TOKEN: ${HEALTHCHECK_TOKEN:?Usar scripts/compose para generar la credencial operativa}
+name: renewable-energy-entrega2
+x-telemetry: &telemetry
+  HEALTHCHECK_TOKEN: ${HEALTHCHECK_TOKEN:?Ejecutar scripts/compose}
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+x-health: &health
+  test: ["CMD", "/healthcheck"]
+  interval: 5s
+  timeout: 3s
+  retries: 12
+  start_period: 10s
 
 services:
-  mock:
-    build:
-      context: .
-      dockerfile: mock/Dockerfile
-    ports: ["127.0.0.1:8080:8080"]
-    environment: *healthcheck-environment
-    read_only: true
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Ejecutar scripts/compose}
+      MYSQL_DATABASE: electrodomesticos_db
+      MYSQL_USER: catalogo
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Ejecutar scripts/compose}
+    volumes: ["catalogo-data:/var/lib/mysql"]
     healthcheck:
-      test: ["CMD", "python", "-c", "import os, urllib.request; request = urllib.request.Request('http://localhost:8080/health/live', headers={'Authorization': 'Bearer ' + os.environ['HEALTHCHECK_TOKEN']}); urllib.request.urlopen(request, timeout=2)"]
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -u$$MYSQL_USER -D $$MYSQL_DATABASE -e 'SELECT 1' >/dev/null 2>&1"]
       interval: 5s
       timeout: 3s
-      retries: 5
-  verificar:
-    profiles: ["verificar"]
+      retries: 30
+    networks: [backend]
+  jaeger:
+    image: jaegertracing/all-in-one:1.74.0
+    environment: {COLLECTOR_OTLP_ENABLED: "true"}
+    ports: ["127.0.0.1:16686:16686"]
+    networks: [backend]
+  electrodomesticos:
     build:
       context: .
-      dockerfile: mock/Dockerfile
-    command: ["python", "-m", "unittest", "discover", "-s", "mock", "-p", "test_*.py", "-v"]
-  usuarios:
-    profiles: ["estructura"]
-    build: ./services/usuarios
-    environment: *healthcheck-environment
-    ports: ["127.0.0.1:8101:8080"]
-  electrodomesticos:
-    profiles: ["estructura"]
-    build: ./services/electrodomesticos
-    environment: *healthcheck-environment
-    ports: ["127.0.0.1:8102:8080"]
+      dockerfile: infra/backend.Dockerfile
+      args: {SERVICE: services/electrodomesticos}
+    environment:
+      <<: *telemetry
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
+      MYSQL_ADDR: mysql:3306
+      MYSQL_DATABASE: electrodomesticos_db
+      MYSQL_USER: catalogo
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Ejecutar scripts/compose}
+    depends_on:
+      mysql: {condition: service_healthy}
+    healthcheck: *health
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
   consumo:
-    profiles: ["estructura"]
-    build: ./services/consumo
-    environment: *healthcheck-environment
-    ports: ["127.0.0.1:8103:8080"]
-  solar:
-    profiles: ["estructura"]
-    build: ./services/solar
-    environment: *healthcheck-environment
-    ports: ["127.0.0.1:8104:8080"]
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+      args: {SERVICE: services/consumo}
+    environment:
+      <<: *telemetry
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
+      M2M_API_KEY: ${M2M_API_KEY:?Ejecutar scripts/compose}
+      M2M_DENIED_KEY: ${M2M_DENIED_KEY:?Ejecutar scripts/compose}
+    healthcheck: *health
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
   gateway:
-    profiles: ["estructura"]
-    build: ./gateway
-    environment: *healthcheck-environment
-    ports: ["127.0.0.1:8105:8080"]
+    build: {context: ., dockerfile: gateway/Dockerfile}
+    environment: *telemetry
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      consumo: {condition: service_healthy}
+      electrodomesticos: {condition: service_healthy}
+    healthcheck: *health
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
+  verificar-go:
+    profiles: [verificar]
+    build: {context: ., dockerfile: infra/backend.Dockerfile, target: test}
+    environment:
+      MYSQL_TEST_PASSWORD: ${MYSQL_PASSWORD:?Ejecutar scripts/compose}
+      MYSQL_TEST_ADDR: mysql:3306
+    depends_on:
+      mysql: {condition: service_healthy}
+      electrodomesticos: {condition: service_healthy}
+    networks: [backend]
+  verificar-real:
+    profiles: [verificar]
+    image: python:3.12.15-alpine
+    working_dir: /project
+    volumes: ["./:/project:ro"]
+    environment:
+      BASE_URL: http://gateway:8080
+      M2M_API_KEY: ${M2M_API_KEY:?Ejecutar scripts/compose}
+      M2M_DENIED_KEY: ${M2M_DENIED_KEY:?Ejecutar scripts/compose}
+      HEALTHCHECK_TOKEN: ${HEALTHCHECK_TOKEN:?Ejecutar scripts/compose}
+    command: ["python", "-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v"]
+    depends_on:
+      gateway: {condition: service_healthy}
+    networks: [backend]
+  verificar-e2e:
+    profiles: [verificar]
+    build: {context: ., dockerfile: tests/e2e/Dockerfile}
+    environment:
+      BASE_URL: http://gateway:8080
+    volumes: ["./docs/evidence/entrega2/e2e:/results"]
+    shm_size: 256mb
+    depends_on:
+      gateway: {condition: service_healthy}
+    networks: [backend]
+  mock:
+    profiles: [mock]
+    build: {context: ., dockerfile: mock/Dockerfile}
+    environment:
+      HEALTHCHECK_TOKEN: ${HEALTHCHECK_TOKEN:?Ejecutar scripts/compose}
+    ports: ["127.0.0.1:8081:8080"]
+    networks: [backend]
+  verificar:
+    profiles: [mock]
+    build: {context: ., dockerfile: mock/Dockerfile}
+    command: ["python", "-m", "unittest", "discover", "-s", "mock", "-p", "test_*.py", "-v"]
+    networks: [backend]
+volumes:
+  catalogo-data:
+networks:
+  backend:

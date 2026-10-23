@@ -1,0 +1,534 @@
+{
+  "data": [
+    {
+      "traceID": "dd645b366efd526afec437513d99995b",
+      "spans": [
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "efd1507f87515b3a",
+          "operationName": "mysql.catalogo.resolver",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "dd645b366efd526afec437513d99995b",
+              "spanID": "592ef8b9919723b3"
+            }
+          ],
+          "startTime": 1792714131223160,
+          "duration": 662,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "electrodomesticos"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "17658e983304e971",
+          "operationName": "HTTP POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "dd645b366efd526afec437513d99995b",
+              "spanID": "0c66df62ca5074ad"
+            }
+          ],
+          "startTime": 1792714131221190,
+          "duration": 3166,
+          "tags": [
+            {
+              "key": "http.request.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.response.status_code",
+              "type": "int64",
+              "value": 200
+            },
+            {
+              "key": "network.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+            },
+            {
+              "key": "otel.scope.version",
+              "type": "string",
+              "value": "0.63.0"
+            },
+            {
+              "key": "server.address",
+              "type": "string",
+              "value": "consumo"
+            },
+            {
+              "key": "server.port",
+              "type": "int64",
+              "value": 8080
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "url.full",
+              "type": "string",
+              "value": "http://consumo:8080/api/v1/publico/consumo-catalogo"
+            }
+          ],
+          "logs": [],
+          "processID": "p2",
+          "warnings": null
+        },
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "0c66df62ca5074ad",
+          "operationName": "gateway",
+          "references": [],
+          "startTime": 1792714131221160,
+          "duration": 3238,
+          "tags": [
+            {
+              "key": "client.address",
+              "type": "string",
+              "value": "172.23.0.1"
+            },
+            {
+              "key": "http.request.body.size",
+              "type": "int64",
+              "value": 282
+            },
+            {
+              "key": "http.request.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.response.body.size",
+              "type": "int64",
+              "value": 461
+            },
+            {
+              "key": "http.response.status_code",
+              "type": "int64",
+              "value": 200
+            },
+            {
+              "key": "network.peer.address",
+              "type": "string",
+              "value": "172.23.0.1"
+            },
+            {
+              "key": "network.peer.port",
+              "type": "int64",
+              "value": 34928
+            },
+            {
+              "key": "network.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+            },
+            {
+              "key": "otel.scope.version",
+              "type": "string",
+              "value": "0.63.0"
+            },
+            {
+              "key": "server.address",
+              "type": "string",
+              "value": "127.0.0.1"
+            },
+            {
+              "key": "server.port",
+              "type": "int64",
+              "value": 8080
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "url.path",
+              "type": "string",
+              "value": "/api/v1/publico/consumo-catalogo"
+            },
+            {
+              "key": "url.scheme",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "user_agent.original",
+              "type": "string",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26200; es-MX) PowerShell/7.6.5"
+            }
+          ],
+          "logs": [],
+          "processID": "p2",
+          "warnings": null
+        },
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "fba8b99fa5b25f8e",
+          "operationName": "HTTP POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "dd645b366efd526afec437513d99995b",
+              "spanID": "864aa2ce5735f8ab"
+            }
+          ],
+          "startTime": 1792714131222348,
+          "duration": 1710,
+          "tags": [
+            {
+              "key": "http.request.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.response.status_code",
+              "type": "int64",
+              "value": 200
+            },
+            {
+              "key": "network.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+            },
+            {
+              "key": "otel.scope.version",
+              "type": "string",
+              "value": "0.63.0"
+            },
+            {
+              "key": "server.address",
+              "type": "string",
+              "value": "electrodomesticos"
+            },
+            {
+              "key": "server.port",
+              "type": "int64",
+              "value": 8080
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "url.full",
+              "type": "string",
+              "value": "http://electrodomesticos:8080/internal/v1/electrodomesticos/resolver"
+            }
+          ],
+          "logs": [],
+          "processID": "p3",
+          "warnings": null
+        },
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "e5dab1fdfc8711ee",
+          "operationName": "consumo",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "dd645b366efd526afec437513d99995b",
+              "spanID": "17658e983304e971"
+            }
+          ],
+          "startTime": 1792714131222245,
+          "duration": 1963,
+          "tags": [
+            {
+              "key": "client.address",
+              "type": "string",
+              "value": "172.23.0.1"
+            },
+            {
+              "key": "http.request.body.size",
+              "type": "int64",
+              "value": 282
+            },
+            {
+              "key": "http.request.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.response.body.size",
+              "type": "int64",
+              "value": 461
+            },
+            {
+              "key": "http.response.status_code",
+              "type": "int64",
+              "value": 200
+            },
+            {
+              "key": "network.peer.address",
+              "type": "string",
+              "value": "172.23.0.6"
+            },
+            {
+              "key": "network.peer.port",
+              "type": "int64",
+              "value": 52370
+            },
+            {
+              "key": "network.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+            },
+            {
+              "key": "otel.scope.version",
+              "type": "string",
+              "value": "0.63.0"
+            },
+            {
+              "key": "server.address",
+              "type": "string",
+              "value": "consumo"
+            },
+            {
+              "key": "server.port",
+              "type": "int64",
+              "value": 8080
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "url.path",
+              "type": "string",
+              "value": "/api/v1/publico/consumo-catalogo"
+            },
+            {
+              "key": "url.scheme",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "user_agent.original",
+              "type": "string",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26200; es-MX) PowerShell/7.6.5"
+            }
+          ],
+          "logs": [],
+          "processID": "p3",
+          "warnings": null
+        },
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "16b77aa550fdb084",
+          "operationName": "consumo.calcular",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "dd645b366efd526afec437513d99995b",
+              "spanID": "864aa2ce5735f8ab"
+            }
+          ],
+          "startTime": 1792714131224112,
+          "duration": 47,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "consumo"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p3",
+          "warnings": null
+        },
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "864aa2ce5735f8ab",
+          "operationName": "consumo.resolver-catalogo",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "dd645b366efd526afec437513d99995b",
+              "spanID": "e5dab1fdfc8711ee"
+            }
+          ],
+          "startTime": 1792714131222298,
+          "duration": 1863,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "consumo"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p3",
+          "warnings": null
+        },
+        {
+          "traceID": "dd645b366efd526afec437513d99995b",
+          "spanID": "592ef8b9919723b3",
+          "operationName": "electrodomesticos",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "dd645b366efd526afec437513d99995b",
+              "spanID": "fba8b99fa5b25f8e"
+            }
+          ],
+          "startTime": 1792714131223104,
+          "duration": 782,
+          "tags": [
+            {
+              "key": "client.address",
+              "type": "string",
+              "value": "172.23.0.2"
+            },
+            {
+              "key": "http.request.body.size",
+              "type": "int64",
+              "value": 47
+            },
+            {
+              "key": "http.request.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.response.body.size",
+              "type": "int64",
+              "value": 843
+            },
+            {
+              "key": "http.response.status_code",
+              "type": "int64",
+              "value": 200
+            },
+            {
+              "key": "network.peer.address",
+              "type": "string",
+              "value": "172.23.0.2"
+            },
+            {
+              "key": "network.peer.port",
+              "type": "int64",
+              "value": 35476
+            },
+            {
+              "key": "network.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+            },
+            {
+              "key": "otel.scope.version",
+              "type": "string",
+              "value": "0.63.0"
+            },
+            {
+              "key": "server.address",
+              "type": "string",
+              "value": "electrodomesticos"
+            },
+            {
+              "key": "server.port",
+              "type": "int64",
+              "value": 8080
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "url.path",
+              "type": "string",
+              "value": "/internal/v1/electrodomesticos/resolver"
+            },
+            {
+              "key": "url.scheme",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "user_agent.original",
+              "type": "string",
+              "value": "Go-http-client/1.1"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "electrodomesticos",
+          "tags": []
+        },
+        "p2": {
+          "serviceName": "gateway",
+          "tags": []
+        },
+        "p3": {
+          "serviceName": "consumo",
+          "tags": []
+        }
+      },
+      "warnings": null
+    }
+  ],
+  "total": 0,
+  "limit": 0,
+  "offset": 0,
+  "errors": null
+}

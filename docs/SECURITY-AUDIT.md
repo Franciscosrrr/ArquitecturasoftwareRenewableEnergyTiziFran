@@ -1,5 +1,6 @@
 # Auditoría de seguridad y resumen del proyecto
 
+> Antecedente histórico de entrega 1. El estado operativo actual y sus evidencias están en [DELIVERY-2](DELIVERY-2.md).
 Revisión de los archivos de trabajo locales y contraste con el enunciado PDF sin párrafos ocultos.
 
 ## Resultado de la revisión

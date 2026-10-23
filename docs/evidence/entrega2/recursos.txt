@@ -1,0 +1,5 @@
+renewable-energy-entrega2-consumo-1 | 0.00% | 6.93MiB / 7.564GiB
+renewable-energy-entrega2-electrodomesticos-1 | 0.01% | 6.805MiB / 7.564GiB
+renewable-energy-entrega2-gateway-1 | 0.01% | 9.391MiB / 7.564GiB
+renewable-energy-entrega2-jaeger-1 | 0.01% | 19.09MiB / 7.564GiB
+renewable-energy-entrega2-mysql-1 | 0.61% | 446.9MiB / 7.564GiB
