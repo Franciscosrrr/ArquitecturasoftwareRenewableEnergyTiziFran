@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:renewable:ConsumoEvaluado:1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36
+    },
+    "tipo": {
+      "const": "ConsumoEvaluado.v1"
+    },
+    "estudioId": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36
+    },
+    "evaluacionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "propietarioId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "consumo",
+        "fichas",
+        "entrada",
+        "lugar"
+      ],
+      "properties": {
+        "consumo": {
+          "type": "object"
+        },
+        "fichas": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "entrada": {
+          "type": "object"
+        },
+        "lugar": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "solar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "horasSolPico": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 8,
+          "multipleOf": 1e-06
+        },
+        "factorRendimiento": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1,
+          "multipleOf": 1e-06
+        },
+        "coberturaObjetivo": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "multipleOf": 1e-06
+        },
+        "superficieM2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "multipleOf": 1e-06
+        }
+      },
+      "required": [
+        "horasSolPico",
+        "factorRendimiento",
+        "coberturaObjetivo"
+      ]
+    },
+    "traceparent": {
+      "type": "string"
+    },
+    "requestId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "eventId",
+    "tipo",
+    "estudioId",
+    "evaluacionId",
+    "propietarioId",
+    "snapshot",
+    "solar",
+    "traceparent",
+    "requestId"
+  ]
+}

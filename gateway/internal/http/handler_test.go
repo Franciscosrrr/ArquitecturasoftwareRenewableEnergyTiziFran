@@ -11,6 +11,13 @@ import (
 // Credencial ficticia exclusiva de pruebas; no es una configuración del servidor.
 const testHealthToken = "credencial-ficticia-solo-para-pruebas-123456"
 
+/**
+ * Comprueba el comportamiento y los invariantes indicados por HealthRejectsUnauthenticatedRequests.
+ *
+ * @method TestHealthRejectsUnauthenticatedRequests
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestHealthRejectsUnauthenticatedRequests(t *testing.T) {
 	handler := NewHandler(testHealthToken)
 	for _, path := range []string{"/health/live", "/health/ready", "/health/ready/publico"} {
@@ -37,6 +44,13 @@ func TestHealthRejectsUnauthenticatedRequests(t *testing.T) {
 	}
 }
 
+/**
+ * Comprueba el comportamiento y los invariantes indicados por AuthenticatedHealthReportsActualReadiness.
+ *
+ * @method TestAuthenticatedHealthReportsActualReadiness
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestAuthenticatedHealthReportsActualReadiness(t *testing.T) {
 	handler := NewHandler(testHealthToken)
 	for _, test := range []struct {
@@ -68,6 +82,13 @@ func TestAuthenticatedHealthReportsActualReadiness(t *testing.T) {
 	}
 }
 
+/**
+ * Comprueba el comportamiento y los invariantes indicados por InvalidHealthConfigurationFailsClosed.
+ *
+ * @method TestInvalidHealthConfigurationFailsClosed
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestInvalidHealthConfigurationFailsClosed(t *testing.T) {
 	for _, token := range []string{"", "corta"} {
 		request := httptest.NewRequest(http.MethodGet, "/health/live", nil)

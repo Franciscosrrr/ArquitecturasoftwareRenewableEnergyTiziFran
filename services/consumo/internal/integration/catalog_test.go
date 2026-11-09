@@ -9,6 +9,13 @@ import (
 	"time"
 )
 
+/**
+ * Comprueba el comportamiento y los invariantes indicados por CircuitOpensAndRecovers.
+ *
+ * @method TestCircuitOpensAndRecovers
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestCircuitOpensAndRecovers(t *testing.T) {
 	var calls atomic.Int32
 	healthy := false
@@ -40,6 +47,14 @@ func TestCircuitOpensAndRecovers(t *testing.T) {
 		t.Fatal("circuit did not recover")
 	}
 }
+
+/**
+ * Comprueba el comportamiento y los invariantes indicados por CancellationStopsCall.
+ *
+ * @method TestCancellationStopsCall
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestCancellationStopsCall(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { <-r.Context().Done() }))
 	defer srv.Close()

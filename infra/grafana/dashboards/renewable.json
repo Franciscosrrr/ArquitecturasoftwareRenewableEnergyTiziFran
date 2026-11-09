@@ -1,0 +1,201 @@
+{
+  "uid": "renewable-final",
+  "title": "Renewable Energy - Estado del sistema",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Solicitudes por servicio",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by(job) (rate(renewable_http_requests_total[1m]))",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 2,
+      "title": "p95 HTTP en segundos",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95,sum by(job,le)(rate(renewable_http_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 3,
+      "title": "Errores 5xx por servicio",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by(job)(rate(renewable_http_requests_total{status=~\"5..\"}[1m])) or on(job) (0 * sum by(job)(rate(renewable_http_requests_total[1m])))",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 4,
+      "title": "Cache hit ratio",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(renewable_operations_total{component=\"cache\",outcome=\"hit\"}[5m])) / clamp_min(sum(rate(renewable_operations_total{component=\"cache\",outcome=~\"hit|miss\"}[5m])),0.001)",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 5,
+      "title": "Outbox pendiente",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "max by(component)(renewable_state{state=\"pendientes\"})",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 6,
+      "title": "Distribución entre réplicas",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by(outcome)(increase(renewable_operations_total{component=\"balanceador\"}[5m]))",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 7,
+      "title": "Estudios y duplicados",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by(outcome)(increase(renewable_operations_total{component=\"estudios\"}[5m]))",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 8,
+      "title": "Alertas activas",
+      "type": "timeseries",
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "ALERTS{alertstate=\"firing\"}",
+          "legendFormat": "{{job}}{{component}}{{outcome}}"
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 20,
+      "title": "Logs correlacionados; abrir TraceID para Jaeger",
+      "type": "logs",
+      "datasource": {
+        "uid": "loki",
+        "type": "loki"
+      },
+      "targets": [
+        {
+          "expr": "{service=~\"gateway|consumo|electrodomesticos|usuarios|solar\"} | json | route != \"/metrics\" | route != \"/health/*path\""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 24,
+        "h": 12
+      }
+    }
+  ]
+}

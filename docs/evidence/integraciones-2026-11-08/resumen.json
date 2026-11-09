@@ -1,0 +1,92 @@
+{
+  "fecha": "2026-11-08",
+  "zona": "America/Buenos_Aires",
+  "go": {
+    "pass_including_subtests": 246,
+    "failed": 0,
+    "skipped": [
+      {
+        "package": "renewable.local/electrodomesticos/internal/repository",
+        "test": "TestMySQLIntegration"
+      }
+    ],
+    "mode": "go test -json -cover -count=1 -timeout 45s; HTTP local permitido"
+  },
+  "frontend": "Vite production build correcto",
+  "compose": "docker compose config --quiet correcto; no contenedores iniciados",
+  "ui": [
+    {
+      "viewport": "escritorio",
+      "quote": true,
+      "failureKeepsConsumption": true,
+      "pageErrors": [],
+      "backend": "fixtures HTTP; sin MySQL ni Go"
+    },
+    {
+      "viewport": "movil",
+      "quote": true,
+      "failureKeepsConsumption": true,
+      "pageErrors": [],
+      "backend": "fixtures HTTP; sin MySQL ni Go"
+    }
+  ],
+  "consumer": {
+    "repo": "https://github.com/OctiDelFabro/portal-paciente-clinica",
+    "commit": "881a00701ed18133bf371849104705540c34434e",
+    "version": "1.0.1",
+    "full_openapi_semantically_equal": true,
+    "inline_budget_ms": 1200,
+    "background_budget_ms": 5000
+  },
+  "contracts": "Ejemplos y referencias locales comprobados con validador del proyecto; no validador OpenAPI general.",
+  "not_executed": [
+    "proveedor real externo",
+    "hosting HTTPS",
+    "carga de la revisión completa",
+    "componentes funcionales todavía no implementados"
+  ],
+  "applied_to_original_repository": true,
+  "docker": {
+    "build_and_start": "passed",
+    "go_with_real_mysql": "passed",
+    "http_tests": 9,
+    "http_failed": 0,
+    "e2e_passed": 8,
+    "e2e_failed": 0,
+    "evidence_directory": "integraciones-2026-11-08/e2e",
+    "vendor_failure_and_recovery": "passed"
+  },
+  "pdf_review": {
+    "files": 9,
+    "pages": 177,
+    "raster_pages_ocr": 159,
+    "native_text_pages": 18
+  },
+  "adrs": {
+    "canonical_numbered": 13,
+    "merged_duplicates": [
+      "ADR-002-E2.md",
+      "ADR-003-E2.md",
+      "ADR-005-E2.md"
+    ],
+    "unumbered_antecedents": 3,
+    "context_and_reason_on_all": true
+  },
+  "diagrams": {
+    "mermaid_views_validated": 4,
+    "original_pngs_preserved": 3,
+    "current_and_target_regenerated": true
+  },
+  "race_detection": {
+    "platform": "Linux amd64 en contenedor temporal",
+    "result": "passed",
+    "packages": [
+      "platform",
+      "solar/internal/adapters/external"
+    ],
+    "new_cases": [
+      "TestConcurrentLimiterPreservesBurst",
+      "TestHalfOpenAllowsOneConcurrentProbe"
+    ]
+  }
+}

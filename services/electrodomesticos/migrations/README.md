@@ -1,3 +1,3 @@
-# Inicialización pendiente
+# Inicialización del catálogo
 
-Aquí se incorporarán índices/migraciones y semillas idempotentes de la base propia. No se incluyen migraciones vacías que aparenten una persistencia implementada.
+El esquema principal está embebido en [repository/schema.sql](../internal/repository/schema.sql); el repositorio aplica semillas idempotentes sin sobrescribir fichas. [features/catalog.go](../internal/features/catalog.go) crea catalogo_outbox repetiblemente. El índice y la caché son derivados/reconstruibles, no migraciones de la fuente MySQL. No se mantiene un segundo esquema en esta carpeta.

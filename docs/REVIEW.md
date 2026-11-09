@@ -1,3 +1,5 @@
+> Documento histórico. Estado vigente: [verificación final](VERIFICACION-FINAL.md) y [arquitectura](ARCHITECTURE.md),2026-11-09. Los pendientes de este hito no describen necesariamente la implementación actual.
+
 # Verificación de la primera entrega revisada
 
 > Antecedente histórico de entrega 1. El estado operativo actual y sus evidencias están en [DELIVERY-2](DELIVERY-2.md).

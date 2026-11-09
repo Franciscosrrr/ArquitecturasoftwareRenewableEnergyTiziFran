@@ -1,29 +1,9 @@
-# Estado ejecutable de entrega 1
+# Servicio Solar
 
-Módulo Go independiente con cmd/server, paquetes internos y Dockerfile. Liveness y readiness exigen Authorization: Bearer con HEALTHCHECK_TOKEN (mínimo 32 caracteres, sin valor por defecto). Con credencial válida, liveness devuelve 200 y readiness 503; negocio responde 501. Sin credencial operativa válida, las rutas /health/ devuelven 401 sin informar estado. Ver scripts/compose para generar la credencial local automáticamente. El transporte inicial usa net/http sin dependencias externas; Gin y los drivers se incorporarán al implementar los casos reales. No es evidencia de persistencia ni del patrón completo en funcionamiento.
+Estado 2026-11-09. Dominio/aplicación/puertos independientes de drivers y adaptadores HTTP, Mongo, proveedor y mensajería. Dos instancias ofrecen búsqueda de paneles, recomendaciones/cotizaciones temporales y estudios autenticados. El gateway las balancea; Solar consulta directamente a Consumo y al vendedor, sin usar el gateway como bus interno.
 
-Dentro de esta carpeta: `go test ./...` y `go run ./cmd/server`. Con Docker, usar el perfil `estructura` de la raíz.
+Mongo conserva paneles, estudios, deduplicación y claims con lease. El worker recibe ConsumoEvaluado.v1, congela entradas/fichas, calcula alternativas y consulta al vendedor por SKU; persiste antes del ACK. Reintentos durables, deduplicación y DLQ cubren fallas e incompatibilidades. No se compra ni reserva stock. HSP y referencias solares siguen siendo supuestos didácticos explícitos.
 
-## Diseño previsto
+El índice paneles en Meilisearch sirve texto, potencia, superficie, moneda/precio, orden y páginas. Una marca Mongo pendiente y leases sincronizan versiones; la reconciliación periódica reconstruye el índice y el respaldo Mongo conserva búsqueda ante caída. La recomendación valida datos canónicos, no el índice derivado.
 
-# solar
-
-Estado del negocio: diseño pendiente de implementación; el arranque mínimo ejecutable está descrito arriba.
-
-## Responsabilidad
-
-Paneles administrativos y estudios/recomendaciones asociados a evaluaciones.
-
-## Organización
-
-Hexagonal: dominio/casos de uso y puertos; adaptadores Gin, MongoDB, mensajería y HTTP externo.
-
-## Dependencias
-
-MongoDB solar_db, RabbitMQ, Consumo HTTP, Usuarios y proveedor externo.
-
-Ver [estructura general](../../docs/STRUCTURE.md). Las dependencias y el código se construirán dentro de Docker. No se declara un módulo, una imagen ni una API ya funcionando.
-
-## Recomendación invitada
-
-POST /api/v1/publico/recomendaciones-solares recibe consumo y parámetros temporales; lee paneles activos/recurso solar y devuelve resultado síncrono. No crea documentos de estudios, trabajos, leases, auditoría de negocio ni eventos. Un puerto de lectura de paneles y el dominio se comparten con el worker; la persistencia del estudio se usa solo en el flujo autenticado. Se balancea entre ambas instancias. Ver [modo invitado](../../docs/GUEST-MODE.md).
+PANEL_PROVIDER_MODE distingue simulado/externo; el externo exige HTTPS y un adaptador compatible con el contrato real. El simulador comercial actual no acredita integración con el otro grupo. [Contrato comercial](../../docs/contracts/SOLAR.md), [búsqueda](../../docs/contracts/panel-search-v1/openapi.json), [pedido al vendedor](../../docs/SOLICITUD-PROVEEDOR.md), [D9](../../docs/adr/ADR-009.md).

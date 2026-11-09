@@ -1,43 +1,47 @@
-# Renewable Energy - Entrega 2
+# Renewable Energy — Arquitectura de Software 2026
 
-Sistema de Administración de Consumo Personalizado · Arquitectura de Software 2026 · UCC.
+> Actualización posterior del 09/11/2026: [M2M publicado por HTTPS temporal con Cloudflare](docs/PUBLICACION-CLINICA.md). URL https://emails-bingo-preference-packets.trycloudflare.com; certificado, contrato y 200/401/403 comprobados. Requiere PC/Docker/red activos; la URL puede cambiar y no hay garantía de uptime. Los estados de preparación anteriores se conservan como antecedente.
 
-**Entrega 2: dominio propio operativo de punta a punta.** La cátedra aprobó el dominio y asignó proveedor/consumidor; el equipo aún no recibió su contrato ni documentación. Bonus anunciado: **tests e2e**.
+Calculadora de consumo y estudios solares con acceso invitado, guardados propios y administración. Tiziano Nicolas (2407889) y Francisco Skrie (2423159), UCC. [Repositorio](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran). Grupo/comisión: pendiente de registrar.
 
-| Integrante | Clave universitaria |
-|---|---|
-| Tiziano Nicolas | 2407889 |
-| Francisco Skrie | 2423159 |
+El entorno completo implementa Usuarios, Consumo, Electrodomésticos y Solar, Gateway Go, MySQL privados, MongoDB, RabbitMQ, Meilisearch, Valkey, dos réplicas Solar y observabilidad. La capacidad de Clínica mantiene OpenAPI **1.0.1** sin precio. El vendedor solar es **simulado**, autorizado por el equipo mientras falta su contrato real. La web y M2M están publicados por HTTPS mediante túneles desde la PC autorizada. El despliegue de la capacidad M2M en un servidor cloud es un paso distinto: está preparado para Render y requiere una sesión del equipo en ese proveedor. [Estado de despliegue](docs/DESPLIEGUE-GRATUITO.md).
 
-Repositorio: [ArquitecturasoftwareRenewableEnergyTiziFran](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran). Grupo/comisión: número pendiente de registrar.
+## Arranque único
 
-## Qué funciona
-
-La calculadora React permite seleccionar fichas públicas, declarar hábitos y calcular energía sin registrarse. Gateway → Consumo → Electrodomésticos → MySQL resuelve la potencia real del catálogo y aplica las reglas. Los cálculos son temporales; recargar elimina el borrador. MySQL conserva únicamente el catálogo y sus semillas idempotentes.
-
-La capacidad para otro grupo es **POST /api/v1/estimaciones-consumo**: recibe equipos externos, valida la entrada y calcula con aritmética decimal exacta, sin guardar datos privados. Conserva el contrato OpenAPI 1.0.1 y exige una clave M2M generada localmente. El mock de la entrega 1 es independiente y opcional.
-
-## Arranque local
-
-Requisito: Docker Desktop con motor Linux y Docker Compose v2. No hace falta instalar Go, Node, Python ni MySQL en el host. La primera ejecución descarga imágenes y dependencias.
-
-Windows, desde la raíz del repositorio:
+Docker Desktop con motor Linux y Compose v2. No se requiere Go, Node, Python ni bases instalados en el host. Desde la raíz:
 
 ```powershell
 .\scripts\compose.ps1 up -d --build
 ```
 
-Linux/macOS:
-
 ```sh
 sh scripts/compose.sh up -d --build
 ```
 
-Abrir [calculadora](http://localhost:8080) y [Jaeger](http://localhost:16686). La interfaz y el visor se publican solo en localhost; MySQL y las APIs internas no exponen puertos al host. Los scripts generan `.env` aleatorio una sola vez. **No compartir ni subir ese archivo.** Conservarlo junto con el volumen MySQL para reiniciar con las mismas credenciales. No borrar `.env` mientras se conserva una base inicializada.
+Los scripts generan secretos aleatorios una sola vez en `.env`, incorporan claves nuevas sin rotar las anteriores y preparan la credencial de métricas excluida de Git. La primera descarga/compilación puede tardar. Construyen cada servicio por separado para contener el consumo; las siguientes aprovechan caché. Conservar `.env` junto con los volúmenes y no publicarlo.
 
-Para detener, usar el mismo script con `down`. Esto conserva el catálogo en su volumen. La calculadora no necesita usuarios ni sesiones; identidad, guardados e implementación solar siguen fuera del alcance de este hito.
+| Acceso local | Dirección |
+|---|---|
+| Aplicación completa | http://localhost:8080 |
+| Grafana | http://localhost:3000 |
+| Prometheus | http://localhost:9090 |
+| Jaeger | http://localhost:16686 |
 
-## Pruebas y demostración
+Puertos solo en loopback. Usuario inicial de la aplicación: `admin@renewable.local`, contraseña ADMIN_PASSWORD de `.env`; Grafana usa `admin` y GRAFANA_ADMIN_PASSWORD. Recuperarlas localmente sin enviarlas a Git ni capturas. El resto de las cuentas se registra desde Mis consumos. Las métricas y /health requieren HEALTHCHECK_TOKEN; las bases, broker, índice y caché no publican puertos al host.
+
+Para detener sin perder datos: mismo script con `stop`. Volver a iniciar con `up -d`. No utilizar `down -v`: elimina los datos. [Recursos y límites locales](docs/RECURSOS-LOCALES.md).
+
+## Recorrido de negocio
+
+Como invitado, elegir fichas activas y hábitos; calcular consumo, comparar alternativas con superficie/HSP manuales y cotizar. Nada de ese recorrido escribe consumos, estudios ni eventos de negocio. Recargar pierde el borrador.
+
+Para conservarlo, crear cuenta/iniciar sesión, crear un lugar y pulsar Guardar consumo. La validación y el cálculo se repiten en el servidor. Calcular paneles confirma la evaluación: congela versiones de configuración y lugar, guarda idempotencia/outbox en la misma transacción y encola un estudio. El historial muestra el procesamiento y resultado recuperado de MongoDB; editar después conserva el snapshot anterior. Comparar con otras condiciones solares permite calcular otra alternativa sobre la evaluación histórica. Archivar/restaurar organiza guardados sin crear versiones de contenido; eliminar quita guardados conservando sus resultados históricos. Solo el propietario puede ver sus datos, incluso si otro usuario es administrador.
+
+La administración permite editar/desactivar equipos/paneles, gestionar roles, reconstruir el índice e inspeccionar/reprocesar DLQ. Actualizaciones usan versión esperada. Una oferta sin stock puede cambiar el panel seleccionado; la cotización no compra ni reserva. Las HSP son un supuesto manual identificado, no una fuente meteorológica real ni garantía de autonomía.
+
+Ejemplo: 30 días, cuatro lámparas de 10 W×5 h/día; una heladera de 150 W×24 h/día×factor 0.3; lavarropas de 0.75 kWh×12 ciclos. Total **47.4 kWh**, promedio **1.58 kWh/día**. Son referencias didácticas que deben sustituirse por fichas reales al usar el sistema fuera de la evaluación.
+
+## Verificación
 
 ```powershell
 .\scripts\verify.ps1
@@ -47,37 +51,22 @@ Para detener, usar el mismo script con `down`. Esto conserva el catálogo en su 
 sh scripts/verify.sh
 ```
 
-Los scripts construyen/inician el sistema y ejecutan tests Go, integración con MySQL real, pruebas HTTP de contrato y pruebas e2e en Chromium para escritorio y móvil. El navegador e2e se descarga en una imagen oficial, que puede tardar en la primera ejecución. El reporte e2e queda en `docs/evidence/entrega2/e2e/`.
+Ejecuta Go, integración real y Chromium escritorio/móvil en secuencia. [Resultados y condiciones](docs/VERIFICACION-FINAL.md), [evidencia](docs/evidence/final-2026-11-09/README.md), [postmortem](docs/POSTMORTEM.md) y [carga](docs/CARGA-FINAL.md). Para ejecutar la sonda voluntaria de fallas desde el host se requiere Python: `python tests/fault_final.py`; detiene temporalmente dependencias de este proyecto y las recupera incluso si falla una aserción. No es parte del arranque normal.
 
-Escenario de exposición: 30 días; cuatro lámparas de 10 W, 5 h/día y factor 1; una heladera de 150 W, 24 h/día y factor 0,3; un lavarropas de 0,75 kWh/ciclo con 12 ciclos. Resultado: **47,4 kWh** en el período y **1,58 kWh/día**. Son referencias didácticas, no fichas universales ni mediciones.
+## Documentación vigente
 
-Prueba M2M reproducible sin imprimir su clave:
+- [Requisitos y aceptación](SPEC.md), [matriz final](docs/VERIFICACION-FINAL.md).
+- [Arquitectura y diagramas](docs/ARCHITECTURE.md), [D1–D13 canónicos](docs/adr/README.md), [los nueve prácticos y sus diferencias justificadas](docs/CLASES-PRACTICAS.md).
+- [Contrato M2M 1.0.1](docs/contracts/README.md), [cuenta/guardados/administración](docs/contracts/private-v1/README.md), [eventos](docs/contracts/events/v1/README.md).
+- [Despliegue M2M en Render y distinción respecto del túnel](docs/DESPLIEGUE-GRATUITO.md), [observabilidad](docs/OBSERVABILITY.md), [recursos](docs/RECURSOS-LOCALES.md).
 
-```powershell
-.\scripts\demo-m2m.ps1
-```
+Las entregas 1/2 y sus evidencias se conservan como historia. Falta recibir y probar la API del vendedor real; la simulación no acredita esa integración entre grupos. La API M2M está publicada temporalmente por Cloudflare Quick Tunnel desde la PC autorizada; véase [publicación y continuidad](docs/PUBLICACION-CLINICA.md). Las claves dedicadas se entregaron al usuario por separado para compartirlas por privado. La PC, Docker y la red deben permanecer activos; Quick Tunnel no garantiza continuidad ni una URL fija al reiniciar. Render Free sigue preparado como alternativa y puede exceder los presupuestos de 1.2 s/5 s en frío.
 
-En Jaeger seleccionar el servicio `gateway` y buscar una operación de cálculo. El `traceId` mostrado en la calculadora permite abrir la misma traza. [Guion y evidencias](docs/DELIVERY-2.md).
+## Mejora de experiencia de cliente — 2026-11-09
 
-## Documentación
+[Archivo sin versiones artificiales, eliminación de guardados y búsqueda solar](docs/EXPERIENCIA-CLIENTE.md). Pruebas posteriores: 19 HTTP y 12 de navegador aprobadas. Se conservan los resultados anteriores como antecedentes. Clínica mantiene OpenAPI 1.0.1.
 
-- [Matriz de cumplimiento y guion de entrega 2](docs/DELIVERY-2.md).
-- [Arquitectura implementada y evolución](docs/ARCHITECTURE.md).
-- [Alcance y requisitos](SPEC.md).
-- [ADR D1 a D13](docs/adr/README.md).
-- [Capacidad compartida y errores](docs/contracts/README.md).
-- [Contrato adicional de catálogo](docs/contracts/catalog-v1/openapi.json).
-- [Observabilidad y recuperación](docs/OBSERVABILITY.md).
-- [Bonus e2e](docs/BONUS-E2E.md).
-- [Caída controlada](docs/POSTMORTEM.md).
-- [Revisión histórica de entrega 1](docs/REVIEW.md).
 
-## Alcance pendiente
+## Página local por Cloudflare
 
-Sin URL cloud todavía. La publicación pública de la capacidad se reserva para la presentación final y necesita acordar hosting y credenciales con el grupo consumidor. No se contrató ningún servicio pago. El costo local de licencias es cero; CPU, RAM, disco y electricidad pertenecen al equipo anfitrión.
-
-Usuarios/roles, configuraciones guardadas, Solar, MongoDB, broker/outbox, Meilisearch, Valkey, balanceo entre réplicas y tablero de métricas siguen pendientes. Los ADR de esos temas distinguen decisión de diseño y evidencia de implementación. El dominio aprobado no equivale a una integración externa ya validada.
-
-## Forma de trabajo
-
-Un repositorio público, ramas cortas y PR revisados hacia main como versión evaluable. Se incluye CI de comprobación, que se ejecutará al subir los cambios. Esta preparación local no realiza publicaciones, commits ni push automáticamente.
+[Web pública verificada](https://conditional-wan-server-learning.trycloudflare.com), independiente de la URL M2M de Clínica. El usuario autorizó la publicación completa. Sin cambios de código de aplicación; mantiene las mismas cuentas y datos. Pruebas HTTPS y cuatro casos de navegador en escritorio/móvil aprobados. [Operación y límites](docs/PUBLICACION-WEB.md): scripts/publicar-web.ps1 iniciar|estado|detener. La PC/Docker/red deben permanecer activos y el hostname temporal puede cambiar al recrear el túnel.

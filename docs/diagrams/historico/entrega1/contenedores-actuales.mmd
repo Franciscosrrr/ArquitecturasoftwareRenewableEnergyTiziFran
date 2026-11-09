@@ -1,0 +1,17 @@
+---
+title: Componentes ejecutables actuales - Compose
+---
+flowchart TB
+    H["Cliente HTTP local"] -->|localhost:8080| M["Mock Python<br/>Consumo y Solar manual de ejemplo<br/>Sin persistencia de negocio"]
+    M -->|Solo contratos de prueba| J["OpenAPI y ejemplos JSON"]
+    subgraph STRUCT["Perfil estructura opcional: procesos Go independientes"]
+        direction LR
+        G["Gateway :8105"]
+        U["Usuarios :8101"]
+        E["Electrodomésticos :8102"]
+        C["Consumo :8103"]
+        S["Solar :8104"]
+        G ~~~ U ~~~ E ~~~ C ~~~ S
+    end
+    classDef service fill:#e9f2fb,stroke:#557a96,color:#203b50
+    class H,M,J,G,U,E,C,S service

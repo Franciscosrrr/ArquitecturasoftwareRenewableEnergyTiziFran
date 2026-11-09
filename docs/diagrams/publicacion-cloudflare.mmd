@@ -1,0 +1,11 @@
+---
+title: M2M publicado con Cloudflare Quick Tunnel temporal
+---
+flowchart LR
+ C["Portal Paciente Clínica"] -->|"HTTPS y X-API-Key"| E["Edge Cloudflare<br/>TLS público"]
+ subgraph PC["PC autorizada · Docker activo"]
+ T["cloudflared · 64 MiB máximo<br/>Conexión saliente HTTP/2"] -->|"HTTP · red aislada"| G["Gateway Go<br/>solo M2M y OpenAPI"]
+ G -->|"HTTP loopback"| S["Consumo Go<br/>cálculo puro"]
+ end
+ E <-->|"Túnel"| T
+ N["Origen API: 128 MiB máximo · sin bases privadas.<br/>URL temporal: puede cambiar al reiniciar.<br/>PC, Docker y conexión deben permanecer activos."]

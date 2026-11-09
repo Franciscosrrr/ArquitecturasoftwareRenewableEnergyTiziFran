@@ -1,0 +1,35 @@
+broker detenido
+evaluaci�n confirmada sin broker
+broker reiniciado
+outbox recuperada y estudio completado
+broker recreado con identidad y volumen conservados
+alta de cat�logo tras reconexi�n ociosa visible en menos de 5 s
+evento duplicado entregado
+evento incompatible en DLQ
+reproceso administrado completa mensaje v�lido y conserva inv�lido
+r�plica Solar 2 detenida
+balanceo excluye ca�da y alerta activa
+r�plica recuperada
+vendedor ca�do conserva evaluaci�n y encola reintento
+reintento comercial completado
+buscador y cach� ca�dos: respaldo SQL
+reinicios conservan SQL, sesi�n y Mongo
+{"completado": true, "pasos": 16, "evidencia": "C:\\Users\\tixin\\Documents\\GitHub\\ArquitecturasoftwareRenewableEnergyTiziFran\\docs\\evidence\\final-2026-11-09\\fallas.json"}
+
+Acciones UTF-8 tomadas de fallas.json (stdout del host conservado arriba):
+2.875 s: broker detenido
+3.14 s: evaluación confirmada sin broker
+3.484 s: broker reiniciado
+9.812 s: outbox recuperada y estudio completado
+28.062 s: broker recreado con identidad y volumen conservados
+29.109 s: alta de catálogo tras reconexión ociosa visible en menos de 5 s
+33.094 s: evento duplicado entregado
+36.437 s: evento incompatible en DLQ
+38.187 s: reproceso administrado completa mensaje válido y conserva inválido
+42.828 s: réplica Solar 2 detenida
+69.078 s: balanceo excluye caída y alerta activa
+88.656 s: réplica recuperada
+92.578 s: vendedor caído conserva evaluación y encola reintento
+97.0 s: reintento comercial completado
+99.469 s: buscador y caché caídos: respaldo SQL
+115.265 s: reinicios conservan SQL, sesión y Mongo

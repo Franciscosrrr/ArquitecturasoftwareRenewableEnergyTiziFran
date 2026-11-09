@@ -2,6 +2,8 @@
 **/__pycache__
 **/*.pyc
 .env
+.runtime
+compose.dev-overrides.yaml
 **/node_modules
 **/dist
 **/coverage.out

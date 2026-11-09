@@ -1,6 +1,6 @@
 # Capacidad pública: estimación de consumo
 
-Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado: implementación real Go operativa en el sistema local de entrega 2; URL cloud pendiente. El mock histórico sigue disponible por separado.
+Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado vigente 2026-11-09: implementación real Go y HTTPS público temporal desde la PC, https://emails-bingo-preference-packets.trycloudflare.com; alojamiento del proceso en cloud todavía pendiente de completar. El mock histórico sigue disponible por separado.
 
 ## Contrato formal
 
@@ -14,7 +14,7 @@ Otro grupo envía equipos y hábitos para utilizar el consumo calculado en una c
 
 POST /api/v1/estimaciones-consumo. Content-Type: application/json. Header X-API-Key: credencial M2M que el equipo proveedor entregará por un canal privado. X-Request-Id es opcional para correlación, con hasta 64 letras, números, guion o guion bajo; no es clave de idempotencia.
 
-Sistema real local: http://localhost:8080 después de ejecutar Compose. Mock histórico opcional: http://localhost:8081 con el perfil mock; no es una URL productiva. URL HTTPS cloud: pendiente de publicar. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplicará inicialmente 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
+Sistema real local: http://localhost:8080 después de ejecutar Compose. Mock histórico opcional: http://localhost:8081 con el perfil mock; no es una URL productiva. URL HTTPS actual desde la PC: https://emails-bingo-preference-packets.trycloudflare.com. URL del futuro alojamiento cloud: todavía no verificada. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplica 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
 
 ## Entrada
 
@@ -64,13 +64,13 @@ Misma entrada y algoritmo producen igual energía. traceId es metadato variable.
 
 Todos los errores de estas operaciones de negocio siguen codigo, mensaje, traceId y detalles. No exponen SQL, stack traces ni credenciales. Una plataforma cloud/proxy puede responder por sí misma durante cold start o antes de llegar a la aplicación; el consumidor debe validar tipo de contenido y tolerar una respuesta de infraestructura ajena al esquema, sin tratarla como 200 de negocio.
 
-Presupuesto propuesto con instancia activa: 5 s; ante fallo de conexión o 503, una repetición con jitter dentro del presupuesto. No repetir 4xx de validación/permiso. Si se acuerda Render Free, la primera activación puede exceder ese presupuesto: acordar un sondeo de disponibilidad separado antes del flujo o mostrar indisponibilidad temporal y reintento explícito. No se simula un éxito para ocultar cold start.
+Presupuesto del reestimador de Clínica con instancia activa: 5 s; su flujo interactivo dispone de 1.2 s. Ante fallo de conexión o 503 en segundo plano, puede realizar una repetición con jitter dentro del presupuesto. No repetir 4 xx de validación/permiso. Si se acuerda Render Free, la primera activación puede exceder ese presupuesto: acordar un sondeo de disponibilidad separado antes del flujo o mostrar indisponibilidad temporal y reintento explícito. No se simula un éxito para ocultar cold start.
 
 ## Compatibilidad y verificación
 
 Cambios de significado, unidades, fórmula, campos obligatorios o errores incompatibles requieren /v2 y transición acordada. La semántica de versionAlgoritmo y las reglas del cálculo no se cambian silenciosamente dentro de v1. Se conserva v1 hasta que el consumidor pueda migrar. Los esquemas actuales rechazan campos desconocidos. Cualquier campo nuevo de respuesta requiere un contrato acordado y la actualización de los consumidores antes de enviarlo; una extensión no acordada no se considera compatible con estos esquemas.
 
-El proveedor verificará implementación contra OpenAPI, ejemplos y casos límite; el grupo consumidor tendrá tests que detecten incompatibilidades. La [guía de mock](MOCK.md) explica arranque, credenciales de prueba y escenarios ejecutables. La asignación del consumidor y su caso concreto todavía no fueron comunicados.
+El proveedor verificará implementación contra OpenAPI, ejemplos y casos límite; el grupo consumidor tendrá tests que detecten incompatibilidades. La [guía de mock](MOCK.md) explica arranque, credenciales de prueba y escenarios ejecutables. El consumidor es Portal Paciente Clínica: consulta energía por equipos y calcula el costo con su tarifa. Ver la actualización 2026-11-08 y su presupuesto interactivo de 1.2 s.
 
 ## Distinción respecto del modo invitado web
 
@@ -78,7 +78,7 @@ Este contrato es la integración M2M de otro grupo y conserva X-API-Key. La calc
 
 ## Revisión compatible 1.0.1
 
-Aclara que el mock local ya es ejecutable y que la implementación productiva sigue pendiente. El contrato invitado retira una cota de salida de superficie que rechazaba resultados matemáticos de solicitudes válidas; no cambian campos, rutas, fórmulas ni unidades. Los errores de validación del mock ahora señalan el campo observado.
+La revisión histórica 1.0.1 aclaró la disponibilidad del mock; la implementación Go ahora está operativa localmente y la publicación HTTPS sigue pendiente. El contrato invitado retira una cota de salida de superficie que rechazaba resultados matemáticos de solicitudes válidas; no cambian campos, rutas, fórmulas ni unidades. Los errores de validación del mock ahora señalan el campo observado.
 
 ## Implementación real de entrega 2
 
@@ -89,3 +89,35 @@ POST /api/v1/estimaciones-consumo aplica el mismo caso de uso que las rutas temp
 La traza usa un traceId W3C de 32 caracteres hexadecimales. X-Request-Id, si se suministra válido, se conserva como referencia del consumidor; ambos se registran en logs. El cliente no debe asumir que son iguales. El parser normaliza ceros y exponentes antes de crear los racionales y rechaza los valores fuera del rango o con más de seis decimales efectivos.
 
 El [contrato adicional del catálogo](catalog-v1/openapi.json) define lectura pública y POST /api/v1/publico/consumo-catalogo. Es una API separada: usa ids propios, resuelve la potencia en MySQL y no acepta potencias enviadas por el navegador. No cambia la entrada M2M externa ni exige claves en React.
+
+## Antecedente de coordinación - 2026-11-08: Portal Paciente Clínica
+
+Esta sección actualiza las referencias históricas a consumidor desconocido. El consumidor es Portal Paciente Clínica. Utiliza la energía de equipos por consulta médica y aplica su propia tarifa en pesos; esta API no agrega precio. Se contrastó su copia del contrato en el commit 881 a 00701 ed18133 bf371849104705540 c34434 e: OpenAPI 1.0.1 semánticamente idéntico al nuestro. No se modifica v1/openapi.json, sus códigos, campos ni redondeo.
+
+Su flujo interactivo tiene un presupuesto efectivo de 1.2 s; el reestimador en segundo plano, 5 s. Su parser es estricto con campos adicionales y tipos numéricos. Si el proveedor falla, muestra costo pendiente y vuelve a estimar después. El plazo de 5 s del mensaje inicial no describe por sí solo toda la experiencia del consumidor.
+
+Tasa confirmada por implementación y test: token bucket de reposición 1 solicitud/s (60/min sostenidas), capacidad de ráfaga 10, 429 y Retry-After: 1. No equivale a una ventana móvil estricta de 60 solicitudes. La cuota es local por proceso; mantener una única instancia M2M hasta incorporar almacenamiento compartido de límites. Gateway limita por hash de X-API-Key; Consumo valida la credencial y aplica su límite conservador.
+
+Pendientes de coordinación real antes del miércoles 11 de noviembre de 2026: URL HTTPS pública y fecha de disponibilidad; clave M2M con estimar-consumo y clave sin permiso por canal privado; hosting elegido y comportamiento de primera activación; confirmación operativa hasta terminar la evaluación. No hay URL ni fecha publicadas, y no se afirma un plan Render contratado. No incluir claves en Git, ejemplos ni frontend.
+
+Claves locales: los scripts existentes generan M2M_API_KEY y M2M_DENIED_KEY en .env. Son credenciales del entorno local; no se entregaron al otro equipo desde esta tarea. La prueba TestClinicaV101 Compatibility congela el OpenAPI recibido y TestClinicaEquipmentProfiles comprueba equipos reales de prueba de Clínica. El test propio no sustituye la ejecución desde su despliegue contra nuestra futura URL.
+
+Ejemplo de cardiología de 30 minutos: 4 luminarias de 18 W, aire de 1100 W con factor 0.5, PC de 120 W y un ciclo de electrocardiógrafo de 0.01 kWh: 0.381 kWh. El costo se calcula en Clínica, con su tarifa.
+
+La API web de [cotización solar](solar-v1/openapi.json) y el [vendedor simulado](paneles-sim-v1/openapi.json) tienen contratos separados. No alteran la capacidad M2M 1.0.1. Su arranque y migración futura se explican en [integración solar](SOLAR.md).
+
+
+## Implementación completa — 2026-11-09
+
+El contrato compartido M2M 1.0.1 y todos sus esquemas/errores/redondeo permanecen intactos. Las operaciones con efectos de la web se formalizan por separado en [API privada 1.1.0](private-v1/README.md) y [eventos1.0.0](events/v1/README.md). La extensión [vendedor simulado por SKU](paneles-sim-v2/openapi.json)0.2.0-simulated mantiene v1 disponible; no reemplaza ningún contrato real del grupo proveedor.
+
+La [publicación HTTPS actual](../PUBLICACION-CLINICA.md) usa un túnel desde la PC; el [despliegue del proceso en cloud](../DESPLIEGUE-GRATUITO.md) permanece separado y no se declara completado sin evidencia. No se publican claves. Clínica mantiene costo/tarifa propios; no se agrega precio a su respuesta. Las decisiones de contrato no se cambian por ampliar la aplicación privada.
+
+## Ampliación de la interfaz — 2026-11-09
+
+La búsqueda pública de [paneles solares 1.0.0](panel-search-v1/openapi.json) y las operaciones privadas de archivo/eliminación [1.1.0](private-v1/openapi.json) tienen contratos separados. No alteran la capacidad M2M 1.0.1.
+
+
+## Responsabilidad de la prueba del consumidor — 2026-11-09
+
+Por indicación del usuario, Clínica realizará la prueba desde su propio backend. El proveedor conserva el contrato 1.0.1, ejemplos, errores, claves dedicadas y cuota pactada; no ejecuta ni afirma haber ejecutado esa validación en nombre de Clínica. Los ensayos del proveedor y su evidencia HTTPS se mantienen separados. Un futuro cambio de hostname cloud se comunicará con su estado de cold start, sin modificar campos, fórmulas ni redondeo.

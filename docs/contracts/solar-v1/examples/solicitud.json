@@ -1,0 +1,28 @@
+{
+  "consumo": {
+    "diasPeriodo": 30,
+    "equipos": [
+      {
+        "catalogoId": "iluminacion",
+        "cantidad": 4,
+        "horasPorDia": 5,
+        "diasUso": 30,
+        "factorFuncionamiento": 1
+      },
+      {
+        "catalogoId": "heladera",
+        "cantidad": 1,
+        "horasPorDia": 24,
+        "diasUso": 30,
+        "factorFuncionamiento": 0.3
+      },
+      {
+        "catalogoId": "lavarropas",
+        "cantidad": 1,
+        "ciclosPeriodo": 12
+      }
+    ]
+  },
+  "horasSolPico": 4,
+  "factorRendimiento": 0.8
+}

@@ -1,0 +1,78 @@
+ Image renewable-energy-entrega2-verificar-e2e Building 
+ Image renewable-energy-entrega2-electrodomesticos Building 
+ Image renewable-energy-entrega2-consumo Building 
+ Image renewable-energy-entrega2-gateway Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.54kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 199B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for mcr.microsoft.com/playwright:v1.64.1-noble
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 186B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 10.95kB done
+#5 DONE 0.0s
+
+#6 [1/5] FROM mcr.microsoft.com/playwright:v1.64.1-noble@sha256:7852dc5a7d72f5fe458a597d690f6c42fbc8e9e26ddfa95f8e6ef552558d9bbf
+#6 resolve mcr.microsoft.com/playwright:v1.64.1-noble@sha256:7852dc5a7d72f5fe458a597d690f6c42fbc8e9e26ddfa95f8e6ef552558d9bbf 0.0s done
+#6 DONE 0.0s
+
+#7 [3/5] COPY tests/e2e/package*.json ./
+#7 CACHED
+
+#8 [2/5] WORKDIR /e2e
+#8 CACHED
+
+#9 [4/5] RUN npm ci --ignore-scripts
+#9 CACHED
+
+#10 [5/5] COPY tests/e2e/ ./
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 exporting manifest sha256:83ae49be159553670ae71d41cd02176457410274577566bc4474af72c5abfed8 0.0s done
+#11 exporting config sha256:002f62fa897d85a5369d3fb8a408f9530dd3702127e626e64b8e32c9316fa9df
+#11 exporting config sha256:002f62fa897d85a5369d3fb8a408f9530dd3702127e626e64b8e32c9316fa9df done
+#11 exporting attestation manifest sha256:441c9ab7a6fd5329efe82bc204716ab93b62d0c1a41b5129bb2c8b50bfe4e7fa 0.0s done
+#11 exporting manifest list sha256:df77d0f4a1bc5ad07c20e16383445e42fed822889c1cbf869cea80f94ce511fd done
+#11 naming to docker.io/library/renewable-energy-entrega2-verificar-e2e:latest done
+#11 unpacking to docker.io/library/renewable-energy-entrega2-verificar-e2e:latest 0.0s done
+#11 DONE 0.1s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ Image renewable-energy-entrega2-verificar-e2e Built 
+ Container renewable-energy-entrega2-verificar-e2e-run-e2a5cd05f2a5 Creating 
+ Container renewable-energy-entrega2-verificar-e2e-run-e2a5cd05f2a5 Created 
+
+> test
+> playwright test
+
+
+Running 10 tests using 1 worker
+
+[1/10] [escritorio] › calculadora.spec.js:4:1 › catálogo real, cálculo mixto y desglose
+[2/10] [escritorio] › calculadora.spec.js:17:1 › editar invalida el resultado y recargar pierde el borrador
+[3/10] [escritorio] › calculadora.spec.js:30:1 › validación del formulario, quitar equipo y acceso sin sesión
+[4/10] [escritorio] › cuenta.spec.js:47:1 › cuenta, guardado, estudio e historial inmutable
+[5/10] [escritorio] › solar.spec.js:30:1 › cotización comercial y consumo conservado ante fallo
+[6/10] [movil] › calculadora.spec.js:4:1 › catálogo real, cálculo mixto y desglose
+[7/10] [movil] › calculadora.spec.js:17:1 › editar invalida el resultado y recargar pierde el borrador
+[8/10] [movil] › calculadora.spec.js:30:1 › validación del formulario, quitar equipo y acceso sin sesión
+[9/10] [movil] › cuenta.spec.js:47:1 › cuenta, guardado, estudio e historial inmutable
+[10/10] [movil] › solar.spec.js:30:1 › cotización comercial y consumo conservado ante fallo
+  10 passed (49.9s)
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

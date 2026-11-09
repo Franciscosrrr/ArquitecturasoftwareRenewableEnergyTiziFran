@@ -1,0 +1,110 @@
+{
+  "fechaUtc": "2026-11-09T05:05:52.6077058Z",
+  "fase": "Un solo sistema completo; compiladores, pruebas y Chrome de verificación finalizados.",
+  "contenedoresProyecto": 18,
+  "memoriaContenedoresMiB": 1436.6,
+  "hostTotalGiB": 15.63,
+  "hostLibreGiB": 2.39,
+  "hostMemoriaUsadaPorcentaje": 84.7,
+  "discoMuestra": [
+    {
+      "Name": "_Total",
+      "PercentDiskTime": 0,
+      "DiskBytesPersec": 218099
+    }
+  ],
+  "otrosContenedoresActivos": [],
+  "limites": [
+    {
+      "Name": "renewable-energy-entrega2-rabbitmq-1",
+      "MemUsage": "85.39MiB / 384MiB",
+      "CPUPerc": "3.23%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-solar-1",
+      "MemUsage": "8.996MiB / 128MiB",
+      "CPUPerc": "0.01%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-solar-2-1",
+      "MemUsage": "9.094MiB / 128MiB",
+      "CPUPerc": "0.00%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-consumo-1",
+      "MemUsage": "8.203MiB / 96MiB",
+      "CPUPerc": "0.16%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-electrodomesticos-1",
+      "MemUsage": "10.83MiB / 96MiB",
+      "CPUPerc": "0.23%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-gateway-1",
+      "MemUsage": "16MiB / 96MiB",
+      "CPUPerc": "0.00%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-usuarios-1",
+      "MemUsage": "8.711MiB / 192MiB",
+      "CPUPerc": "0.03%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-mysql-1",
+      "MemUsage": "192.9MiB / 512MiB",
+      "CPUPerc": "0.71%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-jaeger-1",
+      "MemUsage": "73.68MiB / 128MiB",
+      "CPUPerc": "0.05%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-prometheus-1",
+      "MemUsage": "60.05MiB / 192MiB",
+      "CPUPerc": "0.00%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-mysql-consumo-1",
+      "MemUsage": "200.8MiB / 512MiB",
+      "CPUPerc": "0.78%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-valkey-1",
+      "MemUsage": "4.711MiB / 96MiB",
+      "CPUPerc": "0.22%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-mysql-usuarios-1",
+      "MemUsage": "202.1MiB / 512MiB",
+      "CPUPerc": "0.57%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-loki-1",
+      "MemUsage": "112.5MiB / 192MiB",
+      "CPUPerc": "1.06%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-mongo-1",
+      "MemUsage": "267.1MiB / 640MiB",
+      "CPUPerc": "0.61%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-grafana-1",
+      "MemUsage": "154.1MiB / 256MiB",
+      "CPUPerc": "1.31%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-proveedor-paneles-sim-1",
+      "MemUsage": "3.934MiB / 64MiB",
+      "CPUPerc": "0.00%"
+    },
+    {
+      "Name": "renewable-energy-entrega2-meilisearch-1",
+      "MemUsage": "17.48MiB / 384MiB",
+      "CPUPerc": "0.02%"
+    }
+  ],
+  "nota": "docker stats excluye parte de la caché del kernel de WSL. La memoria del host incluye todas las aplicaciones de Windows. Una muestra de disco no es un promedio sostenido."
+}

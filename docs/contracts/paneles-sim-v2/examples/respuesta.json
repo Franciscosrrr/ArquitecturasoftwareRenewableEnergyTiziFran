@@ -1,0 +1,10 @@
+{
+  "cotizacionId": "sim-modelo-PANEL-SIM-550",
+  "sku": "PANEL-SIM-550",
+  "potenciaPanelW": 550,
+  "cantidad": 2,
+  "stockDisponible": 100,
+  "precioUnitarioCentavos": 30000000,
+  "totalCentavos": 60000000,
+  "moneda": "ARS"
+}

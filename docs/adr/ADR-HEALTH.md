@@ -23,3 +23,24 @@ La invocación directa de Compose o de un servidor exige definir HEALTHCHECK_TOK
 ## Validación
 
 Pruebas HTTP del mock, pruebas de los cinco handlers Go, arranque local de los cinco binarios, rechazo de credenciales ausentes/cortas y validación de Compose. Readiness de Go sigue devolviendo 503 con credencial válida porque los casos de negocio aún no existen. Resultados y límites en [auditoría](../SECURITY-AUDIT.md).
+
+## Actualización 2026-11-08 - contexto y por qué
+
+### Contexto
+
+Los monitores necesitan estado técnico aunque el login no exista, pero las comprobaciones no deben filtrar estado a usuarios anónimos.
+
+### Decisión, motivo y consecuencias
+
+Conservar Bearer técnico independiente y liveness/readiness separados. Frente al /health abierto de las demos, es adecuado para este proyecto porque no reutiliza claves M2M ni depende de sesión humana. El costo es distribuir el secreto a monitores; las rutas no acreditan por sí solas alta disponibilidad.
+
+### Referencias de clase y alcance
+
+Clase 8.pdf pp. 8-9 y Clase 9.pdf pp. 11-12; implementación actual y requisito previo de salud autenticada.
+
+El texto anterior se conserva como historia. Toda revisión posterior se añadirá en este mismo archivo.
+
+
+## Actualización 2026-11-09
+
+Contexto: se integra la aplicación completa y observabilidad sin convertir una simulación en un guardado implícito. Se conservan los motivos originales: invitado sin escrituras y salud autenticada. Identidad solo habilita persistencia explícita y datos propios; Prometheus usa la misma credencial técnica separada para /metrics. Estado y evidencia vigentes en [verificación](../VERIFICACION-FINAL.md). Este cambio se añade al mismo ADR, sin archivo sustituto.

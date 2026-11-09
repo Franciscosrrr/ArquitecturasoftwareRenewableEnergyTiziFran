@@ -6,8 +6,10 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"math"
 	"net/http"
 	"regexp"
+	"renewable.local/electrodomesticos/internal/features"
 	"renewable.local/electrodomesticos/internal/repository"
 	"renewable.local/platform"
 	"strconv"
@@ -16,9 +18,18 @@ import (
 
 type Config struct {
 	Store         *repository.Store
+	Features      *features.Runtime
 	InternalToken string
 }
 
+/**
+ * Conecta rutas HTTP, salud y dependencias de negocio del servicio.
+ *
+ * @method NewHandler
+ * @param {string} token - Credencial técnica del servicio.
+ * @param {...Config} configs - Valor de configs requerido por la operación.
+ * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ */
 func NewHandler(token string, configs ...Config) http.Handler {
 	r := platform.Router()
 	var cfg Config
@@ -28,6 +39,9 @@ func NewHandler(token string, configs ...Config) http.Handler {
 		ready = cfg.Store.DB.PingContext
 	}
 	platform.Health(r, token, ready)
+	if cfg.Features != nil {
+		cfg.Features.Register(r, cfg.InternalToken)
+	}
 	fail := func(c *gin.Context) {
 		platform.Error(c, 503, "SERVICIO_NO_DISPONIBLE", "Catálogo no disponible.", nil)
 	}
@@ -38,6 +52,20 @@ func NewHandler(token string, configs ...Config) http.Handler {
 		}
 		q := repository.Query{Text: c.Query("q"), Category: c.Query("categoria"), Mode: c.Query("modo"), Sort: c.DefaultQuery("orden", "nombre"), Page: 1, Size: 20}
 		var err error
+		for name, dest := range map[string]**float64{"potenciaMin": &q.MinPower, "potenciaMax": &q.MaxPower} {
+			if raw, ok := c.GetQuery(name); ok {
+				value, e := strconv.ParseFloat(raw, 64)
+				if e != nil || math.IsNaN(value) || math.IsInf(value, 0) || value < 0 || value > 1000000 {
+					platform.Error(c, 422, "VALIDACION", "Potencia inválida.", nil)
+					return
+				}
+				*dest = &value
+			}
+		}
+		if (q.MinPower != nil || q.MaxPower != nil) && q.Mode == "CICLOS" || q.MinPower != nil && q.MaxPower != nil && *q.MinPower > *q.MaxPower {
+			platform.Error(c, 422, "VALIDACION", "Rango de potencia incompatible.", nil)
+			return
+		}
 		if v, ok := c.GetQuery("pagina"); ok {
 			q.Page, err = strconv.Atoi(v)
 			if err != nil {
@@ -54,7 +82,15 @@ func NewHandler(token string, configs ...Config) http.Handler {
 			platform.Error(c, 422, "VALIDACION", "Filtros o paginación inválidos.", nil)
 			return
 		}
-		page, err := cfg.Store.List(c.Request.Context(), q)
+		var page repository.Page
+		var source string
+		if cfg.Features != nil {
+			bypass := platform.CredentialOK(c.GetHeader("Authorization"), "Bearer "+cfg.InternalToken) && c.GetHeader("X-Cache-Mode") == "bypass"
+			page, source, err = cfg.Features.List(c.Request.Context(), q, bypass)
+			c.Header("X-Catalog-Source", source)
+		} else {
+			page, err = cfg.Store.List(c.Request.Context(), q)
+		}
 		if err != nil {
 			fail(c)
 			return

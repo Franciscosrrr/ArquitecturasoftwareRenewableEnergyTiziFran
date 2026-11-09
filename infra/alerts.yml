@@ -1,0 +1,13 @@
+groups:
+  - name: renewable
+    rules:
+      - alert: RenewableTargetDown
+        expr: up{job=~"gateway|usuarios|consumo|catalogo|solar"} == 0
+        for: 15s
+        labels: {severity: warning}
+        annotations: {summary: "Un servicio no puede ser observado; revisar réplica y dependencias."}
+      - alert: RenewableHighErrorRate
+        expr: sum(rate(renewable_http_requests_total{status=~"5.."}[5m])) / clamp_min(sum(rate(renewable_http_requests_total[5m])), 0.001) > 0.05 and sum(rate(renewable_http_requests_total[5m])) > 0.1
+        for: 5m
+        labels: {severity: critical}
+        annotations: {summary: "Errores HTTP por encima del 5 por ciento durante cinco minutos."}

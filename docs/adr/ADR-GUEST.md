@@ -21,3 +21,33 @@ Recargar pierde el borrador. La recomendación anónima debe terminar dentro del
 ## Validación prevista
 
 Navegador limpio sin credenciales obtiene consumo y paneles; no cambian tablas/documentos de negocio ni aparecen eventos. Guardados/admin anónimos reciben 401. Un login por sí solo no persiste. Tras Guardar explícito existe información solo bajo el usuario. Ver [especificación del modo](../GUEST-MODE.md).
+
+## Actualización 2026-11-08 - contexto y por qué
+
+### Contexto
+
+El visitante necesita entender consumo y paneles antes de crear una cuenta; el borrador temporal no necesita identidad ni una fila de base.
+
+### Decisión, motivo y consecuencias
+
+Conservar casos de uso sin escrituras/eventos y guardar solo por una acción autenticada futura. Es mejor para este flujo porque evita persistir datos que el usuario no pidió guardar y mantiene usable la calculadora mientras Usuarios sigue pendiente. El costo aceptado es perder el borrador al recargar.
+
+### Referencias de clase y alcance
+
+Clases 1 y 2 sobre límites y contratos; alcance explícito del equipo. No implica que todo sistema deba ser anónimo.
+
+El texto anterior se conserva como historia. Toda revisión posterior se añadirá en este mismo archivo.
+
+
+## Actualización 2026-11-09
+
+Contexto: se integra la aplicación completa y observabilidad sin convertir una simulación en un guardado implícito. Se conservan los motivos originales: invitado sin escrituras y salud autenticada. Identidad solo habilita persistencia explícita y datos propios; Prometheus usa la misma credencial técnica separada para /metrics. Estado y evidencia vigentes en [verificación](../VERIFICACION-FINAL.md). Este cambio se añade al mismo ADR, sin archivo sustituto.
+
+
+## Actualización 2026-11-09 — lenguaje de cliente y trazabilidad opcional
+
+**Contexto:** el cliente no necesita UUID ni versiones en avisos, selectores o títulos de guardados. Sí pidió conservarlos en fichas e historial.
+
+**Decisión y por qué:** se ocultan referencias técnicas fuera de esos detalles. Confirmar evaluación se presenta como Calcular paneles; la comparación adicional queda bajo Comparar con otras condiciones solares en el historial. Archivar sigue siendo opcional y reversible; Eliminar es otra acción. Se conserva la confirmación transaccional necesaria para generar el análisis asíncrono, con su historial inmutable. La interfaz recarga solo las listas modificadas y respeta Retry-After con reintentos acotados ante 429; no se desactiva la cuota para hacer pasar las pruebas.
+
+**Verificación:** doce casos de navegador reales en escritorio/móvil aprobaron los flujos; el primer intento detectó exceso de recargas y se conserva identificado. La calculadora invitada sigue sin guardar datos y el contrato externo de Clínica permanece intacto.

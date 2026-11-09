@@ -23,6 +23,17 @@ CATALOG_REQUEST = {'diasPeriodo': 30, 'equipos': [
 ]}
 
 def call(path, body=None, headers=None, raw=None):
+    """/**
+     * Ejecuta HTTP real y devuelve estado, JSON y cabeceras sin ocultar errores.
+     *
+     * @method call
+     * @param {Any} path - Parámetro path de la operación.
+     * @param {Any} body - Parámetro body de la operación.
+     * @param {Any} headers - Parámetro headers de la operación.
+     * @param {Any} raw - Parámetro raw de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     headers = {'Content-Type': 'application/json', **(headers or {})}
     data = raw if raw is not None else json.dumps(body).encode() if body is not None else None
     req = Request(BASE + path, data=data, headers=headers)
@@ -38,11 +49,32 @@ def call(path, body=None, headers=None, raw=None):
     return response.status, value, response.headers
 
 class RealServices(unittest.TestCase):
+    """/**
+     * Agrupa verificaciones del flujo RealServices.
+     *
+     * @method RealServices
+     * @returns {RealServices} Resultado verificado de la operación.
+     */
+    """
     def setUp(self):
         # Rate policy is part of the deployment; do not disable it just for tests.
+        """/**
+         * Espera la reposición de cuota antes de una prueba independiente.
+         *
+         * @method setUp
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         time.sleep(1.1)
 
     def test_m2m_matches_contract(self):
+        """/**
+         * Comprueba m2m matches contract.
+         *
+         * @method test_m2m_matches_contract
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         status, result, headers = call('/api/v1/estimaciones-consumo', EXAMPLE, {'X-API-Key': os.environ['M2M_API_KEY'], 'X-Request-Id': 'entrega2-m2m'})
         self.assertEqual(status, 200, result)
         validate(result, DOC['components']['schemas']['ResultadoEstimacion'], DOC)
@@ -52,24 +84,52 @@ class RealServices(unittest.TestCase):
         self.assertRegex(result['traceId'], r'^[0-9a-f]{32}$')
 
     def test_catalog_flow_uses_mysql(self):
+        """/**
+         * Comprueba catalog flow uses mysql.
+         *
+         * @method test_catalog_flow_uses_mysql
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         status, result, _ = call('/api/v1/publico/consumo-catalogo', CATALOG_REQUEST, {'X-Request-Id': 'entrega2-catalogo'})
         self.assertEqual(status, 200, result)
         validate(result, DOC['components']['schemas']['ResultadoEstimacion'], DOC)
         self.assertEqual(result['totalPeriodoKWh'], Decimal('47.4'))
 
     def test_guest_requires_no_account(self):
+        """/**
+         * Comprueba guest requires no account.
+         *
+         * @method test_guest_requires_no_account
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         status, result, _ = call('/api/v1/publico/consumo', EXAMPLE)
         self.assertEqual(status, 200, result)
         self.assertNotIn('evaluacionId', result)
         self.assertEqual(result['totalPeriodoKWh'], Decimal('47.4'))
 
     def test_authentication(self):
+        """/**
+         * Comprueba authentication.
+         *
+         * @method test_authentication
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         for headers, expected in [({}, 401), ({'X-API-Key': 'incorrecta'}, 401), ({'X-API-Key': os.environ['M2M_DENIED_KEY']}, 403)]:
             status, result, _ = call('/api/v1/estimaciones-consumo', EXAMPLE, headers)
             self.assertEqual(status, expected, result)
             validate(result, DOC['components']['schemas']['Error'], DOC)
 
     def test_catalog_read_search_pagination(self):
+        """/**
+         * Comprueba catalog read search pagination.
+         *
+         * @method test_catalog_read_search_pagination
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         status, result, _ = call('/api/v1/publico/electrodomesticos?tamano=2&pagina=1&orden=nombre')
         self.assertEqual(status, 200, result)
         self.assertEqual(len(result['items']), 2)
@@ -80,6 +140,13 @@ class RealServices(unittest.TestCase):
         self.assertEqual(call('/api/v1/publico/electrodomesticos?tamano=101')[0], 422)
 
     def test_invalid_days_and_client_power(self):
+        """/**
+         * Comprueba invalid days and client power.
+         *
+         * @method test_invalid_days_and_client_power
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         body = json.loads(json.dumps(EXAMPLE))
         body['equipos'][0]['diasUso'] = 31
         status, result, _ = call('/api/v1/publico/consumo', body)
@@ -90,11 +157,25 @@ class RealServices(unittest.TestCase):
         self.assertEqual(call('/api/v1/publico/consumo-catalogo', body)[0], 422)
 
     def test_json_and_size_limits(self):
+        """/**
+         * Comprueba json and size limits.
+         *
+         * @method test_json_and_size_limits
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         self.assertEqual(call('/api/v1/publico/consumo', raw=b'{')[0], 400)
         self.assertEqual(call('/api/v1/publico/consumo', EXAMPLE, {'Content-Type': 'text/plain'})[0], 415)
         self.assertEqual(call('/api/v1/publico/consumo', raw=b' ' * 262145)[0], 413)
 
     def test_private_routes_and_health(self):
+        """/**
+         * Comprueba private routes and health.
+         *
+         * @method test_private_routes_and_health
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         self.assertEqual(call('/api/v1/configuraciones')[0], 401)
         self.assertEqual(call('/health/ready')[0], 401)
         status, result, _ = call('/health/ready', headers={'Authorization': 'Bearer ' + os.environ['HEALTHCHECK_TOKEN']})
@@ -102,6 +183,13 @@ class RealServices(unittest.TestCase):
         self.assertEqual(result['estado'], 'disponible')
 
     def test_web_and_published_contract(self):
+        """/**
+         * Comprueba web and published contract.
+         *
+         * @method test_web_and_published_contract
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         status, result, _ = call('/')
         self.assertEqual(status, 200)
         self.assertIn('<html lang="es">', result)

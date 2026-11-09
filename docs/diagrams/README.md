@@ -1,13 +1,17 @@
-# Diagramas del proyecto
+# Diagramas vigentes
 
-- [contenedores-entrega2.mmd](contenedores-entrega2.mmd): flujo operativo actual, con gateway, Consumo, Electrodomésticos, MySQL y Jaeger. El mismo diagrama se incluye como bloque Mermaid en [arquitectura](../ARCHITECTURE.md).
-- [contexto.mmd](contexto.mmd) y [contenedores.mmd](contenedores.mmd): contexto y arquitectura completa prevista para la final, con sus PNG de entrega 1.
-- [contenedores-actuales.mmd](contenedores-actuales.mmd) y su PNG: fotografía histórica de los esqueletos y mock de entrega 1, conservada para reproducir [la arquitectura anterior](../ARCHITECTURE-ENTREGA-1.md).
+Actualización 2026-11-09. Las fuentes Mermaid y PNG representan el mismo alcance. Las vistas Entrega1 y Entrega2 permanecen históricas; no describen el entorno final.
 
-No se presenta un PNG histórico como representación de los componentes actuales. El Mermaid E2 es editable y se renderiza directamente en visores compatibles con Markdown/GitHub. Para exportarlo opcionalmente con Mermaid CLI:
+| Vista | Fuente | Imagen |
+|---|---|---|
+| Contexto y actores | [contexto.mmd](contexto.mmd) | [contexto.png](contexto.png) |
+| Contenedores del sistema completo | [contenedores-actuales.mmd](contenedores-actuales.mmd) | [contenedores-actuales.png](contenedores-actuales.png) |
+| Alias de arquitectura general | [contenedores.mmd](contenedores.mmd) | [contenedores.png](contenedores.png) |
+| Evaluación durable y estados de publicación | [evaluacion-durable.mmd](evaluacion-durable.mmd) | [evaluacion-durable.png](evaluacion-durable.png) |
+| Unidad cloud gratuita preparada | [cloud-gratuito.mmd](cloud-gratuito.mmd) | [cloud-gratuito.png](cloud-gratuito.png) |
 
-```sh
-mmdc -i docs/diagrams/contenedores-entrega2.mmd -o docs/diagrams/contenedores-entrega2.png -b white -s 2 -c docs/diagrams/mermaid.config.json
-```
+La vista cloud no acredita publicación ni despliegue completo. Las bases son privadas por servicio. El vendedor es simulado y las llamadas salen de Solar directamente, sin atravesar gateway ni frontend. Los dos workers compiten por la misma cola; no procesan obligatoriamente cada evento ambos. El ACK ocurre después de persistir.
 
-La generación de documentación es independiente del arranque; Mermaid no es una dependencia de los servicios. La distribución actual se prueba además con la traza real de ocho spans incluida en docs/evidence/entrega2. Fuente: [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli).
+Regenerar con Mermaid CLI12.2.0: `mmdc -i docs/diagrams/contenedores-actuales.mmd -o docs/diagrams/contenedores-actuales.png -b white -s 2 -c docs/diagrams/mermaid.config.json`. Repetir para las demás fuentes. Las imágenes históricas no se regeneran con el modelo actual.
+
+Publicación posterior de M2M por túnel: [fuente](publicacion-cloudflare.mmd), [imagen](publicacion-cloudflare.png) y [condiciones operativas](../PUBLICACION-CLINICA.md). La vista cloud-gratuito anterior corresponde a la alternativa Render preparada.

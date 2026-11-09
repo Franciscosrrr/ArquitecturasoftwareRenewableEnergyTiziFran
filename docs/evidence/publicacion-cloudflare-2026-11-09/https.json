@@ -1,0 +1,63 @@
+{
+  "fechaUTC": "2026-11-09T06:17:01.554423+00:00",
+  "baseUrl": "https://emails-bingo-preference-packets.trycloudflare.com",
+  "endpoint": "https://emails-bingo-preference-packets.trycloudflare.com/api/v1/estimaciones-consumo",
+  "openapi": "https://emails-bingo-preference-packets.trycloudflare.com/openapi.json",
+  "tipo": "Cloudflare Quick Tunnel temporal desde PC autorizada",
+  "tlsVerificado": true,
+  "contrato": "1.0.1",
+  "sha256OpenapiLF": "3876121082fa76cd7ca6b25defbc7edc45ea0a4a89b3ee851fcf681e446ffda3",
+  "casos": [
+    {
+      "caso": "sin_clave",
+      "http": 401,
+      "milisegundos": 77.787
+    },
+    {
+      "caso": "sin_permiso",
+      "http": 403,
+      "milisegundos": 118.254
+    },
+    {
+      "ruta": "/api/v1/lugares",
+      "http": 401,
+      "sinAccesoPublico": true
+    },
+    {
+      "ruta": "/api/v1/admin/usuarios",
+      "http": 401,
+      "sinAccesoPublico": true
+    },
+    {
+      "ruta": "/health/ready",
+      "http": 401,
+      "sinAccesoPublico": true
+    },
+    {
+      "ruta": "/metrics",
+      "http": 401,
+      "sinAccesoPublico": true
+    },
+    {
+      "ruta": "/privado-openapi.json",
+      "http": 404,
+      "sinAccesoPublico": true
+    }
+  ],
+  "estimaciones200": 9,
+  "totalCardiologiaKWh": 0.381,
+  "latenciasHTTPSms": [
+    85.708,
+    95.533,
+    89.166,
+    92.974,
+    154.631,
+    146.768,
+    91.52,
+    73.697
+  ],
+  "p95ms": 154.631,
+  "dentroDe1200ms": true,
+  "dentroDe5000ms": true,
+  "limites": "Muestra desde esta conexión hacia el edge público; no prueba todavía desde el backend de Clínica, uptime sostenido ni URL permanente. La PC/Docker/red deben seguir activos. No se garantiza 1.2/5 s para todas las redes."
+}

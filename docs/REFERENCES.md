@@ -42,3 +42,11 @@ La herramienta mock utiliza la [biblioteca HTTP estándar de Python](https://doc
 - Playwright: https://playwright.dev/docs/docker.
 
 Las versiones fijadas y los resultados de pruebas constan en los archivos de dependencias y las evidencias del repositorio. No se atribuyen a estas fuentes mediciones realizadas en el equipo local.
+
+## Revisión completa de prácticos - 2026-11-08
+
+Fuente nueva suministrada por el equipo: carpeta Practico, archivos Clase 1.pdf a Clase 9.pdf; 177 páginas en total. Se leyeron los nueve archivos. Clases 1-8: render de 159 páginas rasterizadas, orientación corregida y OCR español local; Clase 9: texto extraído de sus 18 páginas. Se inspeccionaron también páginas gráficas/de poco texto. No se ejecutaron los comandos de demostración del material ni se copiaron sus credenciales.
+
+La numeración física de estos PDF no se equipara a los títulos internos ni al inventario histórico de Clases.zip de las revisiones anteriores. El detalle por archivo/página, aplicación y desviación justificada está en [CLASES-PRACTICAS.md](CLASES-PRACTICAS.md). Los hashes y conteos están en [inventario de PDF](evidence/integraciones-2026-11-08/pdf-inventory.json).
+
+Se conservaron las elecciones previas. D1-D13 y los tres antecedentes complementarios explicitan contexto y motivo; D2/D3/D5 consolidan sus variantes E2 sin perder historia. Fuentes técnicas primarias usadas para contrastar las diferencias: [transacciones Go](https://go.dev/doc/database/execute-transactions), [compatibilidad Valkey](https://valkey.io/topics/migration/), [filtros Meilisearch](https://www.meilisearch.com/docs/capabilities/filtering_sorting_faceting/getting_started) y [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli).

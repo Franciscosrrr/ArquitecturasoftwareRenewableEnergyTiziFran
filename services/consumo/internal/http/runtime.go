@@ -11,14 +11,25 @@ import (
 	"mime"
 	"net/http"
 	"renewable.local/consumo/internal/application"
+	"renewable.local/consumo/internal/private"
 	"renewable.local/platform"
 )
 
 type Config struct {
 	APIKey, DeniedKey string
 	Catalog           application.Resolver
+	Private           *private.Service
+	InternalToken     string
 }
 
+/**
+ * Conecta rutas HTTP, salud y dependencias de negocio del servicio.
+ *
+ * @method NewHandler
+ * @param {string} token - Credencial técnica del servicio.
+ * @param {...Config} configs - Valor de configs requerido por la operación.
+ * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ */
 func NewHandler(token string, configs ...Config) http.Handler {
 	r := platform.Router()
 	var cfg Config
@@ -26,8 +37,14 @@ func NewHandler(token string, configs ...Config) http.Handler {
 	if len(configs) > 0 {
 		cfg = configs[0]
 		ready = func(context.Context) error { return nil }
+		if cfg.Private != nil {
+			ready = cfg.Private.Store.DB.PingContext
+		}
 	}
 	platform.Health(r, token, ready)
+	if cfg.Private != nil {
+		cfg.Private.Register(r, cfg.InternalToken)
+	}
 	limiter := platform.NewLimiter()
 	handler := func(c *gin.Context) {
 		if c.FullPath() == "/api/v1/estimaciones-consumo" {

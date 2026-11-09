@@ -1,0 +1,82 @@
+{
+  "targets": [
+    {
+      "servicio": "catalogo",
+      "instancia": "electrodomesticos:8080",
+      "estado": "up"
+    },
+    {
+      "servicio": "consumo",
+      "instancia": "consumo:8080",
+      "estado": "up"
+    },
+    {
+      "servicio": "gateway",
+      "instancia": "gateway:8080",
+      "estado": "up"
+    },
+    {
+      "servicio": "solar",
+      "instancia": "solar:8080",
+      "estado": "up"
+    },
+    {
+      "servicio": "solar",
+      "instancia": "solar-2:8080",
+      "estado": "up"
+    },
+    {
+      "servicio": "usuarios",
+      "instancia": "usuarios:8080",
+      "estado": "up"
+    }
+  ],
+  "dashboard": {
+    "uid": "renewable-final",
+    "paneles": 9
+  },
+  "datasources": {
+    "prometheus": {
+      "details": {
+        "application": "Prometheus",
+        "features": {
+          "rulerApiEnabled": false
+        }
+      },
+      "message": "Successfully queried the Prometheus API.",
+      "status": "OK"
+    },
+    "loki": {
+      "message": "Data source successfully connected.",
+      "status": "OK"
+    },
+    "jaeger": {
+      "message": "Data source is working",
+      "status": "OK"
+    }
+  },
+  "logsDeEstudioEnLoki": 10,
+  "trazasEndToEnd": [
+    {
+      "traceId": "d66cf2ee308e5f27791e9dc34c663c43",
+      "servicios": [
+        "consumo",
+        "electrodomesticos",
+        "gateway",
+        "proveedor-paneles-sim",
+        "solar",
+        "usuarios"
+      ],
+      "operaciones": [
+        "HTTP POST",
+        "consumo",
+        "electrodomesticos",
+        "gateway",
+        "mysql.catalogo.resolver",
+        "proveedor-paneles-sim",
+        "solar.procesar-evaluacion",
+        "usuarios"
+      ]
+    }
+  ]
+}

@@ -9,7 +9,14 @@ import (
 )
 
 // NewHandler recibe una credencial operativa independiente de las sesiones de usuario.
-func NewHandler(healthcheckToken string) http.Handler {
+/**
+ * Conserva la salud mínima del servicio sin configuración de negocio.
+ *
+ * @method legacyHandler
+ * @param {string} healthcheckToken - Valor de healthcheckToken requerido por la operación.
+ * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ */
+func legacyHandler(healthcheckToken string) http.Handler {
 	health := http.NewServeMux()
 	health.HandleFunc("GET /health/live", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"estado": "proceso-iniciado"})

@@ -1,0 +1,140 @@
+ Image renewable-energy-entrega2-electrodomesticos Building 
+ Image renewable-energy-entrega2-verificar-go Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.38kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from backend.Dockerfile
+#2 transferring dockerfile: 2.00kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/golang:1.26.1-alpine
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 186B done
+#4 DONE 0.0s
+
+#5 [source  1/13] FROM docker.io/library/golang:1.26.1-alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039
+#5 resolve docker.io/library/golang:1.26.1-alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 12.17kB 0.0s done
+#6 DONE 0.0s
+
+#7 [source  5/13] COPY services/electrodomesticos/go.mod services/electrodomesticos/go.sum ./services/electrodomesticos/
+#7 CACHED
+
+#8 [source 11/13] COPY services ./services
+#8 CACHED
+
+#9 [source  2/13] WORKDIR /src
+#9 CACHED
+
+#10 [source  3/13] COPY platform/go.mod platform/go.sum ./platform/
+#10 CACHED
+
+#11 [source 10/13] COPY platform ./platform
+#11 CACHED
+
+#12 [source  8/13] COPY gateway/go.mod gateway/go.sum ./gateway/
+#12 CACHED
+
+#13 [source  9/13] RUN cd platform && go mod download && cd ../services/consumo && go mod download && cd ../electrodomesticos && go mod download && cd ../solar && go mod download && cd ../usuarios && go mod download && cd ../../gateway && go mod download
+#13 CACHED
+
+#14 [source  4/13] COPY services/consumo/go.mod services/consumo/go.sum ./services/consumo/
+#14 CACHED
+
+#15 [source  6/13] COPY services/solar/go.mod services/solar/go.sum ./services/solar/
+#15 CACHED
+
+#16 [source 12/13] COPY gateway ./gateway
+#16 CACHED
+
+#17 [source  7/13] COPY services/usuarios/go.mod services/usuarios/go.sum ./services/usuarios/
+#17 CACHED
+
+#18 [source 13/13] COPY docs/contracts ./docs/contracts
+#18 CACHED
+
+#19 [test 1/1] RUN apk add --no-cache gcc musl-dev
+#19 1.524 ( 1/14) Upgrading musl (1.2.5-r21 -> 1.2.5-r24)
+#19 1.654 ( 2/14) Installing libgcc (15.2.0-r2)
+#19 1.714 ( 3/14) Installing jansson (2.14.1-r0)
+#19 1.744 ( 4/14) Installing libstdc++ (15.2.0-r2)
+#19 1.962 ( 5/14) Installing zstd-libs (1.5.7-r2)
+#19 2.064 ( 6/14) Installing binutils (2.45.1-r0)
+#19 2.955 ( 7/14) Installing libgomp (15.2.0-r2)
+#19 3.113 ( 8/14) Installing libatomic (15.2.0-r2)
+#19 3.238 ( 9/14) Installing gmp (6.3.0-r4)
+#19 3.346 (10/14) Installing isl26 (0.26-r1)
+#19 3.641 (11/14) Installing mpfr4 (4.2.2-r0)
+#19 3.785 (12/14) Installing mpc1 (1.3.1-r1)
+#19 3.815 (13/14) Installing gcc (15.2.0-r2)
+#19 19.28 (14/14) Installing musl-dev (1.2.5-r24)
+#19 20.02 Executing busybox-1.37.0-r30.trigger
+#19 20.03 OK: 198.1 MiB in 30 packages
+#19 DONE 20.1s
+
+#20 exporting to image
+#20 exporting layers
+#20 exporting layers 5.6s done
+#20 exporting manifest sha256:a9bc4c44e8ade5aaa60f868f6dc99b18d286d3e0fec75c3792450d48efdd55a5 0.0s done
+#20 exporting config sha256:569a48749ff1ab4274704a7be5c8a6d830cbce560c65f60be84f9e318053813e 0.0s done
+#20 exporting attestation manifest sha256:cc79f95245f296ab35fea28f3bac390ecb032f7bdf0e52f111bbdbcc4b2f7ec0 0.0s done
+#20 exporting manifest list sha256:7fa5cad1fe0ba150dc21aa85fa92eb5153ee8668725172532f311668c85ea207 done
+#20 naming to docker.io/library/renewable-energy-entrega2-verificar-go:latest done
+#20 unpacking to docker.io/library/renewable-energy-entrega2-verificar-go:latest
+#20 unpacking to docker.io/library/renewable-energy-entrega2-verificar-go:latest 1.0s done
+#20 DONE 6.7s
+
+#21 resolving provenance for metadata file
+#21 DONE 0.0s
+ Image renewable-energy-entrega2-verificar-go Built 
+ Volume renewable-energy-entrega2_verification-cache Creating 
+ Volume renewable-energy-entrega2_verification-cache Created 
+ Container renewable-energy-entrega2-verificar-go-run-d8745df95b68 Creating 
+ Container renewable-energy-entrega2-verificar-go-run-d8745df95b68 Created 
+ok  	renewable.local/platform	0.005s	coverage: 4.4% of statements
+	renewable.local/platform/cmd/healthcheck		coverage: 0.0% of statements
+	renewable.local/gateway/cmd/server		coverage: 0.0% of statements
+ok  	renewable.local/gateway/internal/balancing	0.008s	coverage: 72.1% of statements
+ok  	renewable.local/gateway/internal/http	0.009s	coverage: 5.9% of statements
+?   	renewable.local/gateway/internal/routing	[no test files]
+?   	renewable.local/gateway/internal/security	[no test files]
+	renewable.local/usuarios/cmd/server		coverage: 0.0% of statements
+?   	renewable.local/usuarios/internal/application	[no test files]
+ok  	renewable.local/usuarios/internal/http	0.038s	coverage: 17.9% of statements
+ok  	renewable.local/usuarios/internal/identity	0.111s	coverage: 14.8% of statements
+?   	renewable.local/usuarios/internal/integration	[no test files]
+?   	renewable.local/usuarios/internal/repository	[no test files]
+	renewable.local/electrodomesticos/cmd/server		coverage: 0.0% of statements
+?   	renewable.local/electrodomesticos/internal/application	[no test files]
+	renewable.local/electrodomesticos/internal/features		coverage: 0.0% of statements
+ok  	renewable.local/electrodomesticos/internal/http	0.010s	coverage: 14.9% of statements
+?   	renewable.local/electrodomesticos/internal/integration	[no test files]
+ok  	renewable.local/electrodomesticos/internal/repository	0.024s	coverage: 79.6% of statements
+	renewable.local/consumo/cmd/server		coverage: 0.0% of statements
+ok  	renewable.local/consumo/internal/application	0.004s	coverage: 93.6% of statements
+ok  	renewable.local/consumo/internal/http	0.014s	coverage: 63.6% of statements
+ok  	renewable.local/consumo/internal/integration	0.021s	coverage: 94.6% of statements
+	renewable.local/consumo/internal/private		coverage: 0.0% of statements
+?   	renewable.local/consumo/internal/repository	[no test files]
+	renewable.local/solar/cmd/server		coverage: 0.0% of statements
+	renewable.local/solar/cmd/supplier		coverage: 0.0% of statements
+ok  	renewable.local/solar/internal/adapters/external	0.168s	coverage: 81.0% of statements
+ok  	renewable.local/solar/internal/adapters/http	0.038s	coverage: 18.5% of statements
+?   	renewable.local/solar/internal/adapters/messaging	[no test files]
+	renewable.local/solar/internal/adapters/persistence		coverage: 0.0% of statements
+	renewable.local/solar/internal/adapters/simulator		coverage: 0.0% of statements
+ok  	renewable.local/solar/internal/application	0.002s	coverage: 50.0% of statements
+ok  	renewable.local/solar/internal/domain	0.017s	coverage: 89.4% of statements
+?   	renewable.local/solar/internal/ports	[no test files]
+ok  	renewable.local/solar/internal/worker	0.007s	coverage: 25.9% of statements
+ok  	renewable.local/platform	1.016s
+?   	renewable.local/platform/cmd/healthcheck	[no test files]
+ok  	renewable.local/gateway/internal/balancing	1.056s
+ok  	renewable.local/consumo/internal/integration	1.021s
+ok  	renewable.local/solar/internal/adapters/external	1.197s

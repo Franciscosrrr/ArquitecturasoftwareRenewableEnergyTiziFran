@@ -17,9 +17,26 @@ import (
 	"time"
 )
 
-type Config struct{ ConsumoURL, CatalogURL, WebDir, DocsDir string }
+/**
+ * Define destinos internos y directorios públicos del gateway.
+ */
+type Config struct {
+	ConsumoURL, CatalogURL, SolarURL, SolarURLs, IdentityURL, InternalToken, WebDir, DocsDir string
+	CapabilityOnly                                                                           bool
+}
 
+/**
+ * Publica rutas explícitas, contratos y proxies con presupuestos por operación.
+ *
+ * @method NewHandler
+ * @param {string} token - Secreto técnico de salud.
+ * @param {...Config} configs - Destinos internos y rutas de archivos.
+ * @returns {http.Handler} Gateway instrumentado con control de tráfico.
+ */
 func NewHandler(token string, configs ...Config) http.Handler {
+	if len(configs) > 0 {
+		return fullHandler(token, configs[0])
+	}
 	r := platform.Router()
 	var cfg Config
 	var ready func(context.Context) error
@@ -67,7 +84,11 @@ func NewHandler(token string, configs ...Config) http.Handler {
 				platform.Error(c, 429, "LIMITE_DE_TRAFICO", "Se alcanzó el límite de solicitudes.", nil)
 				return
 			}
-			ctx, cancel := context.WithTimeout(c.Request.Context(), 8*time.Second)
+			budget := 8 * time.Second
+			if c.FullPath() == "/api/v1/estimaciones-consumo" {
+				budget = 4500 * time.Millisecond
+			}
+			ctx, cancel := context.WithTimeout(c.Request.Context(), budget)
 			defer cancel()
 			p.ServeHTTP(c.Writer, c.Request.WithContext(ctx))
 		}
@@ -76,6 +97,10 @@ func NewHandler(token string, configs ...Config) http.Handler {
 		for _, path := range []string{"/api/v1/publico/consumo", "/api/v1/publico/consumo-catalogo", "/api/v1/estimaciones-consumo"} {
 			r.POST(path, proxy(cfg.ConsumoURL))
 		}
+		if cfg.SolarURL != "" {
+			r.POST("/api/v1/publico/solar/cotizaciones", proxy(cfg.SolarURL))
+		}
+		r.GET("/solar-openapi.json", func(c *gin.Context) { c.File(filepath.Join(cfg.DocsDir, "solar-v1", "openapi.json")) })
 		r.GET("/api/v1/publico/electrodomesticos", proxy(cfg.CatalogURL))
 		r.GET("/api/v1/publico/electrodomesticos/:id", proxy(cfg.CatalogURL))
 		r.GET("/openapi.json", func(c *gin.Context) { c.File(filepath.Join(cfg.DocsDir, "v1", "openapi.json")) })

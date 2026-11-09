@@ -1,0 +1,11 @@
+---
+title: Unidad cloud gratuita preparada - todavía sin URL publicada
+---
+flowchart LR
+ C["Portal Paciente Clínica"] -->|"HTTPS / X-API-Key"| TLS["Render TLS administrado"]
+ subgraph FREE["Una instancia Render Free · capacidad M2M"]
+ TLS --> G["Gateway Go<br/>0.0.0.0:PORT"]
+ G -->|"HTTP loopback"| E["Consumo Go<br/>127.0.0.1:8081<br/>Cálculo puro"]
+ T["tini + supervisor<br/>Cierra la unidad si cae un proceso"]
+ end
+ N["No publica la aplicación completa ni datos privados.<br/>Cold start Free puede exceder 1.2 s y 5 s.<br/>Cuenta, despliegue y verificación externa pendientes."]

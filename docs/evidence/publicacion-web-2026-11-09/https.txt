@@ -1,0 +1,3 @@
+ Container renewable-energy-entrega2-verificar-real-run-f69a7242000f Creating 
+ Container renewable-energy-entrega2-verificar-real-run-f69a7242000f Created 
+{"completado": true, "baseProbada": "https://conditional-wan-server-learning.trycloudflare.com", "httpsPublicoProbado": true, "paginaYJavaScriptIdenticos": true, "htmlSHA256": "3782ee9da98f4106fac231760b2c5627e18ca5f1988f265e97593f4dcfa37f8a", "busquedaSolarYCalculoInvitado": true, "cuentaRegistroLoginRefreshLogout": true, "cookieSecureSoloEntradaWeb": true, "otroOrigenRechazado": true, "rutasTecnicasBloqueadas": true, "privadosSinSesionDenegados": true, "datosCompartidosConAccesoLocal": true, "lugarSinteticoEliminado": true}

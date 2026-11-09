@@ -1,0 +1,13 @@
+
+> renewable-energy-calculadora@2.0.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 24 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.41 kB │ gzip:  0.29 kB
+dist/assets/index-uM0_tBV6.css    4.70 kB │ gzip:  1.63 kB
+dist/assets/index-BOhf-aa7.js   202.25 kB │ gzip: 63.67 kB
+✓ built in 660ms

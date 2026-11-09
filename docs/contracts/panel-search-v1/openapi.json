@@ -1,0 +1,351 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Renewable Energy - búsqueda de paneles solares",
+    "version": "1.0.0",
+    "description": "Capacidad pública de Solar. Mongo es canónico y Meilisearch un índice derivado. No modifica el contrato M2M 1.0.1 de Clínica ni la lectura legada /publico/paneles."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "paths": {
+    "/api/v1/publico/paneles/busqueda": {
+      "get": {
+        "operationId": "buscarPanelesSolares",
+        "summary": "Buscar modelos solares con filtros y paginación",
+        "description": "Solo fichas activas. Requiere moneda para comparar precios; precios desconocidos se excluyen al filtrar u ordenar por precio. Ante fallo del motor se filtra sobre Mongo. Sin autenticación. Se omiten filtros vacíos.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Palabras del nombre o descripción; todas deben coincidir.",
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "moneda",
+            "in": "query",
+            "required": false,
+            "description": "Obligatoria para precioMax u orden por precio; no se mezclan monedas.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ARS",
+                "USD"
+              ]
+            }
+          },
+          {
+            "name": "orden",
+            "in": "query",
+            "required": false,
+            "description": "Orden estable con desempate por identificador.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "nombre",
+                "potencia",
+                "-potencia",
+                "precio"
+              ],
+              "default": "nombre"
+            }
+          },
+          {
+            "name": "potenciaMin",
+            "in": "query",
+            "required": false,
+            "description": "Potencia mínima por panel, W.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
+            }
+          },
+          {
+            "name": "potenciaMax",
+            "in": "query",
+            "required": false,
+            "description": "Potencia máxima por panel, W; debe ser >= mínima.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
+            }
+          },
+          {
+            "name": "superficieMax",
+            "in": "query",
+            "required": false,
+            "description": "Superficie máxima por panel en m², no de toda la instalación.",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "multipleOf": 0.001
+            }
+          },
+          {
+            "name": "precioMax",
+            "in": "query",
+            "required": false,
+            "description": "Precio unitario en unidades de la moneda, no centavos; excluye precio desconocido (0).",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10000000,
+              "multipleOf": 0.01
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "description": "Página solicitada.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000,
+              "default": 1
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "description": "Modelos por página.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 6
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de modelos activos.",
+            "headers": {
+              "X-Panel-Source": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "meilisearch",
+                    "mongo-degradado"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaPaneles"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error controlado. Un lugar con consumos guardados devuelve 409 LUGAR_CON_CONSUMOS.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error controlado. Un lugar con consumos guardados devuelve 409 LUGAR_CON_CONSUMOS.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Cuota pública excedida. Esperar Retry-After.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string",
+                  "example": "1"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Panel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "nombre": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "fuente": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "potenciaW": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2000
+          },
+          "superficieEfectivaMilliM2": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "precioCentavos": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "moneda": {
+            "type": "string",
+            "enum": [
+              "ARS",
+              "USD"
+            ]
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "nombre",
+          "fuente",
+          "potenciaW",
+          "superficieEfectivaMilliM2",
+          "precioCentavos",
+          "moneda",
+          "activo"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "enum": [
+              "FORMATO_INVALIDO",
+              "NO_AUTENTICADO",
+              "SIN_PERMISO",
+              "CUERPO_DEMASIADO_GRANDE",
+              "TIPO_CONTENIDO_NO_SOPORTADO",
+              "VALIDACION",
+              "LIMITE_DE_TRAFICO",
+              "ERROR_INTERNO",
+              "SERVICIO_NO_DISPONIBLE",
+              "CONFLICTO",
+              "NO_ENCONTRADO",
+              "LUGAR_CON_CONSUMOS"
+            ]
+          },
+          "mensaje": {
+            "type": "string",
+            "minLength": 1
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "detalles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetalleError"
+            }
+          }
+        },
+        "required": [
+          "codigo",
+          "mensaje",
+          "traceId",
+          "detalles"
+        ]
+      },
+      "DetalleError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "campo": {
+            "type": "string",
+            "minLength": 1
+          },
+          "motivo": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "campo",
+          "motivo"
+        ]
+      },
+      "PaginaPaneles": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "total",
+          "pagina",
+          "tamano"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Panel"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pagina": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tamano": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        }
+      }
+    }
+  }
+}

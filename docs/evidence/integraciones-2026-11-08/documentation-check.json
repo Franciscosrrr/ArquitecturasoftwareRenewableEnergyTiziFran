@@ -1,0 +1,16 @@
+{
+  "canonical_adrs": 13,
+  "duplicate_numbers": [],
+  "all_have_context_and_why": true,
+  "merged_history_verified": [
+    "ADR-002.md",
+    "ADR-002-E2.md",
+    "ADR-003.md",
+    "ADR-003-E2.md",
+    "ADR-005.md",
+    "ADR-005-E2.md"
+  ],
+  "broken_local_links": [],
+  "m2m_openapi_unchanged": true,
+  "historic_diagram_sources_and_png_preserved": true
+}

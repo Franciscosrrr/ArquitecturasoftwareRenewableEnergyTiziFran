@@ -31,7 +31,7 @@ test('validación del formulario, quitar equipo y acceso sin sesión',async({pag
  await page.getByLabel('Agregar un equipo').selectOption('iluminacion');
  await page.getByLabel('Cantidad',{exact:true}).fill('0');
  await page.getByRole('button',{name:'Calcular consumo ↗'}).click();
- await expect(page.locator('input:invalid')).toHaveCount(1);
+ await expect(page.locator('form.workspace input:invalid')).toHaveCount(1);
  await expect(page.locator('.results')).toHaveCount(0);
  await page.getByRole('button',{name:'Quitar Lámpara LED de referencia'}).click();
  await expect(page.getByRole('button',{name:'Calcular consumo ↗'})).toBeDisabled();

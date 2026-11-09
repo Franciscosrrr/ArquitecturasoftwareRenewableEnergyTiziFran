@@ -14,6 +14,14 @@ ROOT=Path(__file__).resolve().parents[1]
 BASE=os.getenv('BASE_URL','http://127.0.0.1:8080')
 BODY=(ROOT/'docs/contracts/v1/examples/solicitud-valida.json').read_bytes()
 def one(_=None):
+    """/**
+     * Mide una solicitud completa incluyendo lectura de su respuesta.
+     *
+     * @method one
+     * @param {Any} _ - Parámetro _ de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     req=Request(BASE+'/api/v1/publico/consumo',data=BODY,headers={'Content-Type':'application/json'})
     start=time.perf_counter()
     try:
@@ -23,6 +31,14 @@ def one(_=None):
         err.read();status=err.code
     return {'status':status,'ms':round((time.perf_counter()-start)*1000,3)}
 def summary(values):
+    """/**
+     * Resume latencias, throughput, estados y origen de resultados.
+     *
+     * @method summary
+     * @param {Any} values - Parámetro values de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     latencies=sorted(v['ms'] for v in values)
     return {'requests':len(values),'status':dict(Counter(str(v['status']) for v in values)), 'p50_ms':statistics.median(latencies),'p95_ms':latencies[max(0,int(len(latencies)*.95)-1)],'samples':values}
 if __name__=='__main__':

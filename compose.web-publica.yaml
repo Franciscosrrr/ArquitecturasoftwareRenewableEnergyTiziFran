@@ -1,0 +1,44 @@
+name: renewable-web-publica
+services:
+  web-edge:
+    image: nginx@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+    entrypoint: ["nginx"]
+    command: ["-c", "/etc/nginx/web-publica.conf", "-g", "daemon off;"]
+    user: "101:101"
+    restart: unless-stopped
+    mem_limit: 32m
+    memswap_limit: 32m
+    cpus: "0.5"
+    read_only: true
+    tmpfs: ["/tmp:size=8m,uid=101,gid=101,mode=0700"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    volumes: ["./infra/web-publica.conf:/etc/nginx/web-publica.conf:ro"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "2", "-O", "/dev/null", "http://127.0.0.1:8080/edge-health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks: [web, aplicacion]
+  tunnel:
+    image: cloudflare/cloudflared@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    command: ["tunnel", "--no-autoupdate", "--protocol", "http2", "--url", "http://web-edge:8080"]
+    restart: unless-stopped
+    mem_limit: 64m
+    memswap_limit: 64m
+    cpus: "0.5"
+    environment:
+      GOMAXPROCS: "1"
+      GOMEMLIMIT: 40MiB
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      web-edge: {condition: service_healthy}
+    networks: [web]
+networks:
+  web: {}
+  aplicacion:
+    external: true
+    name: renewable-energy-entrega2_backend
