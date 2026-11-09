@@ -1,7 +1,9 @@
-# Despliegue de la capacidad M2M
+# Capacidad M2M desplegada en Render Free
 
-Esta rama contiene un snapshot completo de la implementación verificada para que su código y CI sean coherentes. Render construye únicamente la unidad M2M definida en infra/cloud.Dockerfile; no despliega la web completa, bases, broker ni observabilidad. main y el índice de trabajo original no se modifican por esta rama.
+API: https://renewable-consumo-v1.onrender.com/api/v1/estimaciones-consumo. OpenAPI: https://renewable-consumo-v1.onrender.com/openapi.json. Servicio Free/Oregon, 512 MiB/0.1 CPU, sin extras pagos y con despliegue automático desactivado. El código desplegado es 69850d800b4bbb0295d067b51387cd14324f25f3; su CI aprobó: https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran/actions/runs/42717335793.
 
-Configurar Web Service con runtime Docker, Dockerfile infra/cloud.Dockerfile, contexto raíz y plan Free. Cuatro secretos de entorno: HEALTHCHECK_TOKEN, INTERNAL_TOKEN, M2M_API_KEY y M2M_DENIED_KEY. Nunca publicarlos en Git, capturas ni frontend. Se conserva el contrato 1.0.1 y el cálculo Go. No reutilizar el origen de la PC como prueba de alojamiento cloud.
+Esta rama contiene el proyecto completo verificado para revisión e integración posterior en main. Render construye únicamente infra/cloud.Dockerfile: Gateway y Consumo Go supervisados, CAPABILITY_ONLY=true, sin SQL, broker, frontend ni datos privados. Esta capacidad sigue operativa con la PC apagada; la web completa continúa dependiendo de la PC y su túnel Cloudflare.
 
-Antes de presentar, verificar la URL realmente asignada y distinguir cold start de la llamada caliente. El servicio gratuito puede suspenderse por inactividad; no se promete el presupuesto del consumidor en frío. La prueba desde el backend consumidor queda a cargo de Clínica. Después del despliegue corresponde revisar la integración de los cambios completos en main y comprobar CI.
+Se conserva exactamente el contrato 1.0.1. Se verificaron HTTPS, hash, cálculos, permisos, errores, protección de rutas privadas y 429. La evidencia está en docs/evidence/render-cloud-2026-11-09/ y la operación en docs/DESPLIEGUE-GRATUITO.md. Las cuatro variables secretas se generaron para Render; no están en Git. Las claves del túnel anterior no se reutilizan.
+
+Free puede suspenderse por inactividad y exceder 1.2 s/5 s al reactivarse. El frío no fue medido; el p95 caliente fue 730.585 ms en ocho muestras. Clínica realizará su prueba desde su backend. Revisar e integrar esta rama en main y verificar la CI de esa integración; no se fusionó main.

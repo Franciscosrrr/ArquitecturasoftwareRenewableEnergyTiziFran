@@ -1,0 +1,51 @@
+{
+  "id": 42717335793,
+  "status": "completed",
+  "conclusion": "success",
+  "html_url": "https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran/actions/runs/42717335793",
+  "head_sha": "69850d800b4bbb0295d067b51387cd14324f25f3",
+  "jobs": [
+    {
+      "name": "sistema-real",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Arrancar y verificar Go, MySQL, contratos y navegador",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Conservar evidencia e2e",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Detener servicios",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

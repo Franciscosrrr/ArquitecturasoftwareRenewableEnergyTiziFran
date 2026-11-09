@@ -1,10 +1,10 @@
 # Renewable Energy — Arquitectura de Software 2026
 
-> Actualización posterior del 09/11/2026: [M2M publicado por HTTPS temporal con Cloudflare](docs/PUBLICACION-CLINICA.md). URL https://emails-bingo-preference-packets.trycloudflare.com; certificado, contrato y 200/401/403 comprobados. Requiere PC/Docker/red activos; la URL puede cambiar y no hay garantía de uptime. Los estados de preparación anteriores se conservan como antecedente.
+> Estado 09/11/2026: [API M2M en Render](https://renewable-consumo-v1.onrender.com/openapi.json), contrato 1.0.1 verificado, y [web completa por Cloudflare](https://conditional-wan-server-learning.trycloudflare.com). La API Render no depende de la PC; la web sí. [Operación, pruebas y cold start](docs/DESPLIEGUE-GRATUITO.md).
 
 Calculadora de consumo y estudios solares con acceso invitado, guardados propios y administración. Tiziano Nicolas (2407889) y Francisco Skrie (2423159), UCC. [Repositorio](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran). Grupo/comisión: pendiente de registrar.
 
-El entorno completo implementa Usuarios, Consumo, Electrodomésticos y Solar, Gateway Go, MySQL privados, MongoDB, RabbitMQ, Meilisearch, Valkey, dos réplicas Solar y observabilidad. La capacidad de Clínica mantiene OpenAPI **1.0.1** sin precio. El vendedor solar es **simulado**, autorizado por el equipo mientras falta su contrato real. La web y M2M están publicados por HTTPS mediante túneles desde la PC autorizada. El despliegue de la capacidad M2M en un servidor cloud es un paso distinto: está preparado para Render y requiere una sesión del equipo en ese proveedor. [Estado de despliegue](docs/DESPLIEGUE-GRATUITO.md).
+El entorno completo implementa Usuarios, Consumo, Electrodomésticos y Solar, Gateway Go, MySQL privados, MongoDB, RabbitMQ, Meilisearch, Valkey, dos réplicas Solar y observabilidad. La capacidad de Clínica mantiene OpenAPI **1.0.1** sin precio. El vendedor solar es **simulado**, autorizado por el equipo mientras falta su contrato real. La web y M2M están publicados por HTTPS mediante túneles desde la PC autorizada. La capacidad M2M también está desplegada en Render Free, independiente de la PC y con claves propias. [Estado de despliegue](docs/DESPLIEGUE-GRATUITO.md).
 
 ## Arranque único
 
@@ -60,7 +60,7 @@ Ejecuta Go, integración real y Chromium escritorio/móvil en secuencia. [Result
 - [Contrato M2M 1.0.1](docs/contracts/README.md), [cuenta/guardados/administración](docs/contracts/private-v1/README.md), [eventos](docs/contracts/events/v1/README.md).
 - [Despliegue M2M en Render y distinción respecto del túnel](docs/DESPLIEGUE-GRATUITO.md), [observabilidad](docs/OBSERVABILITY.md), [recursos](docs/RECURSOS-LOCALES.md).
 
-Las entregas 1/2 y sus evidencias se conservan como historia. Falta recibir y probar la API del vendedor real; la simulación no acredita esa integración entre grupos. La API M2M está publicada temporalmente por Cloudflare Quick Tunnel desde la PC autorizada; véase [publicación y continuidad](docs/PUBLICACION-CLINICA.md). Las claves dedicadas se entregaron al usuario por separado para compartirlas por privado. La PC, Docker y la red deben permanecer activos; Quick Tunnel no garantiza continuidad ni una URL fija al reiniciar. Render Free sigue preparado como alternativa y puede exceder los presupuestos de 1.2 s/5 s en frío.
+Las entregas 1/2 y sus evidencias se conservan como historia. Falta recibir y probar la API del vendedor real; la simulación no acredita esa integración entre grupos. La API M2M está publicada temporalmente por Cloudflare Quick Tunnel desde la PC autorizada; véase [publicación y continuidad](docs/PUBLICACION-CLINICA.md). Las claves dedicadas se entregaron al usuario por separado para compartirlas por privado. La PC, Docker y la red deben permanecer activos; Quick Tunnel no garantiza continuidad ni una URL fija al reiniciar. Render Free está operativo en https://renewable-consumo-v1.onrender.com y puede exceder los presupuestos de 1.2 s/5 s en frío; usar sus claves propias, entregadas por separado.
 
 ## Mejora de experiencia de cliente — 2026-11-09
 

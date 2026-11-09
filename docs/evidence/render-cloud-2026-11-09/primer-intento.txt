@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\tixin\Documents\Codex\2026-11-08\aqu-tienes-el-prompt-final-actualizado\work\tp-final\tests\cloud_publication.py", line 112, in <module>
+    evidence=verify(origin)
+             ^^^^^^^^^^^^^^
+  File "C:\Users\tixin\Documents\Codex\2026-11-08\aqu-tienes-el-prompt-final-actualizado\work\tp-final\tests\cloud_publication.py", line 93, in verify
+    assert status in (401,404),(resource,status)
+           ^^^^^^^^^^^^^^^^^^^
+AssertionError: ('/privado-openapi.json', 200)

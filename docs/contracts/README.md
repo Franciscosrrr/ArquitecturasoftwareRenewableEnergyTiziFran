@@ -1,6 +1,6 @@
 # Capacidad pública: estimación de consumo
 
-Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado vigente 2026-11-09: implementación real Go y HTTPS público temporal desde la PC, https://emails-bingo-preference-packets.trycloudflare.com; alojamiento del proceso en cloud todavía pendiente de completar. El mock histórico sigue disponible por separado.
+Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado vigente 2026-11-09: implementación real Go desplegada en Render Free, https://renewable-consumo-v1.onrender.com, con contrato congelado y credenciales propias; el túnel temporal de la PC sigue como alternativa. El mock histórico sigue disponible por separado.
 
 ## Contrato formal
 
@@ -14,7 +14,7 @@ Otro grupo envía equipos y hábitos para utilizar el consumo calculado en una c
 
 POST /api/v1/estimaciones-consumo. Content-Type: application/json. Header X-API-Key: credencial M2M que el equipo proveedor entregará por un canal privado. X-Request-Id es opcional para correlación, con hasta 64 letras, números, guion o guion bajo; no es clave de idempotencia.
 
-Sistema real local: http://localhost:8080 después de ejecutar Compose. Mock histórico opcional: http://localhost:8081 con el perfil mock; no es una URL productiva. URL HTTPS actual desde la PC: https://emails-bingo-preference-packets.trycloudflare.com. URL del futuro alojamiento cloud: todavía no verificada. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplica 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
+Sistema real local: http://localhost:8080 después de ejecutar Compose. Mock histórico opcional: http://localhost:8081 con el perfil mock; no es una URL productiva. URL HTTPS actual desde la PC: https://emails-bingo-preference-packets.trycloudflare.com. URL cloud verificada: https://renewable-consumo-v1.onrender.com; usar las claves específicas de Render. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplica 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
 
 ## Entrada
 
@@ -111,7 +111,7 @@ La API web de [cotización solar](solar-v1/openapi.json) y el [vendedor simulado
 
 El contrato compartido M2M 1.0.1 y todos sus esquemas/errores/redondeo permanecen intactos. Las operaciones con efectos de la web se formalizan por separado en [API privada 1.1.0](private-v1/README.md) y [eventos1.0.0](events/v1/README.md). La extensión [vendedor simulado por SKU](paneles-sim-v2/openapi.json)0.2.0-simulated mantiene v1 disponible; no reemplaza ningún contrato real del grupo proveedor.
 
-La [publicación HTTPS actual](../PUBLICACION-CLINICA.md) usa un túnel desde la PC; el [despliegue del proceso en cloud](../DESPLIEGUE-GRATUITO.md) permanece separado y no se declara completado sin evidencia. No se publican claves. Clínica mantiene costo/tarifa propios; no se agrega precio a su respuesta. Las decisiones de contrato no se cambian por ampliar la aplicación privada.
+La [publicación HTTPS actual](../PUBLICACION-CLINICA.md) usa un túnel desde la PC; el [proceso M2M en Render](../DESPLIEGUE-GRATUITO.md) está desplegado y verificado por separado, con nuevas claves. No se publican claves. Clínica mantiene costo/tarifa propios; no se agrega precio a su respuesta. Las decisiones de contrato no se cambian por ampliar la aplicación privada.
 
 ## Ampliación de la interfaz — 2026-11-09
 
@@ -121,3 +121,6 @@ La búsqueda pública de [paneles solares 1.0.0](panel-search-v1/openapi.json) y
 ## Responsabilidad de la prueba del consumidor — 2026-11-09
 
 Por indicación del usuario, Clínica realizará la prueba desde su propio backend. El proveedor conserva el contrato 1.0.1, ejemplos, errores, claves dedicadas y cuota pactada; no ejecuta ni afirma haber ejecutado esa validación en nombre de Clínica. Los ensayos del proveedor y su evidencia HTTPS se mantienen separados. Un futuro cambio de hostname cloud se comunicará con su estado de cold start, sin modificar campos, fórmulas ni redondeo.
+
+
+La publicación cloud Render conserva el OpenAPI 1.0.1 byte a byte normalizando finales de línea; su base URL se configura externamente en el consumidor. No se modifica servers ni otro campo del contrato congelado para cambiar el hostname. La prueba desde Clínica es responsabilidad de su grupo; la sonda del proveedor no la sustituye.

@@ -1,6 +1,6 @@
 # Arquitectura implementada
 
-Revisión 2026-11-09. El entorno completo es local, con cuatro microservicios de negocio, un gateway, dos instancias Solar y dependencias reales. [Contenedores](diagrams/contenedores-actuales.png), [contexto](diagrams/contexto.png), [flujo durable](diagrams/evaluacion-durable.png) y [unidad cloud preparada](diagrams/cloud-gratuito.png).
+Revisión 2026-11-09. El entorno completo es local, con cuatro microservicios de negocio, un gateway, dos instancias Solar y dependencias reales. [Contenedores](diagrams/contenedores-actuales.png), [contexto](diagrams/contexto.png), [flujo durable](diagrams/evaluacion-durable.png) y [unidad M2M cloud desplegada](diagrams/cloud-gratuito.png).
 
 ## Responsabilidades y datos
 
@@ -47,17 +47,17 @@ Prometheus mide rutas normalizadas, latencia, errores, caché, outbox, workers y
 
 ## Límites externos
 
-Contrato M2M 1.0.1 de Clínica permanece intacto, sin precio. Render Free queda preparado únicamente para esa capacidad sin estado; no aloja las bases durables de la aplicación completa. La capacidad ya se publicó por HTTPS mediante un túnel desde la PC, con claves dedicadas entregadas al usuario por separado. Falta completar el alojamiento del proceso en cloud, preparado para Render; un proxy TLS público no acredita ese requisito. La comprobación desde el backend de Clínica queda a cargo de ese grupo por indicación del usuario. Su cold start puede superar1.2 s/5 s. El vendedor sigue simulado por autorización del equipo, pendiente de contrato real; eso no acredita la integración entre grupos que exige el enunciado. [Despliegue](DESPLIEGUE-GRATUITO.md).
+Contrato M2M 1.0.1 de Clínica permanece intacto, sin precio. Render Free aloja esa capacidad Go sin estado; no aloja las bases durables de la aplicación completa. La capacidad ya se publicó por HTTPS mediante un túnel desde la PC, con claves dedicadas entregadas al usuario por separado. El proceso corre en https://renewable-consumo-v1.onrender.com, verificado por HTTPS y contrato; los túneles de la PC son accesos distintos. La comprobación desde el backend de Clínica queda a cargo de ese grupo por indicación del usuario. Su cold start puede superar1.2 s/5 s. El vendedor sigue simulado por autorización del equipo, pendiente de contrato real; eso no acredita la integración entre grupos que exige el enunciado. [Despliegue](DESPLIEGUE-GRATUITO.md).
 
 Las decisiones y comparaciones con todos los prácticos se conservan en [D1–D13](adr/README.md) y [matriz de clases](CLASES-PRACTICAS.md). Los resultados ejecutados se distinguen de estos límites en [verificación](VERIFICACION-FINAL.md).
 
 ## Publicación posterior mediante Cloudflare — 2026-11-09
 
-El usuario autorizó un origen en su PC. La publicación M2M usa Gateway/Consumo mediante un proyecto aislado de dos contenedores y un Quick Tunnel temporal: https://emails-bingo-preference-packets.trycloudflare.com. No utiliza las bases ni la red del sistema completo. La alternativa Render anterior sigue preparada. El contrato M2M no cambia; no se presenta el túnel como hosting de Workers ni como dirección permanente. [Operación y evidencia](PUBLICACION-CLINICA.md).
+El usuario autorizó un origen en su PC. La publicación M2M usa Gateway/Consumo mediante un proyecto aislado de dos contenedores y un Quick Tunnel temporal: https://emails-bingo-preference-packets.trycloudflare.com. No utiliza las bases ni la red del sistema completo. Render es la publicación cloud principal, con claves propias; el túnel se conserva como alternativa local. El contrato M2M no cambia; no se presenta el túnel como hosting de Workers ni como dirección permanente. [Operación y evidencia](PUBLICACION-CLINICA.md).
 
 
 ## Entrada HTTPS de la web completa — 2026-11-09
 
 La web también está publicada, con autorización explícita del usuario: https://conditional-wan-server-learning.trycloudflare.com. Otro proyecto de dos contenedores usa Nginx de 32 MiB y cloudflared de 64 MiB. Nginx marca la cookie de refresh como Secure, preserva Host/Origin y bloquea rutas técnicas; reutiliza el gateway y sus servicios/bases, sin modificar código de aplicación. El túnel web pertenece solo a su red; Nginx conecta además con la red del gateway. No monta credenciales ni abre puertos adicionales. Cuatro casos de navegador HTTPS y la sonda de sesión aprobaron. [Operación y evidencia](PUBLICACION-WEB.md).
 
-Este acceso y el M2M son independientes. Ambos dependen de PC/Docker/red y sus hostnames pueden cambiar al reiniciar. El despliegue M2M cloud se tratará como una publicación distinta y se documentará únicamente después de comprobar una URL asignada por el proveedor cloud.
+Este acceso y el M2M son independientes. Ambos dependen de PC/Docker/red y sus hostnames pueden cambiar al reiniciar. El despliegue M2M cloud ya está verificado en https://renewable-consumo-v1.onrender.com, sin cuentas ni bases privadas. [Configuración y evidencia](DESPLIEGUE-GRATUITO.md).

@@ -1,0 +1,10 @@
+{
+  "observadoUTC": "2026-11-09T23:15:01.363715+00:00",
+  "webLocal": 200,
+  "webPublica": 200,
+  "webUrl": "https://conditional-wan-server-learning.trycloudflare.com",
+  "m2mCloudflare": 200,
+  "m2mCloudflareUrl": "https://emails-bingo-preference-packets.trycloudflare.com",
+  "tunelClinicaSinReinicio": true,
+  "credencialesRenderDiferentes": true
+}

@@ -1,4 +1,10 @@
-# Publicación M2M de Clínica mediante Cloudflare Tunnel
+# Publicación M2M para Clínica
+
+## Publicación cloud principal — 2026-11-09
+
+Render Free está desplegado y verificado: POST https://renewable-consumo-v1.onrender.com/api/v1/estimaciones-consumo; [OpenAPI 1.0.1](https://renewable-consumo-v1.onrender.com/openapi.json), sin modificaciones. [Operación y pruebas](DESPLIEGUE-GRATUITO.md). Usa claves nuevas específicas, entregadas al usuario en CLINICA-CREDENCIALES-PRIVADAS.txt para compartir por privado. La instancia Free puede superar el presupuesto al reactivarse; preparar antes de la presentación. La prueba desde el backend de Clínica queda a cargo de ese grupo.
+
+## Alternativa local: Cloudflare Tunnel
 
 Estado 2026-11-09: **publicada y comprobada por HTTPS**, con un Quick Tunnel temporal desde la PC autorizada por el equipo. No se creó cuenta ni dominio ni se contrató un plan.
 
@@ -37,7 +43,7 @@ Se verificaron certificado HTTPS, hash del contrato, 9 estimaciones correctas, 4
 
 ## Entrega de credenciales
 
-El usuario recibió un archivo separado CLINICA-CREDENCIALES-PRIVADAS.txt en outputs con únicamente las dos claves que necesita Clínica. Compartirlo por privado. No versionar ni agregarlo al ZIP compartible. .runtime está ignorado por Git. Las claves del host Render, si se usa en el futuro, serían otras salvo configuración explícita.
+El usuario recibió un archivo separado CLINICA-CLOUDFLARE-CREDENCIALES-PRIVADAS.txt en outputs con únicamente las dos claves que necesita Clínica. Compartirlo por privado. No versionar ni agregarlo al ZIP compartible. .runtime está ignorado por Git. Las claves del host Render, si se usa en el futuro, serían otras salvo configuración explícita.
 
 El contrato 1.0.1, permisos, redondeo, ausencia de precio y cuota sostenida 60/min con ráfaga 10 se conservan. Render Free permanece como alternativa preparada y no se desplegó; no es obligatorio para esta publicación. El proveedor de paneles real sigue pendiente, por separado.
 

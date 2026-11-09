@@ -1,36 +1,35 @@
-# Publicación HTTPS y alternativa Render Free
+# Capacidad M2M desplegada en Render Free
 
-Estado actual 2026-11-09: la API M2M y la web tienen HTTPS mediante Cloudflare desde la PC autorizada. El enunciado pide además la capacidad propia ejecutándose en la nube: el proxy TLS no cumple por sí solo ese alojamiento. Se seleccionó Render Free para conservar la implementación Go/Docker existente. La configuración y el paquete M2M están preparados, pero el panel requiere iniciar sesión y el usuario no puede crear/acceder a su cuenta ahora. **No hay despliegue ni URL Render verificados.** [Estado comprobado](evidence/preparacion-render-2026-11-09/estado.json).
+Estado 2026-11-09: **desplegada y verificada en cloud**, [https://renewable-consumo-v1.onrender.com](https://renewable-consumo-v1.onrender.com). El proceso Go corre en Render, independiente de la PC; se distingue de los túneles que siguen sirviendo el entorno local. [Despliegue](evidence/render-cloud-2026-11-09/despliegue.json), [sonda HTTPS](evidence/render-cloud-2026-11-09/https.json), [captura del panel](evidence/render-cloud-2026-11-09/render-activo.jpg).
 
-Las publicaciones actuales de la PC siguen operativas e independientes: [M2M](PUBLICACION-CLINICA.md) y [web](PUBLICACION-WEB.md). No se reiniciaron ni se rotaron sus claves por esta preparación. La prueba desde el backend consumidor queda a cargo de Clínica.
+## Alcance y configuración
 
-## Qué se publica
+POST https://renewable-consumo-v1.onrender.com/api/v1/estimaciones-consumo. OpenAPI: [https://renewable-consumo-v1.onrender.com/openapi.json](https://renewable-consumo-v1.onrender.com/openapi.json), contrato 1.0.1 intacto. Render Web Service Docker, plan Free, Oregon, 0.1 CPU/512 MiB, despliegue manual y auto-deploy Off. No se agregaron discos, bases ni planes pagos. El commit desplegado es 69850d800b4bbb0295d067b51387cd14324f25f3, en la [rama de despliegue](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran/tree/deploy/estimaciones-consumo-20261109); main queda pendiente de revisión/integración.
 
-`render.yaml` define un único Web Service **Free** con `infra/cloud.Dockerfile`. Expone exclusivamente la capacidad M2M `/api/v1/estimaciones-consumo` y el OpenAPI congelado 1.0.1. Ejecuta Gateway y Consumo en dos procesos supervisados por tini dentro de una instancia gratuita. Consumo escucha solo en loopback. No utiliza bases efímeras como persistencia de usuarios ni simula el despliegue de la arquitectura completa.
+infra/cloud.Dockerfile ejecuta Gateway y Consumo supervisados por tini en una instancia. Consumo escucha en loopback y Gateway en PORT; CAPABILITY_ONLY=true excluye cuentas, datos privados, Solar y contratos distintos del M2M. Es una unidad acotada sin persistencia, no el alojamiento de toda la arquitectura. El sistema completo sigue demostrando cuatro microservicios, bases privadas, broker, búsqueda y observabilidad en Compose. Se conserva Go y su cálculo decimal, sin portar el dominio.
 
-Esta unidad de despliegue es una excepción documentada a la separación por contenedor del entorno completo: permite compartir los 750 instance-hours gratuitos mensuales sin bases ni cuotas adicionales para una capacidad que es una función pura. La demostración de microservicios, bases privadas, broker y observabilidad se realiza mediante Compose. Un Render Free no alcanza para alojar de forma durable todo ese entorno. La recomendación general de Render es separar las aplicaciones; esta excepción acotada conserva procesos y contratos separados y supervisa la caída de cualquiera de los dos.
+Cuatro credenciales nuevas se generaron para Render: HEALTHCHECK_TOKEN, INTERNAL_TOKEN, M2M_API_KEY y M2M_DENIED_KEY. La revisión automática rechazó reutilizar las credenciales de la PC sin autorización específica para ese destino; se siguió la alternativa segura de generar otras. .runtime/render.env guarda el entorno privado localmente, excluido de Git y Docker. Las dos claves M2M de integración se entregan al usuario por separado; no son las del túnel Cloudflare. No se guarda la contraseña humana de Render en el proyecto.
 
-## Publicación cuando esté disponible la cuenta
+## Verificación y corrección
 
-1. Subir estos cambios al repositorio público después de revisarlos. En Render, crear una cuenta y un **Blueprint** conectado al repositorio; elegir `render.yaml`.
-2. Verificar que figura **Free**, sin discos ni bases pagas y sin upgrades automáticos. Desplegar. El nombre puede ajustarse si ya está ocupado.
-3. Copiar del dashboard la URL HTTPS realmente asignada. No deducirla del nombre propuesto. La configuración no fija un health check HTTP porque `/health/*` está protegido: Render usa la comprobación de puerto por defecto.
-4. En Environment, recuperar `M2M_API_KEY`, `M2M_DENIED_KEY` y `HEALTHCHECK_TOKEN` sin pegarlos en Git, capturas o logs. Enviar las dos claves M2M al grupo Clínica por un canal privado. La primera representa el permiso `estimar-consumo`; la segunda es válida pero sin ese permiso y produce 403.
-5. Desde otra red, ejecutar `scripts/verificar-publicacion.ps1 -BaseUrl https://URL-REAL` con las claves en variables de entorno. El script comprueba HTTPS, OpenAPI, 200, 401, 403 y el presupuesto de una solicitud caliente. Registrar URL, fecha y resultado en la evidencia del equipo.
-6. Comunicar a Clínica URL, disponibilidad y límite sostenido 60 solicitudes/minuto, ráfaga 10. No cambiar `/v1`, errores ni redondeo. El costo en pesos lo calcula Clínica.
-7. Mantener el servicio y revisar las cuotas durante la evaluación. Desactivar despliegues automáticos evita cambiar el contrato inadvertidamente, pero las correcciones requieren redeploy explícito.
+Ocho estimaciones devolvieron 47.4 kWh y 1.58 kWh/día. TLS y hash de OpenAPI coinciden; 400/401/403/413/415/422, readiness autorizada y bloqueo de rutas privadas/técnicas comprobados. Una ráfaga de 17 llamadas con la clave sin permiso produjo seis 429 con Retry-After: 1. La cuota sigue siendo token bucket de 1 solicitud/s y ráfaga 10, no una ventana móvil estricta ni una cuota global de varias instancias.
 
-## Activación en frío y presupuesto del consumidor
+El p95 caliente observado fue 730.585 ms con ocho muestras desde esta conexión, por debajo de 1.2 s/5 s. El percentil por rango más próximo coincide con el máximo de esas ocho llamadas; no es un SLA. No se midió cold start ni se ejecutó la integración desde Clínica.
 
-Render Free se suspende después de 15 minutos sin tráfico y puede tardar aproximadamente un minuto en activarse. Eso supera tanto el presupuesto interactivo observado de Clínica (1.2 s) como sus 5 s en segundo plano. Coordinar una llamada de preparación antes de presentar y después medir la llamada caliente. No se garantiza un SLA que el plan gratuito no ofrece. Si la cátedra exige 5 s también en frío, esta opción no satisface ese criterio y hará falta una infraestructura ya disponible que no se suspenda.
+La primera sonda detectó /privado-openapi.json accesible porque la imagen contenía todos los contratos. Se corrigió el registro de rutas en modo M2M y se añadió TestCapabilityOnlyContractSurface, con archivos realmente presentes, comprobando también el modo completo. [Primer intento](evidence/render-cloud-2026-11-09/primer-intento.txt), [Go aprobado](evidence/render-cloud-2026-11-09/go-gateway.txt) y sonda final satisfactoria. El OpenAPI M2M no cambió.
 
-Fuentes oficiales consultadas: [límites Free](https://render.com/docs/free), [Blueprint](https://render.com/docs/blueprint-spec), [Docker](https://render.com/docs/docker), [recomendación de separación](https://render.com/docs/faq). No se contratan servicios ni se crean cuentas desde el repositorio.
+## Operación y activación en frío
 
+El plan Free puede suspender la instancia tras 15 minutos sin tráfico; Render avisa que la reactivación puede demorar 50 segundos o más. Eso excede el presupuesto de Clínica en frío. Antes de presentar, preparar la instancia con GET /openapi.json y esperar el contrato real; después ejecutar el flujo. No se inventa un resultado ni se promete una latencia fría de cinco segundos. [Límites oficiales](https://render.com/docs/free).
 
-## Preparación realizada y recordatorio
+Render aloja solo la capacidad M2M y sigue funcionando con la PC apagada. La web completa conserva su [túnel local](PUBLICACION-WEB.md), que necesita PC/Docker/red. El [túnel M2M anterior](PUBLICACION-CLINICA.md) sigue como alternativa, con sus propias claves y dependencia de la PC. No se apagó ninguno ni se cambiaron límites de WSL.
 
-Se preparó una copia aislada en una rama local deploy/estimaciones-consumo-20261109 con el código/configuración necesario para construir M2M y contrato congelado. No se creó una rama remota ni se hizo commit/push de la entrega completa. infra/cloud.Dockerfile todavía no está en main remoto; antes de crear el Blueprint hay que publicar el código fuente o una imagen accesible. Puede usarse una rama de despliegue y dejar la integración final en main para la revisión posterior.
+Para redeploy: revisar la rama/commit, conservar plan Free y elegir Manual Deploy en el panel. No configurar un health check anónimo sobre /health: requiere una credencial técnica; se dejó comprobación por puerto. Mantener auto-deploy Off y no cambiar contrato, errores o redondeo sin transición acordada.
 
-El paquete Despliegue-M2M-Render.zip entregado al usuario contiene 62 archivos, sin secretos ni dependencias instaladas, y una guía específica. El Blueprint genera sus secretos; esos valores no son automáticamente los de la publicación de la PC. Compartir nuevas credenciales solo por privado una vez verificado el despliegue. No enviar claves mediante este documento.
+Sonda reproducible: tests/cloud_publication.py recibe la URL HTTPS por argumento y lee M2M_API_KEY, M2M_DENIED_KEY y opcionalmente HEALTHCHECK_TOKEN del entorno; CLOUD_EVIDENCE elige el archivo de resultado. Usa una instancia ya activa, certificados verificados y no sigue redirecciones de credenciales. scripts/verificar-publicacion.ps1 sigue disponible para la comprobación básica.
 
-Al completar el despliegue: recordar revisión de los cambios completos, integración en main y ejecución de CI. Es un recordatorio ligado al cierre de este trabajo, sin alarma de fecha arbitraria. No se considera completado por preparar archivos o abrir la pantalla de login.
+## Coordinación y entrega
+
+Clínica se encarga de probar desde su backend, por instrucción del usuario. Compartir el nuevo endpoint y las nuevas claves por privado, con el aviso de cold start. El costo energético lo calcula Clínica; la API no agrega precio. El servicio queda configurado sin fecha de baja, sujeto a las cuotas/condiciones Free y al acuerdo de continuidad de la evaluación.
+
+El recordatorio solicitado corresponde ahora: revisar/fusionar la rama de despliegue en main y comprobar CI de la integración. No se fusionó automáticamente. El [estado anterior de preparación](evidence/preparacion-render-2026-11-09/estado.json) se conserva como historia; su bloqueo de login fue resuelto cuando el usuario creó la cuenta y autorizó el acceso.
