@@ -233,6 +233,9 @@ func fullHandler(token string, cfg Config) http.Handler {
 		protected.PUT("/admin/usuarios/:id/rol", proxy(cfg.IdentityURL, true, false, false))
 	}
 	for name, folder := range map[string]string{"openapi.json": "v1", "guest-openapi.json": "guest-v1", "catalogo-openapi.json": "catalog-v1", "solar-openapi.json": "solar-v1", "paneles-openapi.json": "panel-search-v1", "privado-openapi.json": "private-v1"} {
+		if cfg.CapabilityOnly && folder != "v1" {
+			continue
+		}
 		file := filepath.Join(cfg.DocsDir, folder, "openapi.json")
 		r.GET("/"+name, func(c *gin.Context) { c.File(file) })
 	}

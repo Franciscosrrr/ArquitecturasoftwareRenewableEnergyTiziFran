@@ -4,12 +4,52 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
 
 // Credencial ficticia exclusiva de pruebas; no es una configuración del servidor.
 const testHealthToken = "credencial-ficticia-solo-para-pruebas-123456"
+
+/**
+ * Limita los contratos publicados por M2M aunque los otros archivos estén en la imagen.
+ *
+ * @method TestCapabilityOnlyContractSurface
+ * @param {*testing.T} t - Contexto de prueba con archivos públicos y privados presentes.
+ * @returns {void} Falla si M2M sirve otro contrato o si el sistema completo pierde sus documentos.
+ */
+func TestCapabilityOnlyContractSurface(t *testing.T) {
+	docs := t.TempDir()
+	contracts := map[string]string{"openapi.json": "v1", "guest-openapi.json": "guest-v1", "catalogo-openapi.json": "catalog-v1", "solar-openapi.json": "solar-v1", "paneles-openapi.json": "panel-search-v1", "privado-openapi.json": "private-v1"}
+	fixture := []byte(`{"contrato":"fixture-presente-en-disco"}`)
+	for _, folder := range contracts {
+		if err := os.MkdirAll(filepath.Join(docs, folder), 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(docs, folder, "openapi.json"), fixture, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, capabilityOnly := range []bool{false, true} {
+		handler := NewHandler(testHealthToken, Config{ConsumoURL: "http://127.0.0.1:9", DocsDir: docs, WebDir: t.TempDir(), CapabilityOnly: capabilityOnly})
+		for path := range contracts {
+			response := httptest.NewRecorder()
+			handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/"+path, nil))
+			want := http.StatusOK
+			if capabilityOnly && path != "openapi.json" {
+				want = http.StatusNotFound
+			}
+			if response.Code != want {
+				t.Fatalf("capabilityOnly=%t path=%s: status=%d want=%d", capabilityOnly, path, response.Code, want)
+			}
+			if want == http.StatusOK && response.Body.String() != string(fixture) {
+				t.Fatalf("contenido inesperado: %s", path)
+			}
+		}
+	}
+}
 
 /**
  * Comprueba el comportamiento y los invariantes indicados por HealthRejectsUnauthenticatedRequests.
