@@ -1,0 +1,33 @@
+{
+  "observadoUTC": "2026-11-09T23:58:30.249987+00:00",
+  "solicitudUsuario": "Detener M2M local duplicado y eliminar el entorno anterior; conservar aplicación vigente",
+  "verificaciones": [
+    {
+      "destino": "webLocal",
+      "url": "http://localhost:8080/",
+      "http": 200,
+      "bytes": 413,
+      "sha256HTML": "3782ee9da98f4106fac231760b2c5627e18ca5f1988f265e97593f4dcfa37f8a"
+    },
+    {
+      "destino": "webHTTPS",
+      "url": "https://conditional-wan-server-learning.trycloudflare.com/",
+      "http": 200,
+      "bytes": 413,
+      "sha256HTML": "3782ee9da98f4106fac231760b2c5627e18ca5f1988f265e97593f4dcfa37f8a"
+    },
+    {
+      "destino": "RenderOpenAPI",
+      "http": 200,
+      "contratoIdentico": true,
+      "latenciaMs": 12406.0
+    },
+    {
+      "destino": "RenderM2MSinCopiaLocalActiva",
+      "http": 200,
+      "totalPeriodoKWh": 47.4,
+      "promedioDiarioKWh": 1.58
+    }
+  ],
+  "completado": true
+}

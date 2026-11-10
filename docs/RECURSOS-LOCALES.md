@@ -39,3 +39,12 @@ El presupuesto de RabbitMQ se ajustó de 256 a 384 MiB al observar una terminaci
 ## Actualización 2026-11-09 — retención de trazas
 
 La revisión de los contenedores detectó Jaeger detenido por OOM tras horas de retención ilimitada en memoria. Se mantiene su límite de 128 MiB, con un máximo de 512 trazas, cola de 256 spans, cuatro workers y presupuesto Go de 96 MiB. No se modifica WSL. La ventana es temporal y descarta trazas antiguas; la auditoría de negocio sigue en SQL/Mongo. Véanse los anexos añadidos a ADR-011/ADR-013 y la evidencia de esta revisión de experiencia de cliente.
+
+
+## Limpieza operativa y comisión A1 — 2026-11-09
+
+El usuario confirmó la entrega del ZIP Render a Clínica y dejó su prueba de backend a cargo de ese grupo. Se registró comisión A1 y se eliminó el pendiente de número de grupo: el enunciado revisado no lo solicita.
+
+Por solicitud explícita se detuvieron los dos contenedores de renewable-clinica-publica y se retiraron los 18 contenedores detenidos de renewable-energy-final-dev junto con su red vacía. Se conservaron doce volúmenes del entorno antiguo, doce del vigente y todas las imágenes. Los dieciocho contenedores de renewable-energy-entrega2 y los dos de renewable-web-publica se mantuvieron activos con los mismos IDs e instantes de arranque. Los proyectos ajenos no cambiaron y no se modificó WSL globalmente.
+
+[Inventario previo](evidence/operacion-local-2026-11-09/docker-antes.json), [resultado Docker](evidence/operacion-local-2026-11-09/docker-despues.json), [continuidad HTTP](evidence/operacion-local-2026-11-09/continuidad.json) e [identificación](evidence/operacion-local-2026-11-09/identificacion.json). Las mediciones anteriores son históricas, no una muestra de consumo después de esta limpieza.

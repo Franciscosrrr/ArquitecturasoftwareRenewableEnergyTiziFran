@@ -1,6 +1,6 @@
 # Implementación y verificación final local
 
-> Actualización posterior del 09/11/2026: [M2M publicado por HTTPS temporal con Cloudflare](PUBLICACION-CLINICA.md). URL https://emails-bingo-preference-packets.trycloudflare.com; certificado, contrato y 200/401/403 comprobados. Requiere PC/Docker/red activos; la URL puede cambiar y no hay garantía de uptime. Los estados de preparación anteriores se conservan como antecedente.
+> Estado vigente del 09/11/2026: [M2M en Render](DESPLIEGUE-GRATUITO.md), independiente de la PC. La [publicación M2M local anterior](PUBLICACION-CLINICA.md) quedó detenida. La web completa mantiene su propio túnel y backend local. Las pruebas anteriores se conservan como antecedentes.
 
 Fecha 2026-11-09. Cambios aplicados al repositorio original y sistema completo funcionando en http://localhost:8080. Las entregas anteriores permanecen históricas. La evidencia final procede de servicios reales; el mock inicial es opcional y no reemplaza dependencias de estas pruebas.
 
@@ -49,7 +49,7 @@ Se conservaron `.env`, el catálogo existente y las evidencias previas de Entreg
 
 ## Pendientes externos explícitos
 
-M2M está publicado con HTTPS mediante el túnel temporal documentado arriba. Por indicación del usuario, la prueba desde el backend de Clínica queda a cargo de ese grupo, con las claves que el usuario recibió por separado. El alojamiento M2M cloud ya está verificado en https://renewable-consumo-v1.onrender.com; no depende de la PC y usa claves nuevas. Debe acordarse la continuidad hasta la evaluación. Una URL fija e independiente de esta PC requiere hosting o cuenta/dominio para un despliegue apropiado. Render Free sigue como alternativa, con el límite de cold start de 1.2 s/5 s explícito. [Estado de publicación](PUBLICACION-CLINICA.md) y [alternativa Render](DESPLIEGUE-GRATUITO.md).
+M2M está publicado con HTTPS en Render; el túnel local anterior quedó detenido. Por indicación del usuario, la prueba desde el backend de Clínica queda a cargo de ese grupo, con las claves que el usuario recibió por separado. El alojamiento M2M cloud ya está verificado en https://renewable-consumo-v1.onrender.com; no depende de la PC y usa claves nuevas. Debe acordarse la continuidad hasta la evaluación y contemplar el cold start de Render Free, que puede superar los presupuestos de 1.2 s/5 s. [Estado de publicación](PUBLICACION-CLINICA.md) y [alternativa Render](DESPLIEGUE-GRATUITO.md).
 
 También falta recibir/adaptar/probar el contrato real del vendedor asignado. El simulador no acredita integración efectiva con otro grupo. HSP, paneles y precios siguen explícitamente didácticos; no se incorpora una fuente solar por ubicación ni una garantía de autonomía. Estas dependencias no se ocultan como cumplimiento externo realizado.
 
@@ -66,9 +66,18 @@ La [entrada web por Cloudflare](PUBLICACION-WEB.md) está publicada en https://c
 
 ## Revisión documental estable — 2026-11-09
 
-README, SPEC, arquitectura, contratos y bonus distinguen el sistema implementado, los accesos HTTPS desde la PC y el alojamiento M2M cloud verificado. La suite actual es 19 HTTP y 12 navegador locales, más cuatro casos de navegador HTTPS sobre un subconjunto. Las entregas y ensayos anteriores permanecen identificados como historia. No se cambia el OpenAPI M2M 1.0.1. El recordatorio de incorporar/revisar cambios en main y comprobar CI se dará al finalizar el despliegue; no se programa una alarma de fecha arbitraria ni se afirma haber publicado la entrega final.
+README, SPEC, arquitectura, contratos y bonus distinguen el sistema implementado, los accesos HTTPS desde la PC y el alojamiento M2M cloud verificado. La suite actual es 19 HTTP y 12 navegador locales, más cuatro casos de navegador HTTPS sobre un subconjunto. Las entregas y ensayos anteriores permanecen identificados como historia. No se cambia el OpenAPI M2M 1.0.1. El recordatorio de incorporar/revisar cambios en main y comprobar CI ya se entregó al completar el despliegue; no se programa una alarma de fecha arbitraria ni se afirma haber publicado la entrega final.
 
 
 ## Publicación M2M cloud — 2026-11-09
 
 Render Free, Docker, Oregon, commit 69850d800b4bbb0295d067b51387cd14324f25f3, despliegue manual/auto-deploy Off. [Sonda](evidence/render-cloud-2026-11-09/https.json): TLS/hash 1.0.1, ocho cálculos, permisos, errores, rutas privadas y cuota aprobados; p95 caliente 730.585 ms, cold start no medido. [Regresión Go](evidence/render-cloud-2026-11-09/go-gateway.txt) corrige contratos no M2M expuestos en la imagen y preserva los documentos del modo completo. [CI del commit](evidence/render-cloud-2026-11-09/ci.json). Las publicaciones de la PC se conservan. Main queda pendiente de revisión/fusión, como recordó el usuario.
+
+
+## Limpieza operativa y comisión A1 — 2026-11-09
+
+El usuario confirmó la entrega del ZIP Render a Clínica y dejó su prueba de backend a cargo de ese grupo. Se registró comisión A1 y se eliminó el pendiente de número de grupo: el enunciado revisado no lo solicita.
+
+Por solicitud explícita se detuvieron los dos contenedores de renewable-clinica-publica y se retiraron los 18 contenedores detenidos de renewable-energy-final-dev junto con su red vacía. Se conservaron doce volúmenes del entorno antiguo, doce del vigente y todas las imágenes. Los dieciocho contenedores de renewable-energy-entrega2 y los dos de renewable-web-publica se mantuvieron activos con los mismos IDs e instantes de arranque. Los proyectos ajenos no cambiaron y no se modificó WSL globalmente.
+
+[Inventario previo](evidence/operacion-local-2026-11-09/docker-antes.json), [resultado Docker](evidence/operacion-local-2026-11-09/docker-despues.json), [continuidad HTTP](evidence/operacion-local-2026-11-09/continuidad.json) e [identificación](evidence/operacion-local-2026-11-09/identificacion.json). Las mediciones anteriores son históricas, no una muestra de consumo después de esta limpieza.

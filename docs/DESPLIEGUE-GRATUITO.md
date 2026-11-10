@@ -22,7 +22,7 @@ La primera sonda detectó /privado-openapi.json accesible porque la imagen conte
 
 El plan Free puede suspender la instancia tras 15 minutos sin tráfico; Render avisa que la reactivación puede demorar 50 segundos o más. Eso excede el presupuesto de Clínica en frío. Antes de presentar, preparar la instancia con GET /openapi.json y esperar el contrato real; después ejecutar el flujo. No se inventa un resultado ni se promete una latencia fría de cinco segundos. [Límites oficiales](https://render.com/docs/free).
 
-Render aloja solo la capacidad M2M y sigue funcionando con la PC apagada. La web completa conserva su [túnel local](PUBLICACION-WEB.md), que necesita PC/Docker/red. El [túnel M2M anterior](PUBLICACION-CLINICA.md) sigue como alternativa, con sus propias claves y dependencia de la PC. No se apagó ninguno ni se cambiaron límites de WSL.
+Render aloja solo la capacidad M2M y sigue funcionando con la PC apagada. La web completa conserva su [túnel local](PUBLICACION-WEB.md), que necesita PC/Docker/red. La [publicación M2M anterior](PUBLICACION-CLINICA.md) quedó detenida por pedido del usuario; sus contenedores y claves se conservan como recuperación. El entorno final-dev obsoleto se retiró sin eliminar volúmenes ni imágenes. La web y su backend vigente continúan activos. No se cambiaron límites de WSL.
 
 Para redeploy: revisar la rama/commit, conservar plan Free y elegir Manual Deploy en el panel. No configurar un health check anónimo sobre /health: requiere una credencial técnica; se dejó comprobación por puerto. Mantener auto-deploy Off y no cambiar contrato, errores o redondeo sin transición acordada.
 
@@ -30,6 +30,15 @@ Sonda reproducible: tests/cloud_publication.py recibe la URL HTTPS por argumento
 
 ## Coordinación y entrega
 
-Clínica se encarga de probar desde su backend, por instrucción del usuario. Compartir el nuevo endpoint y las nuevas claves por privado, con el aviso de cold start. El costo energético lo calcula Clínica; la API no agrega precio. El servicio queda configurado sin fecha de baja, sujeto a las cuotas/condiciones Free y al acuerdo de continuidad de la evaluación.
+Clínica se encarga de probar desde su backend, por instrucción del usuario. El usuario confirmó haber compartido el ZIP nuevo por privado, con endpoint, claves y aviso de cold start. El costo energético lo calcula Clínica; la API no agrega precio. El servicio queda configurado sin fecha de baja, sujeto a las cuotas/condiciones Free y al acuerdo de continuidad de la evaluación.
 
 El recordatorio solicitado corresponde ahora: revisar/fusionar la rama de despliegue en main y comprobar CI de la integración. No se fusionó automáticamente. El [estado anterior de preparación](evidence/preparacion-render-2026-11-09/estado.json) se conserva como historia; su bloqueo de login fue resuelto cuando el usuario creó la cuenta y autorizó el acceso.
+
+
+## Aplicación completa y límites del plan Free — 2026-11-09
+
+Render puede alojar una aplicación con varios servicios. En este proyecto la API M2M cabe en una unidad sin estado porque solo calcula; la aplicación completa necesita tres MySQL, MongoDB, RabbitMQ, Meilisearch, Valkey y observabilidad además de los servicios Go. Esa diferencia impide trasladar el Compose completo tal cual al mismo servicio Free con conservación de datos.
+
+Los servicios Free no admiten discos persistentes y pierden archivos locales al reiniciar, desplegar o suspender. Los discos para bases propias como MySQL/MongoDB y para componentes como RabbitMQ requieren servicios pagos. El Postgres gratuito expira a los 30 días y no reemplaza automáticamente las tres bases MySQL existentes. Los servicios privados no tienen instancia Free; los servicios web Free tampoco reciben tráfico por la red privada. Por eso una migración íntegra requiere servicios pagos de Render o dependencias alojadas en otra infraestructura; no se contrató nada ni se sustituyeron tecnologías para aparentar ese resultado.
+
+Se conserva la aplicación completa en el entorno local vigente y M2M en Render. Publicar solo el HTML con un backend que continúa en la PC no independizaría la aplicación. Referencias consultadas: [Free](https://render.com/docs/free), [discos](https://render.com/docs/disks) y [servicios privados](https://render.com/docs/private-services).

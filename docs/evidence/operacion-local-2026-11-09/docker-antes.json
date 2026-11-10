@@ -1,0 +1,439 @@
+{
+  "observadoUTC": "2026-11-09T23:54:40.0817167Z",
+  "contenedores": [
+    {
+      "id": "ca3da4af56a9ad8addb3c095552d2725a004152644fbbcdc0f3091f192f288f2",
+      "name": "renewable-web-publica-tunnel-1",
+      "project": "renewable-web-publica",
+      "service": "tunnel",
+      "state": "running",
+      "startedAt": "2026-11-09T20:24:41.710152262Z",
+      "volumes": []
+    },
+    {
+      "id": "623e9deb77863a3650571bed2661be2864e255b9fd444bf47a1afaa57da1ec04",
+      "name": "renewable-web-publica-web-edge-1",
+      "project": "renewable-web-publica",
+      "service": "web-edge",
+      "state": "running",
+      "startedAt": "2026-11-09T20:24:35.949505223Z",
+      "volumes": []
+    },
+    {
+      "id": "140f2d41b952ea49247f0f8c4166feef6147ddc9a41ab1f082abb125ff129828",
+      "name": "renewable-energy-entrega2-jaeger-1",
+      "project": "renewable-energy-entrega2",
+      "service": "jaeger",
+      "state": "running",
+      "startedAt": "2026-11-09T15:15:01.145413552Z",
+      "volumes": [
+        "af23833df9080b819cda0daf60714ed39d6f2c150730c814ab0475641f965ab9"
+      ]
+    },
+    {
+      "id": "57fd2e61585507d31a22ee67f258bb724a7a158c04f9a1d6b4ce9003b2d48c33",
+      "name": "renewable-energy-entrega2-gateway-1",
+      "project": "renewable-energy-entrega2",
+      "service": "gateway",
+      "state": "running",
+      "startedAt": "2026-11-09T15:07:47.453552787Z",
+      "volumes": []
+    },
+    {
+      "id": "93f04aa0aa351a091bc31f84f03abcd9a926c0fc50a6cb00d468cc9a3df17509",
+      "name": "renewable-energy-entrega2-solar-1",
+      "project": "renewable-energy-entrega2",
+      "service": "solar",
+      "state": "running",
+      "startedAt": "2026-11-09T14:57:58.204190111Z",
+      "volumes": []
+    },
+    {
+      "id": "6358ced8cd7e9d75afe4886ba4083739ecabe570e84ff293638d40f5d69096f8",
+      "name": "renewable-energy-entrega2-solar-2-1",
+      "project": "renewable-energy-entrega2",
+      "service": "solar-2",
+      "state": "running",
+      "startedAt": "2026-11-09T14:57:58.205541027Z",
+      "volumes": []
+    },
+    {
+      "id": "6dfe98cdba69a0fa6adcb32d06692204f34e47e63891927930b8ac5afb0b9149",
+      "name": "renewable-energy-entrega2-consumo-1",
+      "project": "renewable-energy-entrega2",
+      "service": "consumo",
+      "state": "running",
+      "startedAt": "2026-11-09T14:28:15.886536602Z",
+      "volumes": []
+    },
+    {
+      "id": "6611c6dfaa8ca5bb8102a2151ee674c9e0fd2fe3b9f2945f22e6b64d265d7cf1",
+      "name": "renewable-clinica-publica-tunnel-1",
+      "project": "renewable-clinica-publica",
+      "service": "tunnel",
+      "state": "running",
+      "startedAt": "2026-11-09T06:14:45.706972956Z",
+      "volumes": []
+    },
+    {
+      "id": "691a2856b47904bf281ad192e9c0db007156255751e2bc08ed4b0a261c7c88a2",
+      "name": "renewable-clinica-publica-api-publica-1",
+      "project": "renewable-clinica-publica",
+      "service": "api-publica",
+      "state": "running",
+      "startedAt": "2026-11-09T06:14:34.966141295Z",
+      "volumes": []
+    },
+    {
+      "id": "0ef6b2406e797443f66bca29ffec66841108804adf475c1742af4b72be0782d4",
+      "name": "renewable-energy-entrega2-rabbitmq-1",
+      "project": "renewable-energy-entrega2",
+      "service": "rabbitmq",
+      "state": "running",
+      "startedAt": "2026-11-09T05:03:25.096600527Z",
+      "volumes": [
+        "renewable-energy-entrega2_broker-data"
+      ]
+    },
+    {
+      "id": "8e07a341e4f7c12f52c57f4686360aea4bed950782db7b59d3e198f840052a8d",
+      "name": "renewable-energy-entrega2-electrodomesticos-1",
+      "project": "renewable-energy-entrega2",
+      "service": "electrodomesticos",
+      "state": "running",
+      "startedAt": "2026-11-09T04:55:05.618636908Z",
+      "volumes": []
+    },
+    {
+      "id": "be08fc55508a0264faa77cf2ee52f35e027a324a8771ad7b26e6785226270d95",
+      "name": "renewable-energy-entrega2-usuarios-1",
+      "project": "renewable-energy-entrega2",
+      "service": "usuarios",
+      "state": "running",
+      "startedAt": "2026-11-09T05:04:52.661005859Z",
+      "volumes": []
+    },
+    {
+      "id": "fc18f36e0b0eb79b62770554cfe8c5d03d7520a31195a51381579193c14c412f",
+      "name": "renewable-energy-entrega2-mysql-1",
+      "project": "renewable-energy-entrega2",
+      "service": "mysql",
+      "state": "running",
+      "startedAt": "2026-11-09T04:10:18.009464231Z",
+      "volumes": [
+        "renewable-energy-entrega2_catalogo-data"
+      ]
+    },
+    {
+      "id": "66c3f50b31a322176dfbf6b03075dec1270fc97cb0ae1abe327399bf12293854",
+      "name": "renewable-energy-entrega2-prometheus-1",
+      "project": "renewable-energy-entrega2",
+      "service": "prometheus",
+      "state": "running",
+      "startedAt": "2026-11-09T04:10:18.052985811Z",
+      "volumes": [
+        "renewable-energy-entrega2_prometheus-data"
+      ]
+    },
+    {
+      "id": "c9ce83f86497fb91ae3b3c2135925af7cdfe682a670a97d637d8d55a8b152af2",
+      "name": "renewable-energy-entrega2-mysql-consumo-1",
+      "project": "renewable-energy-entrega2",
+      "service": "mysql-consumo",
+      "state": "running",
+      "startedAt": "2026-11-09T04:10:17.984491153Z",
+      "volumes": [
+        "renewable-energy-entrega2_consumo-data"
+      ]
+    },
+    {
+      "id": "8a93e821b3f8d193eda3124b7f479f81a92fa0007e6dd52bf3e8b0607e70977f",
+      "name": "renewable-energy-entrega2-valkey-1",
+      "project": "renewable-energy-entrega2",
+      "service": "valkey",
+      "state": "running",
+      "startedAt": "2026-11-09T05:04:51.7771062Z",
+      "volumes": [
+        "655c1634299e92e3ce7c03c485c2b1a19403a2f6e4efe22e03533ee325bf858e"
+      ]
+    },
+    {
+      "id": "75a58756c2f374d4227d6e58227173d3b60f077bcc6b565ae0ef9b6e6ea2643f",
+      "name": "renewable-energy-entrega2-mysql-usuarios-1",
+      "project": "renewable-energy-entrega2",
+      "service": "mysql-usuarios",
+      "state": "running",
+      "startedAt": "2026-11-09T04:10:17.969107925Z",
+      "volumes": [
+        "renewable-energy-entrega2_usuarios-data"
+      ]
+    },
+    {
+      "id": "f4ffc5a93c5c1c2a5c291e986b7657955318402ba5e3cfe23156f6df86dc985b",
+      "name": "renewable-energy-entrega2-loki-1",
+      "project": "renewable-energy-entrega2",
+      "service": "loki",
+      "state": "running",
+      "startedAt": "2026-11-09T04:10:17.993541563Z",
+      "volumes": [
+        "renewable-energy-entrega2_logs-data"
+      ]
+    },
+    {
+      "id": "932f47a7529ccd92736d971bb43a4cdac3c157624d46fa6f60eb76787cbd837c",
+      "name": "renewable-energy-entrega2-mongo-1",
+      "project": "renewable-energy-entrega2",
+      "service": "mongo",
+      "state": "running",
+      "startedAt": "2026-11-09T04:10:18.0075227Z",
+      "volumes": [
+        "e3ecb518f86161df2066c7c0e8a8ba4221e6e27ca02b9056973f171531971d72",
+        "renewable-energy-entrega2_solar-data"
+      ]
+    },
+    {
+      "id": "ff5a09a589f79da2681e42d4100df36e7c20e9a4dc4b2af2f996a062d801d1e4",
+      "name": "renewable-energy-entrega2-grafana-1",
+      "project": "renewable-energy-entrega2",
+      "service": "grafana",
+      "state": "running",
+      "startedAt": "2026-11-09T04:10:18.051047718Z",
+      "volumes": [
+        "renewable-energy-entrega2_grafana-data"
+      ]
+    },
+    {
+      "id": "0931fed349777f6aacce381d9ddf7a5378bc55b8f9efabe3c849bbd4d22a5697",
+      "name": "renewable-energy-entrega2-proveedor-paneles-sim-1",
+      "project": "renewable-energy-entrega2",
+      "service": "proveedor-paneles-sim",
+      "state": "running",
+      "startedAt": "2026-11-09T05:04:44.901731207Z",
+      "volumes": []
+    },
+    {
+      "id": "56b7ebb3ad03e683f697f0c44307654e6d6f16d5bb29d0839a45756c05be8a6c",
+      "name": "renewable-energy-entrega2-meilisearch-1",
+      "project": "renewable-energy-entrega2",
+      "service": "meilisearch",
+      "state": "running",
+      "startedAt": "2026-11-09T15:09:33.541575572Z",
+      "volumes": [
+        "renewable-energy-entrega2_search-data"
+      ]
+    },
+    {
+      "id": "065e66d28582c3338afcec1874e6fd51f9fe72641ba869ba5be90a6efd0edfa6",
+      "name": "renewable-energy-final-dev-gateway-1",
+      "project": "renewable-energy-final-dev",
+      "service": "gateway",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:33:53.720100067Z",
+      "volumes": []
+    },
+    {
+      "id": "808b0a636581003c71a893650f2c53cbc994f859222f7584bea7621586098110",
+      "name": "renewable-energy-final-dev-consumo-1",
+      "project": "renewable-energy-final-dev",
+      "service": "consumo",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:31:41.119889328Z",
+      "volumes": []
+    },
+    {
+      "id": "edecc84b93e0b91da7223fda93d954fcf04f070463529bbf41f8e2cd000f0086",
+      "name": "renewable-energy-final-dev-electrodomesticos-1",
+      "project": "renewable-energy-final-dev",
+      "service": "electrodomesticos",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:31:41.120949928Z",
+      "volumes": []
+    },
+    {
+      "id": "a56b6bc254d3b93db118fe0a047534ffa6b82c84c25924d59cf41aeaca9df167",
+      "name": "renewable-energy-final-dev-solar-1",
+      "project": "renewable-energy-final-dev",
+      "service": "solar",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:29:48.458176871Z",
+      "volumes": []
+    },
+    {
+      "id": "9449e50356043de5fcc0774c2493709abe926fdb40c10c70ffe2561571387b08",
+      "name": "renewable-energy-final-dev-solar-2-1",
+      "project": "renewable-energy-final-dev",
+      "service": "solar-2",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:29:48.646212666Z",
+      "volumes": []
+    },
+    {
+      "id": "1528c3dbdbfb4c7480e3f6dd07099f097685ad4ba46049a0d0ced3e7b3b2e828",
+      "name": "renewable-energy-final-dev-usuarios-1",
+      "project": "renewable-energy-final-dev",
+      "service": "usuarios",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:29:48.515685004Z",
+      "volumes": []
+    },
+    {
+      "id": "e6ff4c3dc26ce6fd18f88ef3c5c188fdf4c7ccffa4b7f2710cec5b62604605f8",
+      "name": "renewable-energy-final-dev-proveedor-paneles-sim-1",
+      "project": "renewable-energy-final-dev",
+      "service": "proveedor-paneles-sim",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:29:40.499943652Z",
+      "volumes": []
+    },
+    {
+      "id": "b6314e71ae1552e9015d54018df12915ac4e3836370cea7d13032e59d99ac17a",
+      "name": "renewable-energy-final-dev-prometheus-1",
+      "project": "renewable-energy-final-dev",
+      "service": "prometheus",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.499040053Z",
+      "volumes": [
+        "renewable-energy-final-dev_prometheus-data"
+      ]
+    },
+    {
+      "id": "cda68eb3791a4ea2bc85bfbd3070333ce345b1688bf5770685c4404614473be9",
+      "name": "renewable-energy-final-dev-loki-1",
+      "project": "renewable-energy-final-dev",
+      "service": "loki",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.453673704Z",
+      "volumes": [
+        "renewable-energy-final-dev_logs-data"
+      ]
+    },
+    {
+      "id": "1d0800007e3f830d1d0878246494e69efcca059e1f7cbf142114b177a898b4bf",
+      "name": "renewable-energy-final-dev-mongo-1",
+      "project": "renewable-energy-final-dev",
+      "service": "mongo",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.443553964Z",
+      "volumes": [
+        "renewable-energy-final-dev_solar-data",
+        "72bc7627687cec31a9e13061f834d670d0d05b3c11bf82e48b13e2b48a538e28"
+      ]
+    },
+    {
+      "id": "a54b29dfea991ff1d6695f3a733af0e60f83a78429860ea3ef609717094032c0",
+      "name": "renewable-energy-final-dev-rabbitmq-1",
+      "project": "renewable-energy-final-dev",
+      "service": "rabbitmq",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:27:41.817580409Z",
+      "volumes": [
+        "renewable-energy-final-dev_broker-data"
+      ]
+    },
+    {
+      "id": "7aaf3542b5b886246b108fca2cbe2ad6cf4703ed050bb4cb541e472b8366f746",
+      "name": "renewable-energy-final-dev-grafana-1",
+      "project": "renewable-energy-final-dev",
+      "service": "grafana",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.494535366Z",
+      "volumes": [
+        "renewable-energy-final-dev_grafana-data"
+      ]
+    },
+    {
+      "id": "9358e717f30069e5a2f0c81b48fa39f554b63892a5bd7e48ace66249e8c9a93b",
+      "name": "renewable-energy-final-dev-mysql-consumo-1",
+      "project": "renewable-energy-final-dev",
+      "service": "mysql-consumo",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.424139122Z",
+      "volumes": [
+        "renewable-energy-final-dev_consumo-data"
+      ]
+    },
+    {
+      "id": "b3af1eb6cc2e6b005a7cf0d22497d249df926492b59b3230728c76cfd522b383",
+      "name": "renewable-energy-final-dev-valkey-1",
+      "project": "renewable-energy-final-dev",
+      "service": "valkey",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:29:47.654359617Z",
+      "volumes": [
+        "d345b75b64c54f0e1d6d925bd191ceecf3642789f039245371d54e0273c00aff"
+      ]
+    },
+    {
+      "id": "08f91ae43c905a1ac04e2786f418c22c1d238d8abe7b67bca44b9e6081e3915d",
+      "name": "renewable-energy-final-dev-jaeger-1",
+      "project": "renewable-energy-final-dev",
+      "service": "jaeger",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.500630138Z",
+      "volumes": [
+        "271ca5b23f0acd31760f280aeb2e2bd0e12fb1745b668edc2477f57e34ba29e6"
+      ]
+    },
+    {
+      "id": "58abe615e744a6b0f025619e4bd919bbc22679cc594c32604feb434c46f8872b",
+      "name": "renewable-energy-final-dev-mysql-1",
+      "project": "renewable-energy-final-dev",
+      "service": "mysql",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.475240069Z",
+      "volumes": [
+        "renewable-energy-final-dev_catalogo-data"
+      ]
+    },
+    {
+      "id": "80fe2ee6c656c6a0d335c5d68e9bc90e36bf32f9f1c94aa918a150af14d96fc6",
+      "name": "renewable-energy-final-dev-mysql-usuarios-1",
+      "project": "renewable-energy-final-dev",
+      "service": "mysql-usuarios",
+      "state": "exited",
+      "startedAt": "2026-11-09T02:58:28.473903875Z",
+      "volumes": [
+        "renewable-energy-final-dev_usuarios-data"
+      ]
+    },
+    {
+      "id": "3dc2824da100be88e79a9ee20297d1841e2b28bfab22d87a0d6e0da4b127307b",
+      "name": "renewable-energy-final-dev-meilisearch-1",
+      "project": "renewable-energy-final-dev",
+      "service": "meilisearch",
+      "state": "exited",
+      "startedAt": "2026-11-09T03:29:47.655622912Z",
+      "volumes": [
+        "renewable-energy-final-dev_search-data"
+      ]
+    }
+  ],
+  "volumenesViejosConservados": [
+    "271ca5b23f0acd31760f280aeb2e2bd0e12fb1745b668edc2477f57e34ba29e6",
+    "72bc7627687cec31a9e13061f834d670d0d05b3c11bf82e48b13e2b48a538e28",
+    "d345b75b64c54f0e1d6d925bd191ceecf3642789f039245371d54e0273c00aff",
+    "renewable-energy-final-dev_broker-data",
+    "renewable-energy-final-dev_catalogo-data",
+    "renewable-energy-final-dev_consumo-data",
+    "renewable-energy-final-dev_grafana-data",
+    "renewable-energy-final-dev_logs-data",
+    "renewable-energy-final-dev_prometheus-data",
+    "renewable-energy-final-dev_search-data",
+    "renewable-energy-final-dev_solar-data",
+    "renewable-energy-final-dev_usuarios-data"
+  ],
+  "volumenesVigentes": [
+    "655c1634299e92e3ce7c03c485c2b1a19403a2f6e4efe22e03533ee325bf858e",
+    "af23833df9080b819cda0daf60714ed39d6f2c150730c814ab0475641f965ab9",
+    "e3ecb518f86161df2066c7c0e8a8ba4221e6e27ca02b9056973f171531971d72",
+    "renewable-energy-entrega2_broker-data",
+    "renewable-energy-entrega2_catalogo-data",
+    "renewable-energy-entrega2_consumo-data",
+    "renewable-energy-entrega2_grafana-data",
+    "renewable-energy-entrega2_logs-data",
+    "renewable-energy-entrega2_prometheus-data",
+    "renewable-energy-entrega2_search-data",
+    "renewable-energy-entrega2_solar-data",
+    "renewable-energy-entrega2_usuarios-data"
+  ]
+}

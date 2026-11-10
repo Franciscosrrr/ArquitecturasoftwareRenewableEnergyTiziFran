@@ -4,9 +4,9 @@
 
 Render Free está desplegado y verificado: POST https://renewable-consumo-v1.onrender.com/api/v1/estimaciones-consumo; [OpenAPI 1.0.1](https://renewable-consumo-v1.onrender.com/openapi.json), sin modificaciones. [Operación y pruebas](DESPLIEGUE-GRATUITO.md). Usa claves nuevas específicas, entregadas al usuario en CLINICA-CREDENCIALES-PRIVADAS.txt para compartir por privado. La instancia Free puede superar el presupuesto al reactivarse; preparar antes de la presentación. La prueba desde el backend de Clínica queda a cargo de ese grupo.
 
-## Alternativa local: Cloudflare Tunnel
+## Publicación local anterior: detenida
 
-Estado 2026-11-09: **publicada y comprobada por HTTPS**, con un Quick Tunnel temporal desde la PC autorizada por el equipo. No se creó cuenta ni dominio ni se contrató un plan.
+Estado actual 2026-11-09: **detenida por solicitud del usuario después de entregar el ZIP de Render a Clínica**. Sus dos contenedores y claves locales se conservan para recuperación; el enlace anterior no se presenta como operativo. Los datos y pruebas siguientes registran la publicación histórica mediante Quick Tunnel. No se creó cuenta ni dominio Cloudflare ni se contrató un plan.
 
 - URL base: https://emails-bingo-preference-packets.trycloudflare.com
 - Operación: POST https://emails-bingo-preference-packets.trycloudflare.com/api/v1/estimaciones-consumo
@@ -43,8 +43,8 @@ Se verificaron certificado HTTPS, hash del contrato, 9 estimaciones correctas, 4
 
 ## Entrega de credenciales
 
-El usuario recibió un archivo separado CLINICA-CLOUDFLARE-CREDENCIALES-PRIVADAS.txt en outputs con únicamente las dos claves que necesita Clínica. Compartirlo por privado. No versionar ni agregarlo al ZIP compartible. .runtime está ignorado por Git. Las claves del host Render, si se usa en el futuro, serían otras salvo configuración explícita.
+El usuario recibió un archivo separado CLINICA-CLOUDFLARE-CREDENCIALES-PRIVADAS.txt en outputs con únicamente las dos claves que necesita Clínica. Compartirlo por privado. No versionar ni agregarlo al ZIP compartible. .runtime está ignorado por Git. Render usa claves nuevas específicas de su publicación; las antiguas solo corresponden al túnel local detenido.
 
-El contrato 1.0.1, permisos, redondeo, ausencia de precio y cuota sostenida 60/min con ráfaga 10 se conservan. Render Free permanece como alternativa preparada y no se desplegó; no es obligatorio para esta publicación. El proveedor de paneles real sigue pendiente, por separado.
+El contrato 1.0.1, permisos, redondeo, ausencia de precio y cuota sostenida 60/min con ráfaga 10 se conservan. Render Free está desplegado y es la publicación principal de la capacidad. El proveedor de paneles real sigue pendiente, por separado.
 
 Referencias: [Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/), [Tunnel con hostname](https://developers.cloudflare.com/tunnel/get-started/), [Render Free](https://render.com/docs/free).

@@ -1,5 +1,7 @@
 # Control de primera entrega
 
+Comisión A1. El enunciado no exige un número de grupo; se corrigió la referencia añadida en la revisión anterior.
+
 Versión 1.2.0. Alcance: diseño, contratos, mock local y estructura inicial compilable. La versión anterior era exclusivamente documental.
 
 | Requisito | Evidencia | Estado |
@@ -17,7 +19,7 @@ Versión 1.2.0. Alcance: diseño, contratos, mock local y estructura inicial com
 
 ## Lo que falta fuera de este paquete
 
-Publicar estos archivos en el repositorio del equipo y comprobar su acceso; confirmar aprobación del dominio y número de grupo/comisión; ejecutar el build/arranque Docker con el motor activo. No se atribuye aprobación docente ni publicación remota a la revisión local.
+Publicar estos archivos en el repositorio del equipo y comprobar su acceso; confirmar aprobación del dominio; ejecutar el build/arranque Docker con el motor activo. No se atribuye aprobación docente ni publicación remota a la revisión local.
 
 El mock permite simular el contrato; el servicio real y la integración con otro grupo siguen pendientes. Frontend, BD, broker, autenticación real, balanceo, pruebas de carga y POSTMORTEM también requieren implementación o evidencia real.
 

@@ -2,9 +2,9 @@
 
 > Estado 09/11/2026: [API M2M en Render](https://renewable-consumo-v1.onrender.com/openapi.json), contrato 1.0.1 verificado, y [web completa por Cloudflare](https://conditional-wan-server-learning.trycloudflare.com). La API Render no depende de la PC; la web sí. [Operación, pruebas y cold start](docs/DESPLIEGUE-GRATUITO.md).
 
-Calculadora de consumo y estudios solares con acceso invitado, guardados propios y administración. Tiziano Nicolas (2407889) y Francisco Skrie (2423159), UCC. [Repositorio](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran). Grupo/comisión: pendiente de registrar.
+Calculadora de consumo y estudios solares con acceso invitado, guardados propios y administración. Tiziano Nicolas (2407889) y Francisco Skrie (2423159), UCC. [Repositorio](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran). Comisión **A1**.
 
-El entorno completo implementa Usuarios, Consumo, Electrodomésticos y Solar, Gateway Go, MySQL privados, MongoDB, RabbitMQ, Meilisearch, Valkey, dos réplicas Solar y observabilidad. La capacidad de Clínica mantiene OpenAPI **1.0.1** sin precio. El vendedor solar es **simulado**, autorizado por el equipo mientras falta su contrato real. La web y M2M están publicados por HTTPS mediante túneles desde la PC autorizada. La capacidad M2M también está desplegada en Render Free, independiente de la PC y con claves propias. [Estado de despliegue](docs/DESPLIEGUE-GRATUITO.md).
+El entorno completo implementa Usuarios, Consumo, Electrodomésticos y Solar, Gateway Go, MySQL privados, MongoDB, RabbitMQ, Meilisearch, Valkey, dos réplicas Solar y observabilidad. La capacidad de Clínica mantiene OpenAPI **1.0.1** sin precio. El vendedor solar es **simulado**, autorizado por el equipo mientras falta su contrato real. La web está publicada por HTTPS mediante su túnel desde la PC. La capacidad M2M está desplegada en Render Free, independiente de la PC y con claves propias. La publicación M2M local anterior quedó detenida y el entorno final-dev obsoleto se retiró, conservando datos. [Estado de despliegue](docs/DESPLIEGUE-GRATUITO.md).
 
 ## Arranque único
 
