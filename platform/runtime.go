@@ -28,12 +28,28 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+/**
+ * Lee una variable de entorno con valor alternativo.
+ *
+ * @method Env
+ * @param {string} key - Nombre de la variable.
+ * @param {string} fallback - Valor usado si no está definida.
+ * @returns {string} Valor de configuración.
+ */
 func Env(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
 	}
 	return fallback
 }
+
+/**
+ * Exige un secreto de al menos treinta y dos caracteres.
+ *
+ * @method Secret
+ * @param {string} key - Nombre de la variable secreta.
+ * @returns {string} Secreto válido; termina el proceso si falta.
+ */
 func Secret(key string) string {
 	v := os.Getenv(key)
 	if len(v) < 32 {
@@ -42,8 +58,17 @@ func Secret(key string) string {
 	}
 	return v
 }
+
+/**
+ * Configura logs JSON y trazas OpenTelemetry del servicio.
+ *
+ * @method Init
+ * @param {string} service - Nombre estable del servicio.
+ * @returns {func()} Cierre del exportador con presupuesto acotado.
+ */
 func Init(service string) func() {
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)).With("service", service))
+	logCtx, logCancel := context.WithCancel(context.Background())
+	slog.SetDefault(slog.New(slog.NewJSONHandler(NewLogWriter(logCtx, os.Stdout, service), nil)).With("service", service, "instance", Env("INSTANCE_ID", service)))
 	gin.SetMode(gin.ReleaseMode)
 	otel.SetTextMapPropagator(propagation.TraceContext{})
 	opts := []sdktrace.TracerProviderOption{sdktrace.WithResource(resource.NewSchemaless(attribute.String("service.name", service))), sdktrace.WithSampler(sdktrace.AlwaysSample())}
@@ -58,19 +83,47 @@ func Init(service string) func() {
 	tp := sdktrace.NewTracerProvider(opts...)
 	otel.SetTracerProvider(tp)
 	return func() {
+		defer logCancel()
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		_ = tp.Shutdown(ctx)
 	}
 }
+
+/**
+ * Obtiene el identificador W3C del span activo.
+ *
+ * @method TraceID
+ * @param {context.Context} ctx - Contexto instrumentado.
+ * @returns {string} Identificador de traza hexadecimal.
+ */
 func TraceID(ctx context.Context) string { return trace.SpanContextFromContext(ctx).TraceID().String() }
 
 type requestIDKey struct{}
 
+/**
+ * Lee el identificador de correlación validado de la solicitud.
+ *
+ * @method RequestID
+ * @param {context.Context} ctx - Contexto de la solicitud.
+ * @returns {string} Identificador o cadena vacía si falta.
+ */
 func RequestID(ctx context.Context) string {
 	value, _ := ctx.Value(requestIDKey{}).(string)
 	return value
 }
+
+/**
+ * Escribe un error de negocio con el sobre público estable.
+ *
+ * @method Error
+ * @param {*gin.Context} c - Solicitud HTTP.
+ * @param {int} status - Estado HTTP.
+ * @param {string} code - Código estable del contrato.
+ * @param {string} message - Mensaje público sin secretos.
+ * @param {any} details - Detalles de validación o nil.
+ * @returns {void} Escribe JSON sin exponer detalles internos.
+ */
 func Error(c *gin.Context, status int, code, message string, details any) {
 	if details == nil {
 		details = []any{}
@@ -80,9 +133,16 @@ func Error(c *gin.Context, status int, code, message string, details any) {
 
 var requestIDPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
 
+/**
+ * Configura correlación, logs y recuperación de errores HTTP.
+ *
+ * @method Router
+ * @returns {*gin.Engine} Router sin proxies de confianza implícitos.
+ */
 func Router() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
+	r.Use(MetricsMiddleware)
 	_ = r.SetTrustedProxies(nil)
 	r.Use(func(c *gin.Context) {
 		c.Header("Cache-Control", "no-store")
@@ -114,8 +174,28 @@ func Router() *gin.Engine {
 	})
 	return r
 }
+
+/**
+ * Crea spans HTTP propagando contexto W3C.
+ *
+ * @method Instrument
+ * @param {string} service - Nombre del servicio.
+ * @param {http.Handler} h - Adaptador HTTP del servicio.
+ * @returns {http.Handler} Adaptador instrumentado.
+ */
 func Instrument(service string, h http.Handler) http.Handler { return otelhttp.NewHandler(h, service) }
+
+/**
+ * Registra liveness y readiness protegidos por secreto técnico.
+ *
+ * @method Health
+ * @param {*gin.Engine} r - Router del servicio.
+ * @param {string} token - Secreto de healthchecks.
+ * @param {func(context.Context) error} ready - Verificación de dependencias indispensables.
+ * @returns {void} Registra rutas de salud sin exponerlas anónimamente.
+ */
 func Health(r *gin.Engine, token string, ready func(context.Context) error) {
+	Metrics(r, token)
 	r.Any("/health/*path", func(c *gin.Context) {
 		supplied := sha256.Sum256([]byte(c.GetHeader("Authorization")))
 		expected := sha256.Sum256([]byte("Bearer " + token))
@@ -148,6 +228,14 @@ func Health(r *gin.Engine, token string, ready func(context.Context) error) {
 		}
 	})
 }
+
+/**
+ * Ejecuta HTTP con límites y apagado ordenado por señal.
+ *
+ * @method Serve
+ * @param {http.Handler} handler - Adaptador de aplicación.
+ * @returns {void} Sirve solicitudes hasta la señal de cierre.
+ */
 func Serve(handler http.Handler) {
 	server := &http.Server{Addr: Env("ADDR", ":8080"), Handler: handler, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 12 * time.Second, IdleTimeout: 30 * time.Second, MaxHeaderBytes: 16 * 1024}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -166,26 +254,58 @@ func Serve(handler http.Handler) {
 		_ = server.Shutdown(shutdown)
 	}
 }
+
+/**
+ * Construye HTTP saliente con trazas y tiempos de espera acotados.
+ *
+ * @method Client
+ * @param {time.Duration} timeout - Presupuesto total de llamada.
+ * @returns {*http.Client} Cliente reutilizable con pool de conexiones.
+ */
 func Client(timeout time.Duration) *http.Client {
-	return &http.Client{Timeout: timeout, Transport: otelhttp.NewTransport(&http.Transport{Proxy: http.ProxyFromEnvironment, DialContext: (&net.Dialer{Timeout: 500 * time.Millisecond, KeepAlive: 30 * time.Second}).DialContext, MaxIdleConnsPerHost: 10, ResponseHeaderTimeout: 2 * time.Second})}
+	return &http.Client{Timeout: timeout, Transport: sharedTransport}
 }
+
+var sharedTransport = otelhttp.NewTransport(&http.Transport{Proxy: http.ProxyFromEnvironment, DialContext: (&net.Dialer{Timeout: 500 * time.Millisecond, KeepAlive: 30 * time.Second}).DialContext, MaxIdleConns: 100, MaxIdleConnsPerHost: 10, IdleConnTimeout: 60 * time.Second, ResponseHeaderTimeout: 2 * time.Second})
 
 type bucket struct {
 	tokens float64
 	last   time.Time
 }
+
+/**
+ * Conserva buckets locales acotados con exclusión mutua y reloj de prueba.
+ */
 type Limiter struct {
-	mu      sync.Mutex
-	entries map[string]bucket
+	mu       sync.Mutex
+	capacity float64
+	rate     float64
+	entries  map[string]bucket
+	now      func() time.Time
 }
 
-func NewLimiter() *Limiter { return &Limiter{entries: map[string]bucket{}} }
+/**
+ * Crea un token bucket por identidad con capacidad de diez.
+ *
+ * @method NewLimiter
+ * @returns {*Limiter} Limitador local con reposición de un token por segundo.
+ */
+func NewLimiter() *Limiter {
+	return &Limiter{entries: map[string]bucket{}, now: time.Now, capacity: 10, rate: 1}
+}
 
 // Entries expire and the map has a hard bound; no identity/body is logged.
+/**
+ * Consume un token y limita la memoria de identidades.
+ *
+ * @method Allow
+ * @param {string} key - Identidad técnica de cliente o hash de clave.
+ * @returns {bool} Indica si la solicitud puede continuar.
+ */
 func (l *Limiter) Allow(key string) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	now := time.Now()
+	now := l.now()
 	b, ok := l.entries[key]
 	if !ok {
 		if len(l.entries) >= 4096 {
@@ -198,9 +318,9 @@ func (l *Limiter) Allow(key string) bool {
 				return false
 			}
 		}
-		b = bucket{10, now}
+		b = bucket{l.capacity, now}
 	}
-	b.tokens = min(10, b.tokens+now.Sub(b.last).Seconds())
+	b.tokens = min(l.capacity, b.tokens+now.Sub(b.last).Seconds()*l.rate)
 	b.last = now
 	allowed := b.tokens >= 1
 	if allowed {
@@ -209,9 +329,34 @@ func (l *Limiter) Allow(key string) bool {
 	l.entries[key] = b
 	return allowed
 }
+
+/**
+ * Escribe JSON con tipo de contenido y política sin caché.
+ *
+ * @method JSON
+ * @param {http.ResponseWriter} w - Respuesta HTTP.
+ * @param {int} status - Estado a enviar.
+ * @param {any} v - Valor serializable.
+ * @returns {void} Escribe la respuesta JSON.
+ */
 func JSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
+}
+
+/**
+ * Construye una cuota local con reposición por segundo y ráfaga explícitas.
+ *
+ * @method NewRateLimiter
+ * @param {float64} rate - Valor de rate requerido por la operación.
+ * @param {int} burst - Valor de burst requerido por la operación.
+ * @returns {*Limiter} Resultado de la operación; error si no puede completarse.
+ */
+func NewRateLimiter(rate float64, burst int) *Limiter {
+	if rate <= 0 || burst < 1 {
+		panic("cuota inválida")
+	}
+	return &Limiter{entries: map[string]bucket{}, now: time.Now, capacity: float64(burst), rate: rate}
 }

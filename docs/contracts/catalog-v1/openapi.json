@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Catálogo y consumo por fichas - Entrega 2",
-    "version": "1.0.0",
-    "description": "Contrato adicional del flujo local. No cambia la API M2M v1.0.1 ni requiere una clave en el navegador."
+    "version": "1.1.0",
+    "description": "Catálogo canónico MySQL con búsqueda Meilisearch, cache-aside Valkey y respaldo SQL explícito. La validación de fichas evita caché/índice. No modifica la API M2M1.0.1."
   },
   "servers": [
     {
@@ -73,6 +73,28 @@
               "minimum": 1,
               "maximum": 100,
               "default": 20
+            }
+          },
+          {
+            "name": "potenciaMin",
+            "in": "query",
+            "required": false,
+            "description": "Filtra solo fichas POTENCIA; mínimo≤máximo; incompatible con modo CICLOS.",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          },
+          {
+            "name": "potenciaMax",
+            "in": "query",
+            "required": false,
+            "description": "Filtra solo fichas POTENCIA; mínimo≤máximo; incompatible con modo CICLOS.",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000
             }
           }
         ],

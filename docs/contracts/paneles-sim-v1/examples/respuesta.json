@@ -1,0 +1,10 @@
+{
+  "cotizacionId": "sim-494",
+  "sku": "PANEL-SIM-450",
+  "potenciaPanelW": 450,
+  "cantidad": 2,
+  "stockDisponible": 1000,
+  "precioUnitarioCentavos": 25000000,
+  "totalCentavos": 50000000,
+  "moneda": "ARS"
+}

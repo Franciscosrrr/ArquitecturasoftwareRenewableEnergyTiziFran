@@ -1,0 +1,18 @@
+{
+  "observadoUTC": "2026-11-09T23:54:44.2926835Z",
+  "completado": true,
+  "proyectoViejoEliminado": "renewable-energy-final-dev",
+  "contenedoresViejosEliminados": 18,
+  "redesVaciasEliminadas": [
+    "renewable-energy-final-dev_backend"
+  ],
+  "proyectoM2MDetenido": "renewable-clinica-publica",
+  "contenedoresM2MDetenidos": 2,
+  "contenedoresVigentesActivosSinReinicio": 20,
+  "volumenesViejosConservados": 12,
+  "volumenesVigentesConservados": 12,
+  "otrosContenedoresConservados": 10,
+  "volumenesEliminados": 0,
+  "imagenesEliminadas": 0,
+  "WSLglobalModificado": false
+}

@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Vendedor de paneles - SIMULACIÓN LOCAL",
+    "version": "0.1.0-simulated",
+    "description": "Diseñado para desarrollo. Reemplazar/adaptar únicamente al recibir el contrato real; no acredita integración entre grupos."
+  },
+  "servers": [
+    {
+      "url": "http://proveedor-paneles-sim:8080",
+      "description": "Solo red Compose; no URL pública."
+    }
+  ],
+  "paths": {
+    "/api/v1/cotizaciones": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "potenciaObjetivoW"
+                ],
+                "properties": {
+                  "potenciaObjetivoW": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10000000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cotización comercial sin reserva ni compra.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cotizacion"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "NO_AUTENTICADO",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "STOCK_INSUFICIENTE",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "TIPO_CONTENIDO_NO_SOPORTADO",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "VALIDACION",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "cotizarPanelesSimulados",
+        "security": [
+          {
+            "BearerComercial": []
+          }
+        ],
+        "description": "Contrato local de simulación, no recibido ni acordado con el grupo vendedor. POST de consulta sin efectos persistentes. Credencial Bearer comercial distinta de las claves de Clínica."
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerComercial": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Cotizacion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cotizacionId",
+          "sku",
+          "potenciaPanelW",
+          "cantidad",
+          "stockDisponible",
+          "precioUnitarioCentavos",
+          "totalCentavos",
+          "moneda"
+        ],
+        "properties": {
+          "cotizacionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "sku": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "potenciaPanelW": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2000
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "stockDisponible": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "precioUnitarioCentavos": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000
+          },
+          "totalCentavos": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000000
+          },
+          "moneda": {
+            "type": "string",
+            "enum": [
+              "ARS"
+            ]
+          }
+        },
+        "description": "cantidad=ceil(potenciaObjetivoW/potenciaPanelW); stockDisponible>=cantidad; totalCentavos=cantidad*precioUnitarioCentavos. Cotizar no reserva ni compra. Importe en centavos de ARS; no es tarifa eléctrica."
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "enum": [
+              "FORMATO_INVALIDO",
+              "NO_AUTENTICADO",
+              "SIN_PERMISO",
+              "CUERPO_DEMASIADO_GRANDE",
+              "TIPO_CONTENIDO_NO_SOPORTADO",
+              "VALIDACION",
+              "LIMITE_DE_TRAFICO",
+              "ERROR_INTERNO",
+              "SERVICIO_NO_DISPONIBLE"
+            ]
+          },
+          "mensaje": {
+            "type": "string",
+            "minLength": 1
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "detalles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetalleError"
+            }
+          }
+        },
+        "required": [
+          "codigo",
+          "mensaje",
+          "traceId",
+          "detalles"
+        ]
+      },
+      "DetalleError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "campo": {
+            "type": "string",
+            "minLength": 1
+          },
+          "motivo": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "campo",
+          "motivo"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "fecha": "2026-11-09",
+  "cloudDesplegado": false,
+  "configuracionRenderFreePreparada": true,
+  "paqueteCodigoM2MPreparado": true,
+  "archivosDelPaquete": 62,
+  "contratoM2MSHA256LF": "3876121082fa76cd7ca6b25defbc7edc45ea0a4a89b3ee851fcf681e446ffda3",
+  "accesoRender": "Panel redirige a login; no hay sesión disponible",
+  "intervencionUsuario": "El usuario informó que no está en la PC y no puede crear la cuenta ahora",
+  "ramaLocalPreparada": "deploy/estimaciones-consumo-20261109 en copia aislada",
+  "ramaRemotaCreada": false,
+  "commitPushEntregaFinal": false,
+  "integracionClinica": "Prueba del backend consumidor a cargo de Clínica por instrucción del usuario",
+  "recordatorioCierre": "Después de completar el despliegue, recordar revisión/integración del proyecto completo en main y comprobación de CI",
+  "nota": "Los enlaces HTTPS de Cloudflare existentes siguen teniendo origen en la PC; no se presentan como alojamiento del proceso en cloud."
+}

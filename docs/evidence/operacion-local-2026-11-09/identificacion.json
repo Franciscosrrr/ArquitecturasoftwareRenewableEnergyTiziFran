@@ -1,0 +1,15 @@
+{
+  "fecha": "2026-11-09",
+  "comision": "A1",
+  "numeroGrupoExigidoEnEnunciado": false,
+  "fuente": "Enunciado TP Final - sin parrafos ocultos.pdf",
+  "paginasRevisadas": 10,
+  "seccionIdentificacion": "6.1 Instancia Inicial",
+  "requisitosIniciales": [
+    "integrantes confirmados",
+    "dominio y alcance preliminar aprobados",
+    "repositorio creado y accesible para la cátedra"
+  ],
+  "zipClinicaEntregadoPorUsuario": true,
+  "validacionDesdeBackendClinica": "A cargo de Clínica; no ejecutada por nosotros"
+}

@@ -1,6 +1,6 @@
 # Especificación de alcance y requisitos
 
-Versión 2.0.0 · Entrega 2. Los requisitos siguientes describen el objetivo completo. El alcance implementado del hito se delimita en la sección «Estado de entrega 2» y en docs/DELIVERY-2.md; no todos los criterios finales están implementados.
+Comisión A1 · Versión 3.1.0 · Estado actualizado 2026-11-09. El sistema completo funciona localmente y tiene acceso web HTTPS público mediante un túnel desde la PC. Además, la capacidad M2M Go está desplegada y verificada en Render Free, independiente de la PC. Los requisitos conservan sus criterios de aceptación; los apartados históricos identifican estados de entregas anteriores. Estado y evidencia: docs/VERIFICACION-FINAL.md. El contrato real del vendedor continúa pendiente.
 
 ## 1. Objetivo y vocabulario
 
@@ -36,7 +36,7 @@ El permiso administrativo de catálogos no habilita lectura de consumos ajenos. 
 
 | ID | Requisito | Criterio de aceptación |
 |---|---|---|
-| RF01 | Registro | Un email normalizado único crea un usuario común; solicitudes concurrentes no crean duplicados; solo se persiste un hash Argon2id con salt |
+| RF01 | Registro | Un email normalizado único crea un usuario común; solicitudes concurrentes no crean duplicados; solo se persiste un hash Argon2 id con salt |
 | RF02 | Login, refresh y logout | Credenciales válidas habilitan guardados/perfil; la calculadora no exige login; logout revoca refresh; access token tiene vencimiento acotado; ninguna respuesta incluye contraseña ni hash de contraseña |
 | RF03 | Privacidad | Cambiar ids en una URL no permite acceder a lugares, guardados o estudios ajenos |
 | RF04 | Lugares | Crear, listar, editar y archivar lugares propios con ubicación y superficie opcional |
@@ -108,7 +108,7 @@ Reintentar error vuelve a pendiente con auditoría. Un respaldo solar válido se
 
 ## 7. Requisitos no funcionales
 
-| ID | Compromiso | Evidencia futura |
+| ID | Compromiso | Criterio de verificación |
 |---|---|---|
 | RNF01 | Cuatro servicios y gateway; capas/hexagonal distinguibles | Despliegues y revisión de dependencias |
 | RNF02 | Base privada por servicio; MySQL + MongoDB | Credenciales y pruebas sin acceso cruzado |
@@ -126,24 +126,41 @@ Reintentar error vuelve a pendiente con auditoría. Un respaldo solar válido se
 | RNF14 | Componentes/hosting exclusivamente gratuitos | Ediciones verificadas y cuotas; ningún upgrade pago |
 | RNF15 | Privacidad invitada y control de abuso | Verificar ausencia de escrituras/eventos, ausencia de cuerpos sensibles en logs y límites de las rutas anónimas |
 
-Objetivos iniciales, todavía no medidos: p95 de catálogo <500 ms; p95 de confirmación <1 s con hasta 100 equipos; 95 % de estudios visibles <15 s con proveedor saludable. La activación en frío cloud se informa separadamente y no se oculta en estas métricas. La cobertura unitaria propuesta es 80 % de ramas del dominio y todos los invariantes críticos; el PDF no fija un porcentaje preciso y debe validarse con la cátedra.
+Objetivos definidos para verificar: p95 de catálogo <500 ms; p95 de confirmación <1 s con hasta 100 equipos; 95 % de estudios visibles <15 s con proveedor saludable. Los ensayos ejecutados están en docs/CARGA-FINAL.md: catálogo y confirmación cumplieron sus umbrales en la carga medida, con un equipo por configuración; no acreditan el escenario de 100 equipos bajo carga ni capacidad máxima. La activación en frío cloud se informa por separado. La cobertura medida de sentencias del dominio es Consumo 93.6% y Solar 89.4%; el objetivo de 80% lo propuso el equipo, no lo fija el PDF.
 
 ## 8. Exclusiones y pendientes
 
 No se incluye IoT, facturación/pagos, venta, instalación, baterías, diseño eléctrico/estructural, normativa de conexión, autonomía, imágenes adjuntas ni importación masiva. “Subir un equipo/panel” significa alta de ficha por formulario administrativo.
 
-Pendientes externos: aprobación docente, número de grupo/comisión, proveedor/consumidor asignados y contrato, fuente solar para ubicaciones reales, dataset con fuentes, reglas de precio/moneda y validación del hosting gratuito. Los resultados de carga/fallas y la integración no se declaran ya realizados.
+Pendientes externos actuales: recibir e integrar el contrato real del vendedor y mantener el despliegue M2M Render durante la evaluación y cerrar su integración en main. El dominio y la asignación de grupos se registraron como aprobados por el equipo; el consumidor identificado es Portal Paciente Clínica. El usuario confirmó haber entregado el ZIP actualizado de Render. La prueba desde su backend queda a cargo de Clínica por indicación del usuario. Las HSP manuales y los datos didácticos son límites del alcance, no una integración real afirmada. Las pruebas de carga/fallas locales sí se ejecutaron y sus resultados están documentados.
 
 ## Protección operativa
 
 Las rutas /health/ requieren una credencial de monitoreo independiente de JWT de usuario y de la API key M2M. Sin credencial válida responden 401 sin estado interno. La credencial se genera al arrancar y nunca se fija en el repositorio; las respuestas son mínimas, en español y con Cache-Control: no-store. El arranque rechaza credenciales ausentes o de menos de 32 caracteres.
 
-## Estado de entrega 2 y bonus anunciado
+## Antecedente histórico — Estado de entrega 2 y bonus anunciado
 
-Dominio aprobado y grupos asignados por la cátedra, según confirmación del equipo. Contrato/documentación del proveedor aún no recibidos. Se anuncia un único bonus: tests e2e con navegador, integrados al flujo real y documentados en docs/BONUS-E2E.md.
+Dominio aprobado y grupos asignados por la cátedra, según confirmación del equipo. Contrato/documentación del proveedor aún no recibidos. Se anuncia un único bonus: tests e2 e con navegador, integrados al flujo real y documentados en docs/BONUS-E2 E.md.
 
 Implementado: cálculo M2M RF19; cálculo temporal de consumo de RF21/RF22; consulta del catálogo precargado RF07; búsqueda SQL inicial de RF08 con paginación/filtros/orden; protección de entrada anónima a rutas privadas, todavía sin identidad; primera observabilidad distribuida y timeout/circuit breaker. RF08 aún requiere el índice especializado y actualización de la final. La recomendación solar de RF21 sigue pendiente.
 
 No se afirma implementación de registro, login, administración, lugares, guardados, evaluaciones durables, idempotencia de escritura, estudios solares, evento/broker ni integración externa. El cálculo por catálogo agrega POST /api/v1/publico/consumo-catalogo, formalizado en docs/contracts/catalog-v1/openapi.json. La API compartida v1.0.1 conserva su contrato.
 
 El parser normaliza ceros y notación exponencial antes de construir racionales, y aplica los rangos de negocio y seis decimales efectivos. Esto evita enteros de tamaño desproporcionado sin cambiar las fórmulas ni añadir límites de representación al contrato.
+
+## Antecedente histórico — Incremento de arquitectura base e integraciones - 2026-11-08
+
+Después de estimar consumo por catálogo, el visitante puede cotizar paneles con supuestos explícitos. Solar calcula potencia objetivo y obtiene stock/modelo/cantidad/precio del vendedor. Cotizar no compra, no reserva y no guarda; la oferta simulada se identifica en pantalla. Si el vendedor falla o no tiene stock, el consumo previo sigue visible y el usuario puede corregir o reintentar. El alcance durable previsto en versiones anteriores continúa pendiente.
+
+La capacidad de Clínica mantiene contrato 1.0.1, sin precio ni cambios de redondeo. Se requiere verificar HTTPS y latencia dentro del presupuesto interactivo observado de 1.2 s, además del presupuesto de 5 s del reestimador. La URL y disponibilidad no están confirmadas.
+
+
+## Estado vigente 2026-11-09
+
+RF01–RF24 cuentan con implementación en el sistema local: identidad/roles, propiedad, lugares/configuraciones versionadas, catálogo precargado y administración, búsqueda Meilisearch con filtros de potencia, caché Valkey, evaluación/idempotencia/outbox, estudios Mongo vía Rabbit, comparación y variantes, invitado sin guardado, M2M y vendedor simulado. La verificación de cada flujo y sus límites consta en docs/VERIFICACION-FINAL.md; no se interpreta código como prueba de despliegue externo.
+
+RNF01–RNF12 se implementan mediante cuatro servicios + gateway, bases privadas, startup automatizado, persistencia, HTTP/AMQP, transacción/outbox, sincronización de índice, caché medida, dos Solar, timeout/circuit/retry/DLQ, logs/métricas/trazas/dashboard/alertas y pruebas. Los resultados ejecutados y objetivos de latencia se registran en el informe final; no se conserva la frase “todavía no medidos” como afirmación actual. La cobertura unitaria es un porcentaje medido, no una garantía por elegir80% de forma arbitraria.
+
+RNF13: la rama deploy/estimaciones-consumo-20261109 está publicada y la CI del commit desplegado en Render aprobó. Falta revisión por el otro integrante e integración de la entrega completa en main; no se realizó una fusión automática. RNF14: se mantiene software gratuito y despliegue Render Free acotado a capacidad sin estado, con límites y cold start documentados. RNF15: borradores temporales, autorización backend, cuotas y telemetría sin cuerpos privados.
+
+Restricciones explícitas: HSP manuales, orientación/inclinación no verificadas, paneles y precios didácticos del simulador; no se incorpora una fuente de irradiación real. El comparador acota promedio diario a 10^12 kWh y cantidad calculada a 1.000 millones para evitar desbordamientos; el vendedor tiene límites de stock mucho menores. Las cotizaciones no reservan ni compran. La integración con el vendedor real continúa pendiente de su contrato. La capacidad Go M2M está desplegada y verificada en Render Free, con el cold start explícito; la publicación M2M de la PC quedó detenida por solicitud del usuario. La prueba desde el backend consumidor queda a cargo de Clínica. Una simulación local o un túnel no se presentan como evidencia de esos pasos externos.

@@ -1,0 +1,16 @@
+[
+  {
+    "viewport": "escritorio",
+    "quote": true,
+    "failureKeepsConsumption": true,
+    "pageErrors": [],
+    "backend": "fixtures HTTP; sin MySQL ni Go"
+  },
+  {
+    "viewport": "movil",
+    "quote": true,
+    "failureKeepsConsumption": true,
+    "pageErrors": [],
+    "backend": "fixtures HTTP; sin MySQL ni Go"
+  }
+]

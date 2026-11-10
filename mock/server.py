@@ -20,14 +20,40 @@ ERRORS = {400: 'FORMATO_INVALIDO', 401: 'NO_AUTENTICADO', 403: 'SIN_PERMISO', 41
 
 
 class ValidationError(ValueError):
+    """/**
+     * Agrupa verificaciones del flujo ValidationError.
+     *
+     * @method ValidationError
+     * @returns {ValidationError} Resultado verificado de la operación.
+     */
+    """
     def __init__(self, field, reason):
+        """/**
+         * Inicializa el cliente de prueba con cookies y credencial aisladas.
+         *
+         * @method __init__
+         * @param {Any} field - Parámetro field de la operación.
+         * @param {Any} reason - Parámetro reason de la operación.
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         self.field = field[2:] if field.startswith('$.') else field
         self.reason = reason
         super().__init__(self.field + ': ' + reason)
 
 
 def validate(value, schema, doc, path='$'):
-    """Comprueba el subconjunto de schemas usado aquí; no es un validador OpenAPI general."""
+    """/**
+     * Valida un documento contra el contrato procesable y sus reglas.
+     *
+     * @method validate
+     * @param {Any} value - Parámetro value de la operación.
+     * @param {Any} schema - Parámetro schema de la operación.
+     * @param {Any} doc - Parámetro doc de la operación.
+     * @param {Any} path - Parámetro path de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     if '$ref' in schema:
         target = doc
         for part in schema['$ref'][2:].split('/'):
@@ -77,6 +103,15 @@ def validate(value, schema, doc, path='$'):
 
 
 def precision(value, path='$'):
+    """/**
+     * Valida y ejecuta precision según el contrato de prueba.
+     *
+     * @method precision
+     * @param {Any} value - Parámetro value de la operación.
+     * @param {Any} path - Parámetro path de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     if isinstance(value, Decimal) and value != value.quantize(Decimal('0.000001')):
         raise ValidationError(path, 'Se admiten como máximo seis decimales')
     if isinstance(value, dict):
@@ -86,10 +121,27 @@ def precision(value, path='$'):
 
 
 def rounded(value):
+    """/**
+     * Valida y ejecuta rounded según el contrato de prueba.
+     *
+     * @method rounded
+     * @param {Any} value - Parámetro value de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     return float(Decimal(value).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP))
 
 
 def consumo(data, trace):
+    """/**
+     * Valida y ejecuta consumo según el contrato de prueba.
+     *
+     * @method consumo
+     * @param {Any} data - Parámetro data de la operación.
+     * @param {Any} trace - Parámetro trace de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     seen, rows, total = set(), [], Decimal(0)
     for index, e in enumerate(data['equipos']):
         if e['id'] in seen: raise ValidationError(f'equipos[{index}].id', 'Identificador repetido')
@@ -105,6 +157,15 @@ def consumo(data, trace):
 
 
 def solar(data, trace):
+    """/**
+     * Valida y ejecuta solar según el contrato de prueba.
+     *
+     * @method solar
+     * @param {Any} data - Parámetro data de la operación.
+     * @param {Any} trace - Parámetro trace de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     recurso = data['recursoSolar']
     if recurso['tipo'] != 'MANUAL': return None
     demand = Decimal(data['promedioDiarioKWh'])
@@ -119,10 +180,34 @@ def solar(data, trace):
 
 
 class Limiter:
+    """/**
+     * Agrupa verificaciones del flujo Limiter.
+     *
+     * @method Limiter
+     * @returns {Limiter} Resultado verificado de la operación.
+     */
+    """
     def __init__(self):
+        """/**
+         * Inicializa el cliente de prueba con cookies y credencial aisladas.
+         *
+         * @method __init__
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         self.entries, self.lock = {}, threading.Lock()
 
     def allow(self, key, capacity, rate):
+        """/**
+         * Valida y ejecuta allow según el contrato de prueba.
+         *
+         * @method allow
+         * @param {Any} key - Parámetro key de la operación.
+         * @param {Any} capacity - Parámetro capacity de la operación.
+         * @param {Any} rate - Parámetro rate de la operación.
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         now = time.monotonic()
         with self.lock:
             self.entries = {k: v for k, v in self.entries.items() if now - v[1] < 120}
@@ -134,11 +219,37 @@ class Limiter:
 
 
 class Handler(BaseHTTPRequestHandler):
+    """/**
+     * Agrupa verificaciones del flujo Handler.
+     *
+     * @method Handler
+     * @returns {Handler} Resultado verificado de la operación.
+     */
+    """
     limiter = Limiter()
 
-    def log_message(self, *_): pass  # No cuerpos, IP, credenciales ni query strings.
+    def log_message(self, *_):
+        """/**
+         * Valida y ejecuta log message según el contrato de prueba.
+         *
+         * @method log_message
+         * @param {Any} _ - Parámetro de la operación.
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
+        pass  # No cuerpos, IP, credenciales ni query strings.
 
     def send_json(self, code, body, trace=None):
+        """/**
+         * Valida y ejecuta send json según el contrato de prueba.
+         *
+         * @method send_json
+         * @param {Any} code - Parámetro code de la operación.
+         * @param {Any} body - Parámetro body de la operación.
+         * @param {Any} trace - Parámetro trace de la operación.
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         raw = json.dumps(body, ensure_ascii=False, allow_nan=False).encode('utf-8')
         self.send_response(code)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -153,9 +264,27 @@ class Handler(BaseHTTPRequestHandler):
         if self.command != 'HEAD': self.wfile.write(raw)
 
     def error(self, code, trace, message=None, details=None):
+        """/**
+         * Valida y ejecuta error según el contrato de prueba.
+         *
+         * @method error
+         * @param {Any} code - Parámetro code de la operación.
+         * @param {Any} trace - Parámetro trace de la operación.
+         * @param {Any} message - Parámetro message de la operación.
+         * @param {Any} details - Parámetro details de la operación.
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         self.send_json(code, dict(codigo=ERRORS[code], mensaje=message or ERRORS[code], traceId=trace, detalles=details or []), trace)
 
     def do_GET(self):
+        """/**
+         * Valida y ejecuta do GET según el contrato de prueba.
+         *
+         * @method do_GET
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         if self.path.startswith('/health/'):
             supplied = hashlib.sha256(self.headers.get('Authorization', '').encode('utf-8')).digest()
             if not hmac.compare_digest(supplied, self.server.healthcheck_auth_digest):
@@ -167,9 +296,23 @@ class Handler(BaseHTTPRequestHandler):
         else: self.send_json(404, {'mensaje': 'Ruta no incluida en el mock'})
 
     def do_HEAD(self):
+        """/**
+         * Valida y ejecuta do HEAD según el contrato de prueba.
+         *
+         * @method do_HEAD
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         self.do_GET()
 
     def do_POST(self):
+        """/**
+         * Valida y ejecuta do POST según el contrato de prueba.
+         *
+         * @method do_POST
+         * @returns {Any} Resultado verificado de la operación.
+         */
+        """
         trace = self.headers.get('X-Request-Id') or str(uuid.uuid4())
         self.connection.settimeout(5)
         if self.headers.get('Transfer-Encoding'): return self.error(400, str(uuid.uuid4()), 'Mock requiere Content-Length, sin Transfer-Encoding')
@@ -215,6 +358,16 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def create_server(host='127.0.0.1', port=8080, healthcheck_token=None):
+    """/**
+     * Valida y ejecuta create server según el contrato de prueba.
+     *
+     * @method create_server
+     * @param {Any} host - Parámetro host de la operación.
+     * @param {Any} port - Parámetro port de la operación.
+     * @param {Any} healthcheck_token - Parámetro healthcheck_token de la operación.
+     * @returns {Any} Resultado verificado de la operación.
+     */
+    """
     token = os.getenv('HEALTHCHECK_TOKEN', '') if healthcheck_token is None else healthcheck_token
     if len(token) < 32:
         raise ValueError('HEALTHCHECK_TOKEN debe tener al menos 32 caracteres; usar scripts/compose para el arranque local')

@@ -1,0 +1,47 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "Eventos Renewable Energy",
+    "version": "1.0.0"
+  },
+  "channels": {
+    "consumo": {
+      "address": "consumo.evaluado.v1",
+      "messages": {
+        "ConsumoEvaluado": {
+          "name": "ConsumoEvaluado.v1",
+          "contentType": "application/json",
+          "payload": {
+            "$ref": "./ConsumoEvaluado.schema.json"
+          }
+        }
+      }
+    },
+    "catalogo": {
+      "address": "catalogo.actualizado.v1",
+      "messages": {
+        "ElectrodomesticoActualizado": {
+          "name": "ElectrodomesticoActualizado.v1",
+          "contentType": "application/json",
+          "payload": {
+            "$ref": "./ElectrodomesticoActualizado.schema.json"
+          }
+        }
+      }
+    }
+  },
+  "operations": {
+    "solicitarEstudio": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/consumo"
+      }
+    },
+    "actualizarIndice": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/catalogo"
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+?   	renewable.local/consumo/cmd/server	[no test files]
+ok  	renewable.local/consumo/internal/application	(cached)
+ok  	renewable.local/consumo/internal/http	(cached)
+ok  	renewable.local/consumo/internal/integration	(cached)
+?   	renewable.local/consumo/internal/private	[no test files]
+?   	renewable.local/consumo/internal/repository	[no test files]
+?   	renewable.local/solar/cmd/server	[no test files]
+?   	renewable.local/solar/cmd/supplier	[no test files]
+ok  	renewable.local/solar/internal/adapters/external	(cached)
+ok  	renewable.local/solar/internal/adapters/http	0.024s
+?   	renewable.local/solar/internal/adapters/messaging	[no test files]
+?   	renewable.local/solar/internal/adapters/persistence	[no test files]
+ok  	renewable.local/solar/internal/adapters/search	(cached)
+?   	renewable.local/solar/internal/adapters/simulator	[no test files]
+ok  	renewable.local/solar/internal/application	(cached)
+ok  	renewable.local/solar/internal/domain	(cached)
+?   	renewable.local/solar/internal/ports	[no test files]
+ok  	renewable.local/solar/internal/worker	(cached)
+?   	renewable.local/gateway/cmd/server	[no test files]
+ok  	renewable.local/gateway/internal/balancing	(cached)
+ok  	renewable.local/gateway/internal/http	0.022s
+?   	renewable.local/gateway/internal/routing	[no test files]
+?   	renewable.local/gateway/internal/security	[no test files]

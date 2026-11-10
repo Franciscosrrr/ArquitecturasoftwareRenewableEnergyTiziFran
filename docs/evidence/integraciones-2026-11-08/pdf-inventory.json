@@ -1,0 +1,60 @@
+{
+  "pdf_count": 9,
+  "total_pages": 177,
+  "files": [
+    {
+      "file": "Clase 1.pdf",
+      "pages": 23,
+      "sha256": "537d93ebbf0efe19d84a6f7513f5c54d7364b8d964d0c3ba36251ef7ca33d44d",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 2.pdf",
+      "pages": 11,
+      "sha256": "a5217401f4090a651862f6567b969fd6004bf2c32bbdd4c543fdc8a9264874c3",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 3.pdf",
+      "pages": 36,
+      "sha256": "343a06c0960ed3bf2192cc1136076303fd048bd7ab3c8a0e682167c8aad0d997",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 4.pdf",
+      "pages": 18,
+      "sha256": "c5606b0c4563f7cdf649901a22927cc79159599a8304e34b53900bc6f08691e4",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 5.pdf",
+      "pages": 12,
+      "sha256": "dce062e447f469eb0d48f6e3418938a9df66141227a10a5fac0e8eca359c5dce",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 6.pdf",
+      "pages": 32,
+      "sha256": "442e54303d27e8216a02f69337d84c09f1f4723d09ae21c142848151ab64b6bb",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 7.pdf",
+      "pages": 17,
+      "sha256": "deb94963424982aee36d03058ffddfc129f699abd4bcfa6b1a1f55b769c5a1f1",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 8.pdf",
+      "pages": 10,
+      "sha256": "854275c360d0a21be93055b39b48be0898fec853356feb29ec596d04b32d6602",
+      "reading": "OCR español local con orientación corregida"
+    },
+    {
+      "file": "Clase 9.pdf",
+      "pages": 18,
+      "sha256": "99abdb74523b5b619ec4fae3cce0175882288c0eacc4960be438544d7f89e639",
+      "reading": "Extracción de texto"
+    }
+  ]
+}

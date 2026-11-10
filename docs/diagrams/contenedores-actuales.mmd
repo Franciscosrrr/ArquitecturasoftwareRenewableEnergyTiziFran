@@ -1,17 +1,39 @@
 ---
-title: Componentes ejecutables actuales - Compose
+title: Contenedores implementados - entorno completo local
 ---
 flowchart TB
-    H["Cliente HTTP local"] -->|localhost:8080| M["Mock Python<br/>Consumo y Solar manual de ejemplo<br/>Sin persistencia de negocio"]
-    M -->|Solo contratos de prueba| J["OpenAPI y ejemplos JSON"]
-    subgraph STRUCT["Perfil estructura opcional: procesos Go independientes"]
-        direction LR
-        G["Gateway :8105"]
-        U["Usuarios :8101"]
-        E["Electrodomésticos :8102"]
-        C["Consumo :8103"]
-        S["Solar :8104"]
-        G ~~~ U ~~~ E ~~~ C ~~~ S
-    end
-    classDef service fill:#e9f2fb,stroke:#557a96,color:#203b50
-    class H,M,J,G,U,E,C,S service
+ W["React<br/>Invitado, cuenta y administración"] --> G["API Gateway Go · :8080<br/>JWT / cuotas / proxy / balanceo"]
+ CL["Clínica · API key M2M<br/>Contrato estable 1.0.1"] --> G
+ subgraph BACK["Red backend privada de Compose"]
+ G --> U["Usuarios<br/>Identidad y sesiones"]
+ G --> C["Consumo · capas<br/>Cálculo y confirmación"]
+ G --> E["Electrodomésticos · capas<br/>Catálogo y worker de índice"]
+ G -->|"Round robin + health checks"| S1["Solar 1 · hexagonal<br/>API y worker AMQP"]
+ G --> S2["Solar 2 · hexagonal<br/>API y worker AMQP"]
+ U --> UD[("MySQL usuarios_db<br/>Usuarios / sesiones")]
+ C --> CD[("MySQL consumo_db<br/>Lugares / configuraciones<br/>Evaluaciones / idempotencia / outbox")]
+ E --> ED[("MySQL electrodomesticos_db<br/>Catálogo / outbox")]
+ C -->|"HTTP lote · timeout 2 s"| E
+ C -->|"Relay outbox + confirms"| B["RabbitMQ<br/>Durable / retry / DLQ"]
+ E -->|"Relay outbox"| B
+ B -->|"ConsumoEvaluado.v1 / ACK tras persistir"| S1
+ B --> S2
+ B -->|"ElectrodomesticoActualizado.v1"| E
+ E --> M["Meilisearch<br/>Índices de equipos y paneles"]
+ S1 -->|"Búsqueda y sincronización con lease"| M
+ S2 --> M
+ E --> V["Valkey<br/>Cache-aside · TTL 60 s"]
+ S1 --> MD[("MongoDB solar_db<br/>Paneles / pendientes de índice<br/>Estudios / deduplicación")]
+ S2 --> MD
+ S1 -->|"HTTP directo · timeout 1 s"| P["Vendedor SIMULADO<br/>Stock y cotización por SKU"]
+ S2 --> P
+ end
+ OBS["Observabilidad en red backend:<br/>Prometheus :9090 · Grafana :3000<br/>Loki · Jaeger :16686<br/>Métricas protegidas / logs JSON / trazas W3C"]
+ G -. "Servicios emiten telemetría" .-> OBS
+ NOTE["Puertos de host solo en 127.0.0.1.<br/>Cada servicio usa únicamente su base.<br/>Cotizar no reserva ni compra.<br/>HTTPS público usa un despliegue aislado."]
+ classDef active fill:#e6f4ee,stroke:#417c64,color:#203b50
+ classDef store fill:#e9f2fb,stroke:#557a96,color:#203b50
+ classDef note fill:#fff4de,stroke:#a87827,color:#563c14
+ class G,U,C,E,S1,S2,B,M,V active
+ class UD,CD,ED,MD,OBS store
+ class NOTE,P note

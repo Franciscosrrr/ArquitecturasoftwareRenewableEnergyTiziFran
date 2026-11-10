@@ -1,0 +1,26 @@
+{
+  "completado": true,
+  "baseProbada": "https://conditional-wan-server-learning.trycloudflare.com",
+  "httpsPublicoProbado": true,
+  "paginaYJavaScriptIdenticos": true,
+  "htmlSHA256": "3782ee9da98f4106fac231760b2c5627e18ca5f1988f265e97593f4dcfa37f8a",
+  "busquedaSolarYCalculoInvitado": true,
+  "cuentaRegistroLoginRefreshLogout": true,
+  "cookieSecureSoloEntradaWeb": true,
+  "otroOrigenRechazado": true,
+  "rutasTecnicasBloqueadas": true,
+  "privadosSinSesionDenegados": true,
+  "datosCompartidosConAccesoLocal": true,
+  "lugarSinteticoEliminado": true,
+  "url": "https://conditional-wan-server-learning.trycloudflare.com",
+  "observadoUTC": "2026-11-09T20:27:28.102421+00:00",
+  "autorizacion": "Usuario autorizó explícitamente publicar la web completa",
+  "navegador": {
+    "startTime": "2026-11-09T20:26:10.603Z",
+    "duration": 36169.356999999996,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

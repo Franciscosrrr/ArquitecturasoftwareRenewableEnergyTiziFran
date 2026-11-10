@@ -1,0 +1,55 @@
+[
+  {
+    "archivo": "docs/contracts/catalog-v1/openapi.json",
+    "version": "1.1.0",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/guest-v1/openapi.json",
+    "version": "1.1.0",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/panel-search-v1/openapi.json",
+    "version": "1.0.0",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/paneles-sim-v1/openapi.json",
+    "version": "0.1.0-simulated",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/paneles-sim-v2/openapi.json",
+    "version": "0.2.0-simulated",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/private-v1/openapi.json",
+    "version": "1.1.0",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/solar-v1/openapi.json",
+    "version": "1.0.0",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/v1/openapi.json",
+    "version": "1.0.1",
+    "openapiValido": true
+  },
+  {
+    "archivo": "docs/contracts/events/v1/ConsumoEvaluado.schema.json",
+    "jsonSchemaValido": true
+  },
+  {
+    "archivo": "docs/contracts/events/v1/ElectrodomesticoActualizado.schema.json",
+    "jsonSchemaValido": true
+  },
+  {
+    "archivo": "render.yaml",
+    "schemaOficial": "https://render.com/schema/render.yaml.json",
+    "valido": true
+  }
+]

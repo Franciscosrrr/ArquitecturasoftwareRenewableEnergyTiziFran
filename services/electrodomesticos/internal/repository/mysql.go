@@ -31,6 +31,7 @@ type Store struct{ DB *sql.DB }
 type Query struct {
 	Text, Category, Mode, Sort string
 	Page, Size                 int
+	MinPower, MaxPower         *float64
 }
 type Page struct {
 	Items []Item `json:"items"`
@@ -39,6 +40,16 @@ type Page struct {
 	Size  int    `json:"tamano"`
 }
 
+/**
+ * Abre la infraestructura propia y prepara sus índices o conexiones.
+ *
+ * @method Open
+ * @param {string} user - Valor de user requerido por la operación.
+ * @param {string} password - Valor de password requerido por la operación.
+ * @param {string} address - Valor de address requerido por la operación.
+ * @param {string} database - Valor de database requerido por la operación.
+ * @returns {*Store, error} Resultado de la operación; error si no puede completarse.
+ */
 func Open(user, password, address, database string) (*Store, error) {
 	cfg := mysql.NewConfig()
 	cfg.User = user
@@ -59,6 +70,14 @@ func Open(user, password, address, database string) (*Store, error) {
 	db.SetConnMaxLifetime(5 * time.Minute)
 	return &Store{db}, nil
 }
+
+/**
+ * Crea o migra el esquema propio de manera repetible sin eliminar datos existentes.
+ *
+ * @method Migrate
+ * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
+ * @returns {error} Resultado de la operación; error si no puede completarse.
+ */
 func (s *Store) Migrate(ctx context.Context) error {
 	if _, err := s.DB.ExecContext(ctx, schema); err != nil {
 		return err
@@ -90,6 +109,13 @@ func (s *Store) Migrate(ctx context.Context) error {
 
 const columns = "id,nombre,categoria,modo,potencia_w,energia_ciclo,factor,fuente,version"
 
+/**
+ * Convierte filas SQL a fichas tipadas conservando números decimales y versiones.
+ *
+ * @method scanRows
+ * @param {*sql.Rows} rows - Valor de rows requerido por la operación.
+ * @returns {[]Item, error} Resultado de la operación; error si no puede completarse.
+ */
 func scanRows(rows *sql.Rows) ([]Item, error) {
 	defer rows.Close()
 	items := []Item{}
@@ -106,6 +132,15 @@ func scanRows(rows *sql.Rows) ([]Item, error) {
 	}
 	return items, rows.Err()
 }
+
+/**
+ * Lista resultados con propiedad y límites definidos por el repositorio del servicio.
+ *
+ * @method List
+ * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
+ * @param {Query} q - Filtros, orden y límites de la consulta.
+ * @returns {Page, error} Resultado de la operación; error si no puede completarse.
+ */
 func (s *Store) List(ctx context.Context, q Query) (Page, error) {
 	ctx, span := otel.Tracer("electrodomesticos").Start(ctx, "mysql.catalogo.listar")
 	defer span.End()
@@ -124,6 +159,14 @@ func (s *Store) List(ctx context.Context, q Query) (Page, error) {
 	if q.Mode != "" {
 		where += " AND modo=?"
 		args = append(args, q.Mode)
+	}
+	if q.MinPower != nil {
+		where += " AND modo='POTENCIA' AND potencia_w>=?"
+		args = append(args, *q.MinPower)
+	}
+	if q.MaxPower != nil {
+		where += " AND modo='POTENCIA' AND potencia_w<=?"
+		args = append(args, *q.MaxPower)
 	}
 	order := map[string]string{"nombre": "nombre,id", "potencia": "potencia_w,id", "-potencia": "potencia_w DESC,id"}[q.Sort]
 	if order == "" {
@@ -151,6 +194,15 @@ func (s *Store) List(ctx context.Context, q Query) (Page, error) {
 	}
 	return p, tx.Commit()
 }
+
+/**
+ * Obtiene fichas canónicas activas para calcular con sus versiones exactas.
+ *
+ * @method Resolve
+ * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
+ * @param {[]string} ids - Valor de ids requerido por la operación.
+ * @returns {[]Item, error} Resultado de la operación; error si no puede completarse.
+ */
 func (s *Store) Resolve(ctx context.Context, ids []string) ([]Item, error) {
 	ctx, span := otel.Tracer("electrodomesticos").Start(ctx, "mysql.catalogo.resolver")
 	defer span.End()

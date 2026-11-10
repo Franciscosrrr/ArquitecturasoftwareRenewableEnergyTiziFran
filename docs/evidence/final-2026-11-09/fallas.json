@@ -1,0 +1,113 @@
+[
+  {
+    "segundo": 2.875,
+    "accion": "broker detenido"
+  },
+  {
+    "segundo": 3.14,
+    "accion": "evaluación confirmada sin broker",
+    "http": 201,
+    "publicacion": "PENDIENTE"
+  },
+  {
+    "segundo": 3.484,
+    "accion": "broker reiniciado"
+  },
+  {
+    "segundo": 9.812,
+    "accion": "outbox recuperada y estudio completado",
+    "estado": "COMPLETADO"
+  },
+  {
+    "segundo": 28.062,
+    "accion": "broker recreado con identidad y volumen conservados",
+    "mensajesDLQAntes": 2,
+    "mensajesDLQDespues": 2
+  },
+  {
+    "segundo": 29.109,
+    "accion": "alta de catálogo tras reconexión ociosa visible en menos de 5 s",
+    "segundos": 1.047
+  },
+  {
+    "segundo": 33.094,
+    "accion": "evento duplicado entregado",
+    "estudios": 1
+  },
+  {
+    "segundo": 36.437,
+    "accion": "evento incompatible en DLQ",
+    "colas": {
+      "solar.estudios": 0,
+      "solar.estudios.dlq": 3,
+      "solar.estudios.retry": 0
+    }
+  },
+  {
+    "segundo": 38.187,
+    "accion": "reproceso administrado completa mensaje válido y conserva inválido",
+    "invalidosConservados": 3,
+    "republicados": 1
+  },
+  {
+    "segundo": 42.828,
+    "accion": "réplica Solar 2 detenida",
+    "distribucionAnterior": [
+      "solar-2",
+      "solar-1",
+      "solar-2",
+      "solar-1"
+    ]
+  },
+  {
+    "segundo": 69.078,
+    "accion": "balanceo excluye caída y alerta activa",
+    "instancias": [
+      "solar-1",
+      "solar-1",
+      "solar-1",
+      "solar-1"
+    ],
+    "alertas": [
+      {
+        "__name__": "ALERTS",
+        "alertname": "RenewableTargetDown",
+        "alertstate": "firing",
+        "instance": "solar-2:8080",
+        "job": "solar",
+        "severity": "warning"
+      }
+    ]
+  },
+  {
+    "segundo": 88.656,
+    "accion": "réplica recuperada",
+    "distribucion": [
+      "solar-2",
+      "solar-1",
+      "solar-2",
+      "solar-1"
+    ]
+  },
+  {
+    "segundo": 92.578,
+    "accion": "vendedor caído conserva evaluación y encola reintento",
+    "evaluacionDisponible": 200
+  },
+  {
+    "segundo": 97.0,
+    "accion": "reintento comercial completado"
+  },
+  {
+    "segundo": 99.469,
+    "accion": "buscador y caché caídos: respaldo SQL",
+    "http": 200,
+    "origen": "sql-degradado"
+  },
+  {
+    "segundo": 115.265,
+    "accion": "reinicios conservan SQL, sesión y Mongo",
+    "configuracionVersion": 1,
+    "estudioEstado": "COMPLETADO"
+  }
+]

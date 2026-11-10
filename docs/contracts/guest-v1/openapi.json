@@ -2,13 +2,13 @@
   "openapi": "3.0.3",
   "info": {
     "title": "ArquitecturasoftwareRenewableEnergy - Calculadora invitada",
-    "version": "1.0.1",
-    "description": "Contrato de entrega 2. Implementación Go local para consumo; las reglas cruzadas, redondeo y límites se describen en docs/contracts/README.md. La recomendación solar del contrato invitado permanece pendiente; el mock histórico la simula por separado. URL cloud pendiente."
+    "version": "1.1.0",
+    "description": "Cálculos temporales implementados sin guardados anónimos. Recurso manual explícito; sin proveedor de irradiación por ubicación acordado. Se conservan campos de consumo y de comparación solar. La capacidad M2M separada conserva1.0.1."
   },
   "servers": [
     {
       "url": "http://localhost:8080",
-      "description": "Gateway local del sistema real de entrega 2. Mock histórico opcional en localhost:8081; no es un despliegue cloud."
+      "description": "Gateway del entorno completo local."
     }
   ],
   "tags": [
@@ -883,7 +883,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Números con hasta seis decimales efectivos. Dimensionamiento con cantidad requerida≤1.000 millones por alternativa para evitar overflow; fuera del límite devuelve422. Superficie cero produce resultado sin alternativa. UBICACION válida devuelve503 hasta acordar una fuente."
       },
       "AlternativaSolarTemporal": {
         "type": "object",

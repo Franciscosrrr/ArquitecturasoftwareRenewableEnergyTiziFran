@@ -1,0 +1,17 @@
+broker detenido
+evaluaci�n confirmada sin broker
+broker reiniciado
+outbox recuperada y estudio completado
+broker recreado con identidad y volumen conservados
+alta de cat�logo tras reconexi�n ociosa visible en menos de 5 s
+evento duplicado entregado
+evento incompatible en DLQ
+reproceso administrado completa mensaje v�lido y conserva inv�lido
+r�plica Solar 2 detenida
+balanceo excluye ca�da y alerta activa
+r�plica recuperada
+vendedor ca�do conserva evaluaci�n y encola reintento
+reintento comercial completado
+buscador y cach� ca�dos: respaldo SQL
+reinicios conservan SQL, sesi�n y Mongo
+{"completado": true, "pasos": 16, "evidencia": "C:\\Users\\tixin\\Documents\\GitHub\\ArquitecturasoftwareRenewableEnergyTiziFran\\docs\\evidence\\final-2026-11-09\\fallas.json"}

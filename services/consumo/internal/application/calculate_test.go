@@ -8,6 +8,13 @@ import (
 	"testing"
 )
 
+/**
+ * Carga la solicitud de referencia del contrato para las pruebas del algoritmo.
+ *
+ * @method example
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {[]byte} Resultado de la operación; error si no puede completarse.
+ */
 func example(t *testing.T) []byte {
 	t.Helper()
 	raw, err := os.ReadFile("../../../../docs/contracts/v1/examples/solicitud-valida.json")
@@ -16,6 +23,14 @@ func example(t *testing.T) []byte {
 	}
 	return raw
 }
+
+/**
+ * Comprueba el comportamiento y los invariantes indicados por MixedConsumption.
+ *
+ * @method TestMixedConsumption
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestMixedConsumption(t *testing.T) {
 	r, err := Calculate(context.Background(), example(t), "trace-test")
 	if err != nil {
@@ -30,6 +45,14 @@ func TestMixedConsumption(t *testing.T) {
 		}
 	}
 }
+
+/**
+ * Comprueba el comportamiento y los invariantes indicados por Validation.
+ *
+ * @method TestValidation
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestValidation(t *testing.T) {
 	cases := map[string]string{
 		"not-object": `[]`, "null": `null`, "malformed": `{`, "extra-json": `{} {}`, "missing-days": `{"equipos":[]}`, "empty": `{"diasPeriodo":30,"equipos":[]}`, "null-days": `{"diasPeriodo":null,"equipos":[]}`, "bool": `{"diasPeriodo":true,"equipos":[]}`, "extra": `{"diasPeriodo":30,"equipos":[],"otro":1}`,
@@ -50,6 +73,14 @@ func TestValidation(t *testing.T) {
 		t.Fatal("duplicate accepted")
 	}
 }
+
+/**
+ * Comprueba el comportamiento y los invariantes indicados por RoundingWithoutIntermediateLoss.
+ *
+ * @method TestRoundingWithoutIntermediateLoss
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestRoundingWithoutIntermediateLoss(t *testing.T) {
 	raw := `{"diasPeriodo":1,"equipos":[{"id":"a","modo":"POTENCIA","cantidad":1,"potenciaW":0.001,"horasPorDia":0.5,"diasUso":1,"factorFuncionamiento":1},{"id":"b","modo":"POTENCIA","cantidad":1,"potenciaW":0.001,"horasPorDia":0.5,"diasUso":1,"factorFuncionamiento":1}]}`
 	r, err := Calculate(context.Background(), []byte(raw), "t")
@@ -60,6 +91,14 @@ func TestRoundingWithoutIntermediateLoss(t *testing.T) {
 		t.Fatal(r)
 	}
 }
+
+/**
+ * Comprueba el comportamiento y los invariantes indicados por CyclesArePerUnitAndZeroIsValid.
+ *
+ * @method TestCyclesArePerUnitAndZeroIsValid
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestCyclesArePerUnitAndZeroIsValid(t *testing.T) {
 	for _, cycles := range []string{"0", "12"} {
 		raw := `{"diasPeriodo":30,"equipos":[{"id":"a","modo":"CICLOS","cantidad":2,"energiaPorCicloKWh":0.75,"ciclosPeriodo":` + cycles + `}]}`
@@ -82,7 +121,21 @@ type fakeCatalog struct {
 	err   error
 }
 
+/**
+ * Obtiene fichas canónicas activas para calcular con sus versiones exactas.
+ *
+ * @method Resolve
+ * @returns {[]Ficha, error} Resultado de la operación; error si no puede completarse.
+ */
 func (f fakeCatalog) Resolve(context.Context, []string) ([]Ficha, error) { return f.items, f.err }
+
+/**
+ * Comprueba el comportamiento y los invariantes indicados por CatalogUsesServerPower.
+ *
+ * @method TestCatalogUsesServerPower
+ * @param {*testing.T} t - Contexto de verificación de la prueba.
+ * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
+ */
 func TestCatalogUsesServerPower(t *testing.T) {
 	raw := `{"diasPeriodo":30,"equipos":[{"catalogoId":"led","cantidad":4,"horasPorDia":5,"diasUso":30,"factorFuncionamiento":1}]}`
 	catalog := fakeCatalog{items: []Ficha{{ID: "led", Mode: "POTENCIA", Power: "10"}}}

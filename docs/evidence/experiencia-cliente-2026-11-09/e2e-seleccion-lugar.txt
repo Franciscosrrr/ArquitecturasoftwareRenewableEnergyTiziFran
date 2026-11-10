@@ -1,0 +1,159 @@
+ Image renewable-energy-entrega2-electrodomesticos Building 
+ Image renewable-energy-entrega2-verificar-e2e Building 
+ Image renewable-energy-entrega2-consumo Building 
+ Image renewable-energy-entrega2-gateway Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.54kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 199B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for mcr.microsoft.com/playwright:v1.64.1-noble
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 186B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 15.39kB 0.0s done
+#5 DONE 0.0s
+
+#6 [1/5] FROM mcr.microsoft.com/playwright:v1.64.1-noble@sha256:7852dc5a7d72f5fe458a597d690f6c42fbc8e9e26ddfa95f8e6ef552558d9bbf
+#6 resolve mcr.microsoft.com/playwright:v1.64.1-noble@sha256:7852dc5a7d72f5fe458a597d690f6c42fbc8e9e26ddfa95f8e6ef552558d9bbf 0.0s done
+#6 DONE 0.0s
+
+#7 [2/5] WORKDIR /e2e
+#7 CACHED
+
+#8 [3/5] COPY tests/e2e/package*.json ./
+#8 CACHED
+
+#9 [4/5] RUN npm ci --ignore-scripts
+#9 CACHED
+
+#10 [5/5] COPY tests/e2e/ ./
+#10 DONE 0.0s
+
+#11 exporting to image
+#11 exporting layers 0.1s done
+#11 exporting manifest sha256:fac149c30712af32627a44e45f15736430ae725592156f85885af7e2f15681a8 0.0s done
+#11 exporting config sha256:471bf4d6732f38bf5a23698c932a5808f5a95e541ee299f8f2e000b41e1347ff done
+#11 exporting attestation manifest sha256:64eca5b8b1d0957194b6f4066d1a3d4d4d1266f6d4e694d4b71821bced0f81d1 0.0s done
+#11 exporting manifest list sha256:aa98aa70fe58ea108818fbe95a482b98cbaf7dfac28330786d36cbe84f3645d6 0.0s done
+#11 naming to docker.io/library/renewable-energy-entrega2-verificar-e2e:latest done
+#11 unpacking to docker.io/library/renewable-energy-entrega2-verificar-e2e:latest 0.0s done
+#11 DONE 0.2s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ Image renewable-energy-entrega2-verificar-e2e Built 
+ Container renewable-energy-entrega2-verificar-e2e-run-c10727f505f5 Creating 
+ Container renewable-energy-entrega2-verificar-e2e-run-c10727f505f5 Created 
+
+> test
+> playwright test
+
+
+Running 12 tests using 1 worker
+
+[1/12] [escritorio] › calculadora.spec.js:4:1 › catálogo real, cálculo mixto y desglose
+[2/12] [escritorio] › calculadora.spec.js:17:1 › editar invalida el resultado y recargar pierde el borrador
+[3/12] [escritorio] › calculadora.spec.js:30:1 › validación del formulario, quitar equipo y acceso sin sesión
+[4/12] [escritorio] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+  1) [escritorio] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable ──────────
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.account').getByLabel('Lugar', { exact: true }).locator('option:checked')
+    Expected: "Hospital demo (Archivado)"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('.account').getByLabel('Lugar', { exact: true }).locator('option:checked') with timeout 5000ms
+      - waiting for locator('.account').getByLabel('Lugar', { exact: true }).locator('option:checked')
+
+
+      36 |  await location.locator('summary').first().click();
+      37 |  await location.getByRole('button',{name:'Archivar lugar',exact:true}).click();
+    > 38 |  await expect(account.getByLabel('Lugar',{exact:true}).locator('option:checked')).toHaveText('Hospital demo (Archivado)');
+         |                                                                                   ^
+      39 |  await expect(account.getByRole('button',{name:'Guardar cambios',exact:true})).toBeDisabled();
+      40 |  await expect(saved.getByRole('button',{name:'Calcular paneles',exact:true})).toBeDisabled();
+      41 |  await location.getByRole('button',{name:'Restaurar lugar',exact:true}).click();
+        at durableAccountFlow (/e2e/cuenta.spec.js:38:83)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-escritorio/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-escritorio/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-escritorio/trace.zip
+    Usage:
+
+        npx playwright show-trace ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-escritorio/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[5/12] [escritorio] › paneles.spec.js:35:1 › paneles solares: filtros y ficha técnica opcional
+[6/12] [escritorio] › solar.spec.js:30:1 › cotización comercial y consumo conservado ante fallo
+[7/12] [movil] › calculadora.spec.js:4:1 › catálogo real, cálculo mixto y desglose
+[8/12] [movil] › calculadora.spec.js:17:1 › editar invalida el resultado y recargar pierde el borrador
+[9/12] [movil] › calculadora.spec.js:30:1 › validación del formulario, quitar equipo y acceso sin sesión
+[10/12] [movil] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+  2) [movil] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable ───────────────
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.account').getByLabel('Lugar', { exact: true }).locator('option:checked')
+    Expected: "Hospital demo (Archivado)"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('.account').getByLabel('Lugar', { exact: true }).locator('option:checked') with timeout 5000ms
+      - waiting for locator('.account').getByLabel('Lugar', { exact: true }).locator('option:checked')
+
+
+      36 |  await location.locator('summary').first().click();
+      37 |  await location.getByRole('button',{name:'Archivar lugar',exact:true}).click();
+    > 38 |  await expect(account.getByLabel('Lugar',{exact:true}).locator('option:checked')).toHaveText('Hospital demo (Archivado)');
+         |                                                                                   ^
+      39 |  await expect(account.getByRole('button',{name:'Guardar cambios',exact:true})).toBeDisabled();
+      40 |  await expect(saved.getByRole('button',{name:'Calcular paneles',exact:true})).toBeDisabled();
+      41 |  await location.getByRole('button',{name:'Restaurar lugar',exact:true}).click();
+        at durableAccountFlow (/e2e/cuenta.spec.js:38:83)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-movil/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-movil/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-movil/trace.zip
+    Usage:
+
+        npx playwright show-trace ../results/artefactos/cuenta-cuenta-guardado-estudio-e-historial-inmutable-movil/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[11/12] [movil] › paneles.spec.js:35:1 › paneles solares: filtros y ficha técnica opcional
+[12/12] [movil] › solar.spec.js:30:1 › cotización comercial y consumo conservado ante fallo
+  2 failed
+    [escritorio] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable ───────────
+    [movil] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable ────────────────
+  10 passed (59.2s)
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+

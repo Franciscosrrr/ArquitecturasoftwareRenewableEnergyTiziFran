@@ -1,24 +1,39 @@
 ---
-title: Contenedores de la arquitectura prevista
+title: Contenedores implementados - entorno completo local
 ---
 flowchart TB
-    W["Frontend web<br/>React / JavaScript"] -->|HTTP| G["API Gateway Go<br/>Rutas, identidad, límites y balanceo"]
-    X["Grupo consumidor<br/>API key M2M"] -->|HTTP estimación| G
-    G --> U["Usuarios / capas<br/>Registro, login y roles"]
-    G --> E["Electrodomésticos / capas<br/>Catálogo, búsqueda e indexador propio"]
-    G --> C["Consumo / capas<br/>Temporal, configuraciones y evaluaciones"]
-    G -->|Round-robin saludable| S["Solar / hexagonal<br/>Dos instancias del mismo servicio"]
-    U -->|Acceso exclusivo| UD[("MySQL usuarios_db")]
-    E -->|Acceso exclusivo| ED[("MySQL electrodomesticos_db")]
-    C -->|Acceso exclusivo| CD[("MySQL consumo_db")]
-    S -->|Acceso exclusivo del servicio| SD[("MongoDB solar_db<br/>Compartida entre las dos instancias Solar")]
-    E -->|Lecturas e indexación| D["Meilisearch / Valkey<br/>Índice y caché del catálogo"]
-    E -. ElectrodomesticoActualizado .-> B["RabbitMQ<br/>Eventos durables, confirmaciones y DLQ"]
-    B -. Consumidor indexador .-> E
-    C -. ConsumoEvaluado .-> B
-    B -. Consumidores Solar .-> S
-    S -->|Adaptador HTTP directo| P["Proveedor externo<br/>Asignación y contrato pendientes"]
-    classDef service fill:#e9f2fb,stroke:#557a96,color:#203b50
-    classDef store fill:#e6f4ee,stroke:#417c64,color:#203b50
-    class W,G,U,E,C,S,X,P service
-    class UD,ED,CD,SD,D,B store
+ W["React<br/>Invitado, cuenta y administración"] --> G["API Gateway Go · :8080<br/>JWT / cuotas / proxy / balanceo"]
+ CL["Clínica · API key M2M<br/>Contrato estable 1.0.1"] --> G
+ subgraph BACK["Red backend privada de Compose"]
+ G --> U["Usuarios<br/>Identidad y sesiones"]
+ G --> C["Consumo · capas<br/>Cálculo y confirmación"]
+ G --> E["Electrodomésticos · capas<br/>Catálogo y worker de índice"]
+ G -->|"Round robin + health checks"| S1["Solar 1 · hexagonal<br/>API y worker AMQP"]
+ G --> S2["Solar 2 · hexagonal<br/>API y worker AMQP"]
+ U --> UD[("MySQL usuarios_db<br/>Usuarios / sesiones")]
+ C --> CD[("MySQL consumo_db<br/>Lugares / configuraciones<br/>Evaluaciones / idempotencia / outbox")]
+ E --> ED[("MySQL electrodomesticos_db<br/>Catálogo / outbox")]
+ C -->|"HTTP lote · timeout 2 s"| E
+ C -->|"Relay outbox + confirms"| B["RabbitMQ<br/>Durable / retry / DLQ"]
+ E -->|"Relay outbox"| B
+ B -->|"ConsumoEvaluado.v1 / ACK tras persistir"| S1
+ B --> S2
+ B -->|"ElectrodomesticoActualizado.v1"| E
+ E --> M["Meilisearch<br/>Índices de equipos y paneles"]
+ S1 -->|"Búsqueda y sincronización con lease"| M
+ S2 --> M
+ E --> V["Valkey<br/>Cache-aside · TTL 60 s"]
+ S1 --> MD[("MongoDB solar_db<br/>Paneles / pendientes de índice<br/>Estudios / deduplicación")]
+ S2 --> MD
+ S1 -->|"HTTP directo · timeout 1 s"| P["Vendedor SIMULADO<br/>Stock y cotización por SKU"]
+ S2 --> P
+ end
+ OBS["Observabilidad en red backend:<br/>Prometheus :9090 · Grafana :3000<br/>Loki · Jaeger :16686<br/>Métricas protegidas / logs JSON / trazas W3C"]
+ G -. "Servicios emiten telemetría" .-> OBS
+ NOTE["Puertos de host solo en 127.0.0.1.<br/>Cada servicio usa únicamente su base.<br/>Cotizar no reserva ni compra.<br/>HTTPS público usa un despliegue aislado."]
+ classDef active fill:#e6f4ee,stroke:#417c64,color:#203b50
+ classDef store fill:#e9f2fb,stroke:#557a96,color:#203b50
+ classDef note fill:#fff4de,stroke:#a87827,color:#563c14
+ class G,U,C,E,S1,S2,B,M,V active
+ class UD,CD,ED,MD,OBS store
+ class NOTE,P note

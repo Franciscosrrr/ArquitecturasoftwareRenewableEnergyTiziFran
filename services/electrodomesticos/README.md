@@ -1,7 +1,7 @@
-# Electrodomésticos - Entrega 2
+# Servicio Electrodomésticos
 
-Catálogo público de lectura en MySQL 8.4. Listado/búsqueda literal, filtros categoría/modo, paginación, orden y detalle de fichas activas. Endpoint interno de resolución por lote autenticado con Bearer técnico, usado por Consumo. Sin mantenimiento administrativo público.
+Estado 2026-11-09. MySQL privado administra fichas de equipos para construir consumos. La API pública mantiene listado, filtros, orden, paginación y detalle de fichas activas; el resolver interno por lote requiere credencial técnica y lo usa Consumo. La administración de fichas exige rol autorizado y versión esperada.
 
-schema.sql embebido define la tabla e índices; la inicialización crea seis referencias didácticas mediante INSERT IGNORE transaccional, sin duplicar ni sobrescribir filas existentes. Cada ficha informa fuente y versión. Solo este servicio recibe las credenciales de su base. Las migraciones incrementales posteriores y el índice Meilisearch permanecen pendientes.
+schema.sql embebido crea tabla/índices; las seis semillas didácticas son idempotentes y no sobrescriben fichas existentes. Las modificaciones administrativas generan outbox local. RabbitMQ notifica cambios y el worker lee el estado canónico, espera la indexación Meilisearch y luego invalida la generación de caché Valkey. Hay reindexación temporal/swap y respaldo SQL cuando fallan dependencias derivadas.
 
-Prueba con base real: perfil verificar-go de Compose. Dockerfile desde raíz mediante infra/backend.Dockerfile y ARG SERVICE=services/electrodomesticos.
+La búsqueda principal de la interfaz se trasladó a paneles; esta API y su índice se conservan para compatibilidad. Solo este servicio recibe las credenciales de su base. [Contrato](../../docs/contracts/catalog-v1/openapi.json), [medición de caché](../../docs/CARGA-FINAL.md), [fallas](../../docs/POSTMORTEM.md). Construcción desde la raíz mediante infra/backend.Dockerfile.

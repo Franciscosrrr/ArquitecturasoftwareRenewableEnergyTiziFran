@@ -1,0 +1,222 @@
+ Image renewable-energy-entrega2-gateway Building 
+ Image renewable-energy-entrega2-consumo Building 
+ Image renewable-energy-entrega2-electrodomesticos Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.00kB done
+#1 DONE 0.0s
+
+#2 [electrodomesticos internal] load build definition from backend.Dockerfile
+#2 transferring dockerfile: 1.14kB done
+#2 DONE 0.0s
+
+#3 [gateway internal] load build definition from Dockerfile
+#3 transferring dockerfile: 793B done
+#3 DONE 0.0s
+
+#4 [gateway internal] load metadata for docker.io/library/golang:1.26.1-alpine
+#4 ...
+
+#5 [gateway internal] load metadata for docker.io/library/node:22.16.0-alpine
+#5 DONE 0.7s
+
+#4 [electrodomesticos internal] load metadata for docker.io/library/golang:1.26.1-alpine
+#4 DONE 0.8s
+
+#6 [consumo internal] load .dockerignore
+#6 transferring context: 146B done
+#6 DONE 0.0s
+
+#7 [electrodomesticos source 1/7] FROM docker.io/library/golang:1.26.1-alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039
+#7 resolve docker.io/library/golang:1.26.1-alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039 0.0s done
+#7 DONE 0.0s
+
+#8 [gateway internal] load build context
+#8 transferring context: 54.00kB 0.0s done
+#8 DONE 0.1s
+
+#9 [gateway web 1/6] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#9 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#9 DONE 0.1s
+
+#10 [gateway source 2/7] WORKDIR /src
+#10 CACHED
+
+#11 [gateway web 2/6] WORKDIR /web
+#11 CACHED
+
+#12 [gateway build 5/6] RUN cd gateway && go mod download && CGO_ENABLED=0 go build -trimpath -o /service ./cmd/server
+#12 CACHED
+
+#13 [gateway build 6/6] RUN cd platform && CGO_ENABLED=0 go build -trimpath -o /healthcheck ./cmd/healthcheck
+#13 CACHED
+
+#14 [gateway web 6/6] RUN npm run build
+#14 CACHED
+
+#15 [gateway stage-2 1/5] COPY --from=build /service /service
+#15 CACHED
+
+#16 [gateway stage-2 3/5] COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+#16 CACHED
+
+#17 [gateway web 5/6] COPY frontend/ ./
+#17 CACHED
+
+#18 [gateway web 4/6] RUN npm ci --ignore-scripts
+#18 CACHED
+
+#19 [gateway build 3/6] COPY platform ./platform
+#19 CACHED
+
+#20 [gateway build 4/6] COPY gateway ./gateway
+#20 CACHED
+
+#21 [gateway stage-2 4/5] COPY --from=web /web/dist /web
+#21 CACHED
+
+#22 [gateway stage-2 2/5] COPY --from=build /healthcheck /healthcheck
+#22 CACHED
+
+#23 [gateway web 3/6] COPY frontend/package*.json ./
+#23 CACHED
+
+#24 [gateway stage-2 5/5] COPY docs/contracts /contracts
+#24 CACHED
+
+#25 [electrodomesticos internal] load build context
+#25 transferring context: 9.61kB 0.0s done
+#25 DONE 0.1s
+
+#26 [gateway] exporting to image
+#26 exporting layers done
+#26 exporting manifest sha256:f4356747404b1fd2c52bd4523b43b7e7af65cf93d0054846f69ea6225fc75280 done
+#26 exporting config sha256:94c34981a5709af047970e5c88857bb4bd373b1a5ffa4fcc13e439301ec09002 done
+#26 ...
+
+#25 [consumo internal] load build context
+#25 DONE 0.1s
+
+#27 [electrodomesticos stage-3 1/3] COPY --from=build /service /service
+#27 CACHED
+
+#28 [electrodomesticos build 2/2] RUN cd /src/platform && CGO_ENABLED=0 go build -trimpath -o /healthcheck ./cmd/healthcheck
+#28 CACHED
+
+#29 [electrodomesticos build 1/2] RUN cd /src/services/electrodomesticos && CGO_ENABLED=0 go build -trimpath -o /service ./cmd/server
+#29 CACHED
+
+#30 [electrodomesticos stage-3 2/3] COPY --from=build /healthcheck /healthcheck
+#30 CACHED
+
+#31 [electrodomesticos stage-3 3/3] COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+#31 CACHED
+
+#32 [consumo source 6/7] COPY docs/contracts ./docs/contracts
+#32 CACHED
+
+#10 [consumo source 2/7] WORKDIR /src
+#10 CACHED
+
+#33 [consumo stage-3 1/3] COPY --from=build /service /service
+#33 CACHED
+
+#34 [consumo source 5/7] COPY gateway ./gateway
+#34 CACHED
+
+#35 [consumo build 2/2] RUN cd /src/platform && CGO_ENABLED=0 go build -trimpath -o /healthcheck ./cmd/healthcheck
+#35 CACHED
+
+#36 [consumo source 4/7] COPY services ./services
+#36 CACHED
+
+#37 [consumo source 7/7] RUN cd platform && go mod download && cd ../services/consumo && go mod download && cd ../electrodomesticos && go mod download && cd ../solar && go mod download && cd ../../gateway && go mod download
+#37 CACHED
+
+#38 [consumo stage-3 2/3] COPY --from=build /healthcheck /healthcheck
+#38 CACHED
+
+#39 [consumo build 1/2] RUN cd /src/services/consumo && CGO_ENABLED=0 go build -trimpath -o /service ./cmd/server
+#39 CACHED
+
+#40 [consumo source 3/7] COPY platform ./platform
+#40 CACHED
+
+#41 [consumo stage-3 3/3] COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+#41 CACHED
+
+#26 [gateway] exporting to image
+#26 exporting attestation manifest sha256:7e3bc903091fb714e031e74264fd96fa17e30065bc8d6a4d69f917014613679a 0.1s done
+#26 exporting manifest list sha256:fae4ecd21764bbb9252fe2995c87557a2d83dbded09b36c45dc230026433a19d
+#26 exporting manifest list sha256:fae4ecd21764bbb9252fe2995c87557a2d83dbded09b36c45dc230026433a19d 0.1s done
+#26 naming to docker.io/library/renewable-energy-entrega2-gateway:latest 0.0s done
+#26 unpacking to docker.io/library/renewable-energy-entrega2-gateway:latest 0.0s done
+#26 DONE 0.4s
+
+#42 [electrodomesticos] exporting to image
+#42 exporting layers done
+#42 exporting manifest sha256:e7d2625ed7345b575acf46a331625f0ed2d721f69be6b14fc9efea65b6ed1435 0.0s done
+#42 exporting config sha256:e59a790a59c744dc37b9437674b0324bc3de69844c725e8159bd2310f14e1014 done
+#42 exporting attestation manifest sha256:162aae0140a03bad6518bd4fe7bdad1a6614f09c7e747b6b19d609aa63cffda9 0.1s done
+#42 exporting manifest list sha256:9e30cc72edb5a4ed162367ea33f78b72d5ce244962b61e1176b26f1d3240ed2e 0.0s done
+#42 naming to docker.io/library/renewable-energy-entrega2-electrodomesticos:latest 0.0s done
+#42 unpacking to docker.io/library/renewable-energy-entrega2-electrodomesticos:latest 0.0s done
+#42 DONE 0.4s
+
+#43 [consumo] exporting to image
+#43 exporting layers done
+#43 exporting manifest sha256:2fde0a51937771613a860567abb54fe20eee916388c5c34b7452fc6d46b40eb8 0.0s done
+#43 exporting config sha256:080778477346c4d2ab803fb01056126624b981d26ffbc85480503e78207a09d1 done
+#43 exporting attestation manifest sha256:0a2e7437a1ab905b3cc779642608529d23afe2afeb83f03e18b5626cb0af56ef 0.1s done
+#43 exporting manifest list sha256:56ef245bf300fb4331de1b2ab1af864ad0221365f1b60b90a036476029c3d6ed 0.0s done
+#43 naming to docker.io/library/renewable-energy-entrega2-consumo:latest done
+#43 unpacking to docker.io/library/renewable-energy-entrega2-consumo:latest 0.0s done
+#43 DONE 0.4s
+
+#44 [gateway] resolving provenance for metadata file
+#44 DONE 0.1s
+
+#45 [consumo] resolving provenance for metadata file
+#45 DONE 0.0s
+
+#46 [electrodomesticos] resolving provenance for metadata file
+#46 DONE 0.0s
+ Image renewable-energy-entrega2-gateway Built 
+ Image renewable-energy-entrega2-consumo Built 
+ Image renewable-energy-entrega2-electrodomesticos Built 
+ Container renewable-energy-entrega2-mysql-1 Running 
+ Container renewable-energy-entrega2-consumo-1 Recreate 
+ Container renewable-energy-entrega2-electrodomesticos-1 Recreate 
+ Container renewable-energy-entrega2-electrodomesticos-1 Recreated 
+ Container renewable-energy-entrega2-consumo-1 Recreated 
+ Container renewable-energy-entrega2-gateway-1 Recreate 
+ Container renewable-energy-entrega2-gateway-1 Recreated 
+ Container renewable-energy-entrega2-consumo-1 Starting 
+ Container renewable-energy-entrega2-mysql-1 Waiting 
+ Container renewable-energy-entrega2-consumo-1 Started 
+ Container renewable-energy-entrega2-mysql-1 Healthy 
+ Container renewable-energy-entrega2-electrodomesticos-1 Starting 
+ Container renewable-energy-entrega2-electrodomesticos-1 Started 
+ Container renewable-energy-entrega2-electrodomesticos-1 Waiting 
+ Container renewable-energy-entrega2-consumo-1 Waiting 
+ Container renewable-energy-entrega2-consumo-1 Healthy 
+ Container renewable-energy-entrega2-electrodomesticos-1 Healthy 
+ Container renewable-energy-entrega2-gateway-1 Starting 
+ Container renewable-energy-entrega2-gateway-1 Started 
+ Container renewable-energy-entrega2-gateway-1 Waiting 
+ Container renewable-energy-entrega2-gateway-1 Healthy 
+ Container renewable-energy-entrega2-verificar-real-run-ecfbd876dbda Creating 
+ Container renewable-energy-entrega2-verificar-real-run-ecfbd876dbda Created 
+test_authentication (test_real.RealServices.test_authentication) ... ok
+test_catalog_flow_uses_mysql (test_real.RealServices.test_catalog_flow_uses_mysql) ... ok
+test_catalog_read_search_pagination (test_real.RealServices.test_catalog_read_search_pagination) ... ok
+test_guest_requires_no_account (test_real.RealServices.test_guest_requires_no_account) ... ok
+test_invalid_days_and_client_power (test_real.RealServices.test_invalid_days_and_client_power) ... ok
+test_json_and_size_limits (test_real.RealServices.test_json_and_size_limits) ... ok
+test_m2m_matches_contract (test_real.RealServices.test_m2m_matches_contract) ... ok
+test_private_routes_and_health (test_real.RealServices.test_private_routes_and_health) ... ok
+test_web_and_published_contract (test_real.RealServices.test_web_and_published_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 10.075s
+
+OK

@@ -1,25 +1,9 @@
-# Estado ejecutable de entrega 1
+# Servicio Usuarios
 
-Módulo Go independiente con cmd/server, paquetes internos y Dockerfile. Liveness y readiness exigen Authorization: Bearer con HEALTHCHECK_TOKEN (mínimo 32 caracteres, sin valor por defecto). Con credencial válida, liveness devuelve 200 y readiness 503; negocio responde 501. Sin credencial operativa válida, las rutas /health/ devuelven 401 sin informar estado. Ver scripts/compose para generar la credencial local automáticamente. El transporte inicial usa net/http sin dependencias externas; Gin y los drivers se incorporarán al implementar los casos reales. No es evidencia de persistencia ni del patrón completo en funcionamiento.
+Estado 2026-11-09. Implementación Go/Gin en capas: transporte HTTP, identidad y persistencia en MySQL usuarios_db. Registro y login usan Argon2id con salt; el access token es JWT y el refresh se conserva como hash en una sesión durable con vencimiento. Refresh rota la credencial y logout revoca la sesión. No se devuelven contraseñas ni sus hashes.
 
-Dentro de esta carpeta: `go test ./...` y `go run ./cmd/server`. Con Docker, usar el perfil `estructura` de la raíz.
+El gateway consulta identidad para verificar sesión y rol vigentes. Perfil y administración exigen credencial interna/actor; gestionar roles requiere administrador y no permite perder el último administrador. La cookie de refresh es HttpOnly/SameSite Strict y la entrada web HTTPS agrega Secure sin afectar localhost. Las operaciones de autenticación verifican Origin y aplican límites de solicitudes/cómputo.
 
-## Diseño previsto
+Migrate crea tablas e índices repetiblemente; el administrador inicial se crea con la contraseña de entorno generada por los scripts, sin sobrescribir usuarios existentes. /health y /metrics requieren HEALTHCHECK_TOKEN; readiness comprueba MySQL. El arranque del entorno completo usa scripts/compose, no el perfil histórico de estructura.
 
-# usuarios
-
-Estado del negocio: diseño pendiente de implementación; el arranque mínimo ejecutable está descrito arriba.
-
-## Responsabilidad
-
-Registro, login, perfil, roles y sesiones.
-
-## Organización
-
-En capas: Handler → servicio de identidad → repositorio.
-
-## Dependencias
-
-MySQL usuarios_db; hashing, JWT y claves.
-
-Ver [estructura general](../../docs/STRUCTURE.md). Las dependencias y el código se construirán dentro de Docker. No se declara un módulo, una imagen ni una API ya funcionando.
+[Arquitectura](../../docs/ARCHITECTURE.md), [contrato privado](../../docs/contracts/private-v1/README.md), [verificación](../../docs/VERIFICACION-FINAL.md).

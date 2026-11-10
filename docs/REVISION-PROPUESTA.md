@@ -1,3 +1,5 @@
+> Documento histórico. Estado vigente: [verificación final](VERIFICACION-FINAL.md) y [arquitectura](ARCHITECTURE.md),2026-11-09. Los pendientes de este hito no describen necesariamente la implementación actual.
+
 # Revisión de la propuesta de arquitectura
 
 Alcance: primera entrega y coherencia del diseño futuro. No es aprobación docente ni una auditoría del sistema implementado.

@@ -1,0 +1,19 @@
+ Container renewable-energy-entrega2-verificar-e2e-run-3811a8a8e62b Creating 
+ Container renewable-energy-entrega2-verificar-e2e-run-3811a8a8e62b Created 
+
+> test
+> playwright test cuenta.spec.js paneles.spec.js
+
+
+Running 4 tests using 1 worker
+
+[1/4] [escritorio] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+[2/4] [escritorio] › paneles.spec.js:35:1 › paneles solares: filtros y ficha técnica opcional
+[3/4] [movil] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+[4/4] [movil] › paneles.spec.js:35:1 › paneles solares: filtros y ficha técnica opcional
+  4 passed (36.2s)
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

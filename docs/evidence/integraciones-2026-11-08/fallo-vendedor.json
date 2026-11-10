@@ -1,0 +1,134 @@
+{
+  "timezone": "America/Buenos_Aires",
+  "records": [
+    {
+      "event": "baseline_quote",
+      "at": "2026-11-08T22:41:39.075832-03:00",
+      "status": 200,
+      "duration_ms": 85.55,
+      "traceId": "8b34326fada35efa5291f6fd795bb133",
+      "codigo": null
+    },
+    {
+      "event": "vendor_stopped_1",
+      "at": "2026-11-08T22:41:39.925061-03:00",
+      "status": 503,
+      "duration_ms": 525.234,
+      "traceId": "ce10db7b72f402d16470968e347c4460",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_stopped_2",
+      "at": "2026-11-08T22:41:40.431126-03:00",
+      "status": 503,
+      "duration_ms": 505.807,
+      "traceId": "93d74c536eb426294474ab34b7c6075d",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_stopped_3",
+      "at": "2026-11-08T22:41:40.938462-03:00",
+      "status": 503,
+      "duration_ms": 507.41,
+      "traceId": "d5888d9aafabd72434293e906798b595",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_stopped_4",
+      "at": "2026-11-08T22:41:40.942074-03:00",
+      "status": 503,
+      "duration_ms": 3.269,
+      "traceId": "7e233e1fa0ab36b4bfc5f71ffba6f9c5",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "m2m_isolated",
+      "at": "2026-11-08T22:41:40.944166-03:00",
+      "status": 200,
+      "duration_ms": 2.11,
+      "traceId": "5c15d49e55484fd87f5cd1272e4f21b3",
+      "codigo": null
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:41.292223-03:00",
+      "status": 503,
+      "duration_ms": 4.549,
+      "traceId": "64680281988233c5c74e3aeb536a52d9",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:42.403290-03:00",
+      "status": 503,
+      "duration_ms": 10.389,
+      "traceId": "9e20541f82fec8c9eb3539d9d9852f9a",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:43.524837-03:00",
+      "status": 503,
+      "duration_ms": 20.513,
+      "traceId": "033a91ad93353bce638e1d70e48a68a0",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:44.634421-03:00",
+      "status": 503,
+      "duration_ms": 8.949,
+      "traceId": "fed7532f03ae60e2ae3ae273471ab531",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:45.760751-03:00",
+      "status": 503,
+      "duration_ms": 26.121,
+      "traceId": "2466b43cf0b6c4a41dbcfe923b5b0f25",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:46.867486-03:00",
+      "status": 503,
+      "duration_ms": 6.188,
+      "traceId": "a8cb3c964eb94a5b59d85b827224a2ad",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:47.977427-03:00",
+      "status": 503,
+      "duration_ms": 9.622,
+      "traceId": "4df638276caf89f05e34f4173bc7467f",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:49.105055-03:00",
+      "status": 503,
+      "duration_ms": 26.657,
+      "traceId": "6d36fec7f0bfd9a7145041cadaba86ce",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:50.241090-03:00",
+      "status": 503,
+      "duration_ms": 35.5,
+      "traceId": "5a8ec5b20a886a81431d84c7cca58c14",
+      "codigo": "PROVEEDOR_NO_DISPONIBLE"
+    },
+    {
+      "event": "vendor_recovery",
+      "at": "2026-11-08T22:41:51.364120-03:00",
+      "status": 200,
+      "duration_ms": 22.901,
+      "traceId": "5bae40b4508f7d91f58220980d80bef3",
+      "codigo": null
+    }
+  ],
+  "provider_restored": true
+}

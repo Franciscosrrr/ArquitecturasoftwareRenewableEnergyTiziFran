@@ -1,0 +1,52 @@
+ Container renewable-energy-entrega2-verificar-real-run-7d441515ffb7 Creating 
+ Container renewable-energy-entrega2-verificar-real-run-7d441515ffb7 Created 
+test_panel_cas_and_inactive_visibility (test_admin.Administration.test_panel_cas_and_inactive_visibility)
+/** ... ok
+test_role_change_is_immediate_and_last_admin_is_preserved (test_admin.Administration.test_role_change_is_immediate_and_last_admin_is_preserved)
+/** ... ok
+test_all_contract_references_resolve (test_contract_assets.ContractAssets.test_all_contract_references_resolve)
+/** ... ok
+test_shared_v101_is_byte_frozen (test_contract_assets.ContractAssets.test_shared_v101_is_byte_frozen)
+/** ... ok
+test_admin_index_cache_version_and_deactivation (test_durable.DurableFlow.test_admin_index_cache_version_and_deactivation)
+/** ... FAIL
+test_concurrent_confirmation_has_one_effect_and_place_version_is_frozen (test_durable.DurableFlow.test_concurrent_confirmation_has_one_effect_and_place_version_is_frozen)
+/** ... ok
+test_identity_ownership_immutable_snapshot_and_variants (test_durable.DurableFlow.test_identity_ownership_immutable_snapshot_and_variants)
+/** ... ok
+test_comparison_source_surface_zero_and_contract (test_guest_solar.GuestSolar.test_comparison_source_surface_zero_and_contract)
+/** ... ok
+test_authentication (test_real.RealServices.test_authentication)
+/** ... ok
+test_catalog_flow_uses_mysql (test_real.RealServices.test_catalog_flow_uses_mysql)
+/** ... ok
+test_catalog_read_search_pagination (test_real.RealServices.test_catalog_read_search_pagination)
+/** ... ok
+test_guest_requires_no_account (test_real.RealServices.test_guest_requires_no_account)
+/** ... ok
+test_invalid_days_and_client_power (test_real.RealServices.test_invalid_days_and_client_power)
+/** ... ok
+test_json_and_size_limits (test_real.RealServices.test_json_and_size_limits)
+/** ... ok
+test_m2m_matches_contract (test_real.RealServices.test_m2m_matches_contract)
+/** ... ok
+test_private_routes_and_health (test_real.RealServices.test_private_routes_and_health)
+/** ... ok
+test_web_and_published_contract (test_real.RealServices.test_web_and_published_contract)
+/** ... ok
+
+======================================================================
+FAIL: test_admin_index_cache_version_and_deactivation (test_durable.DurableFlow.test_admin_index_cache_version_and_deactivation)
+/**
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/project/tests/test_durable.py", line 194, in test_admin_index_cache_version_and_deactivation
+    if time.monotonic()>deadline:self.fail(str(page))
+                                 ^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'items': [], 'total': 0, 'pagina': 1, 'tamano': 20}
+
+----------------------------------------------------------------------
+Ran 17 tests in 39.023s
+
+FAILED (failures=1)
+

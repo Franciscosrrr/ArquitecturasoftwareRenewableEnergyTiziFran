@@ -1,7 +1,10 @@
 name: renewable-energy-entrega2
 x-telemetry: &telemetry
+  GOMEMLIMIT: 80MiB
+  GOMAXPROCS: "2"
   HEALTHCHECK_TOKEN: ${HEALTHCHECK_TOKEN:?Ejecutar scripts/compose}
   OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+  LOKI_URL: http://loki:3100
 x-health: &health
   test: ["CMD", "/healthcheck"]
   interval: 5s
@@ -11,7 +14,11 @@ x-health: &health
 
 services:
   mysql:
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: "1.0"
     image: mysql:8.4
+    command: ["--innodb-buffer-pool-size=64M", "--performance-schema=OFF", "--max-connections=30", "--table-open-cache=128", "--tmp-table-size=8M", "--max-heap-table-size=8M", "--innodb-redo-log-capacity=64M"]
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Ejecutar scripts/compose}
       MYSQL_DATABASE: electrodomesticos_db
@@ -25,11 +32,21 @@ services:
       retries: 30
     networks: [backend]
   jaeger:
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: "1.0"
     image: jaegertracing/all-in-one:1.74.0
-    environment: {COLLECTOR_OTLP_ENABLED: "true"}
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      GOMEMLIMIT: 96MiB
+      GOGC: "50"
+    command: ["--memory.max-traces=512", "--collector.queue-size=256", "--collector.num-workers=4"]
     ports: ["127.0.0.1:16686:16686"]
     networks: [backend]
   electrodomesticos:
+    mem_limit: 96m
+    memswap_limit: 96m
+    cpus: "1.0"
     build:
       context: .
       dockerfile: infra/backend.Dockerfile
@@ -37,6 +54,11 @@ services:
     environment:
       <<: *telemetry
       INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
+      VALKEY_ADDR: valkey:6379
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD:?Ejecutar scripts/compose}
+      SEARCH_URL: http://meilisearch:7700
+      SEARCH_API_KEY: ${SEARCH_API_KEY:?Ejecutar scripts/compose}
+      AMQP_URL: amqp://renewable:${RABBITMQ_PASSWORD:?Ejecutar scripts/compose}@rabbitmq:5672/
       MYSQL_ADDR: mysql:3306
       MYSQL_DATABASE: electrodomesticos_db
       MYSQL_USER: catalogo
@@ -49,6 +71,9 @@ services:
     security_opt: ["no-new-privileges:true"]
     networks: [backend]
   consumo:
+    mem_limit: 96m
+    memswap_limit: 96m
+    cpus: "1.0"
     build:
       context: .
       dockerfile: infra/backend.Dockerfile
@@ -58,14 +83,72 @@ services:
       INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
       M2M_API_KEY: ${M2M_API_KEY:?Ejecutar scripts/compose}
       M2M_DENIED_KEY: ${M2M_DENIED_KEY:?Ejecutar scripts/compose}
+      MYSQL_ADDR: mysql-consumo:3306
+      MYSQL_DATABASE: consumo_db
+      MYSQL_USER: consumo
+      MYSQL_PASSWORD: ${CONSUMO_DB_PASSWORD:?Ejecutar scripts/compose}
+      AMQP_URL: amqp://renewable:${RABBITMQ_PASSWORD:?Ejecutar scripts/compose}@rabbitmq:5672/
+    depends_on:
+      mysql-consumo: {condition: service_healthy}
+    healthcheck: *health
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
+  proveedor-paneles-sim:
+    mem_limit: 64m
+    memswap_limit: 64m
+    cpus: "1.0"
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+      args: {SERVICE: services/solar, COMMAND: supplier}
+    environment:
+      <<: *telemetry
+      PANEL_PROVIDER_API_KEY: ${PANEL_PROVIDER_API_KEY:?Ejecutar scripts/compose}
+    healthcheck: *health
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
+  solar:
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: "1.0"
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+      args: {SERVICE: services/solar}
+    environment:
+      <<: *telemetry
+      CONSUMO_URL: http://consumo:8080
+      INSTANCE_ID: solar-1
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
+      MONGO_URI: mongodb://solar:${MONGO_SOLAR_PASSWORD:?Ejecutar scripts/compose}@mongo:27017/solar_db
+      AMQP_URL: amqp://renewable:${RABBITMQ_PASSWORD:?Ejecutar scripts/compose}@rabbitmq:5672/
+      SEARCH_URL: http://meilisearch:7700
+      SEARCH_API_KEY: ${SEARCH_API_KEY:?Ejecutar scripts/compose}
+      PANEL_PROVIDER_MODE: ${PANEL_PROVIDER_MODE:-simulado}
+      PANEL_PROVIDER_URL: ${PANEL_PROVIDER_URL:-http://proveedor-paneles-sim:8080}
+      PANEL_PROVIDER_API_KEY: ${PANEL_PROVIDER_API_KEY:?Ejecutar scripts/compose}
+    depends_on:
+      consumo: {condition: service_healthy}
+      mongo: {condition: service_healthy}
     healthcheck: *health
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     networks: [backend]
   gateway:
+    mem_limit: 96m
+    memswap_limit: 96m
+    cpus: "1.0"
     build: {context: ., dockerfile: gateway/Dockerfile}
-    environment: *telemetry
+    environment:
+      <<: *telemetry
+      SOLAR_URLS: http://solar:8080,http://solar-2:8080
+      IDENTITY_URL: http://usuarios:8080
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
     ports: ["127.0.0.1:8080:8080"]
     depends_on:
       consumo: {condition: service_healthy}
@@ -75,10 +158,190 @@ services:
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     networks: [backend]
+  mysql-usuarios:
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: "1.0"
+    image: mysql:8.4
+    command: ["--innodb-buffer-pool-size=64M", "--performance-schema=OFF", "--max-connections=30", "--table-open-cache=128", "--tmp-table-size=8M", "--max-heap-table-size=8M", "--innodb-redo-log-capacity=64M"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USUARIOS_DB_ROOT_PASSWORD:?Ejecutar scripts/compose}
+      MYSQL_DATABASE: usuarios_db
+      MYSQL_USER: usuarios
+      MYSQL_PASSWORD: ${USUARIOS_DB_PASSWORD:?Ejecutar scripts/compose}
+    volumes: ["usuarios-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -u$$MYSQL_USER -D $$MYSQL_DATABASE -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks: [backend]
+  mysql-consumo:
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: "1.0"
+    image: mysql:8.4
+    command: ["--innodb-buffer-pool-size=64M", "--performance-schema=OFF", "--max-connections=30", "--table-open-cache=128", "--tmp-table-size=8M", "--max-heap-table-size=8M", "--innodb-redo-log-capacity=64M"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${CONSUMO_DB_ROOT_PASSWORD:?Ejecutar scripts/compose}
+      MYSQL_DATABASE: consumo_db
+      MYSQL_USER: consumo
+      MYSQL_PASSWORD: ${CONSUMO_DB_PASSWORD:?Ejecutar scripts/compose}
+    volumes: ["consumo-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -u$$MYSQL_USER -D $$MYSQL_DATABASE -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks: [backend]
+  usuarios:
+    mem_limit: 192m
+    memswap_limit: 192m
+    cpus: "1.0"
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+      args: {SERVICE: services/usuarios}
+    environment:
+      <<: *telemetry
+      GOMEMLIMIT: 144MiB
+      MYSQL_ADDR: mysql-usuarios:3306
+      MYSQL_DATABASE: usuarios_db
+      MYSQL_USER: usuarios
+      MYSQL_PASSWORD: ${USUARIOS_DB_PASSWORD:?Ejecutar scripts/compose}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
+      JWT_SECRET: ${JWT_SECRET:?Ejecutar scripts/compose}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@renewable.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Ejecutar scripts/compose}
+    depends_on:
+      mysql-usuarios: {condition: service_healthy}
+    healthcheck: *health
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
+  mongo:
+    mem_limit: 640m
+    memswap_limit: 640m
+    cpus: "1.0"
+    image: mongo:8.0.16
+    command: ["mongod", "--wiredTigerCacheSizeGB", "0.25", "--bind_ip_all"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Ejecutar scripts/compose}
+      MONGO_SOLAR_PASSWORD: ${MONGO_SOLAR_PASSWORD:?Ejecutar scripts/compose}
+    volumes: ["solar-data:/data/db", "./infra/mongo-init.js:/docker-entrypoint-initdb.d/solar.js:ro"]
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --username root --password $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'quit(db.adminCommand({ping:1}).ok ? 0 : 1)' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [backend]
+  rabbitmq:
+    mem_limit: 384m
+    memswap_limit: 384m
+    cpus: "1.0"
+    image: rabbitmq:4.1.5-management-alpine
+    hostname: ${RABBITMQ_HOSTNAME:-renewable-broker}
+    environment:
+      RABBITMQ_DEFAULT_USER: renewable
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Ejecutar scripts/compose}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 2:2 +SDcpu 1 +SDio 1"
+      RABBITMQ_CTL_ERL_ARGS: "+S 1:1 +SDcpu 1 +SDio 1"
+    volumes: ["broker-data:/var/lib/rabbitmq", "./infra/rabbitmq.conf:/etc/rabbitmq/conf.d/20-project.conf:ro", "./infra/rabbit-health.sh:/rabbit-health.sh:ro"]
+    healthcheck:
+      test: ["CMD", "sh", "/rabbit-health.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks: [backend]
+  valkey:
+    mem_limit: 96m
+    memswap_limit: 96m
+    cpus: "1.0"
+    image: valkey/valkey:8.1.4-alpine
+    command: ["valkey-server", "--requirepass", "${VALKEY_PASSWORD:?Ejecutar scripts/compose}", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lfu", "--appendonly", "no"]
+    networks: [backend]
+  meilisearch:
+    mem_limit: 384m
+    memswap_limit: 384m
+    cpus: "1.0"
+    image: getmeili/meilisearch:v1.15.2
+    environment:
+      MEILI_MAX_INDEXING_MEMORY: 128Mb
+      MEILI_MAX_INDEXING_THREADS: "1"
+      MEILI_MASTER_KEY: ${SEARCH_API_KEY:?Ejecutar scripts/compose}
+      MEILI_ENV: production
+      MEILI_NO_ANALYTICS: "true"
+    volumes: ["search-data:/meili_data"]
+    networks: [backend]
+  solar-2:
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: "1.0"
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+      args: {SERVICE: services/solar}
+    environment:
+      <<: *telemetry
+      CONSUMO_URL: http://consumo:8080
+      INSTANCE_ID: solar-2
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
+      MONGO_URI: mongodb://solar:${MONGO_SOLAR_PASSWORD:?Ejecutar scripts/compose}@mongo:27017/solar_db
+      AMQP_URL: amqp://renewable:${RABBITMQ_PASSWORD:?Ejecutar scripts/compose}@rabbitmq:5672/
+      SEARCH_URL: http://meilisearch:7700
+      SEARCH_API_KEY: ${SEARCH_API_KEY:?Ejecutar scripts/compose}
+      PANEL_PROVIDER_MODE: ${PANEL_PROVIDER_MODE:-simulado}
+      PANEL_PROVIDER_URL: ${PANEL_PROVIDER_URL:-http://proveedor-paneles-sim:8080}
+      PANEL_PROVIDER_API_KEY: ${PANEL_PROVIDER_API_KEY:?Ejecutar scripts/compose}
+    depends_on:
+      mongo: {condition: service_healthy}
+      consumo: {condition: service_healthy}
+    healthcheck: *health
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
+  prometheus:
+    mem_limit: 192m
+    memswap_limit: 192m
+    cpus: "1.0"
+    image: prom/prometheus:v3.7.3
+    volumes: ["./infra/prometheus.yml:/etc/prometheus/prometheus.yml:ro", "./infra/alerts.yml:/etc/prometheus/alerts.yml:ro", "prometheus-data:/prometheus"]
+    secrets: [metrics_token]
+    ports: ["127.0.0.1:9090:9090"]
+    networks: [backend]
+  loki:
+    mem_limit: 192m
+    memswap_limit: 192m
+    cpus: "1.0"
+    image: grafana/loki:3.5.8
+    command: ["-config.file=/etc/loki/config.yml"]
+    volumes: ["./infra/loki.yml:/etc/loki/config.yml:ro", "logs-data:/loki"]
+    networks: [backend]
+  grafana:
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: "1.0"
+    image: grafana/grafana:12.2.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Ejecutar scripts/compose}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes: ["grafana-data:/var/lib/grafana", "./infra/grafana/provisioning:/etc/grafana/provisioning:ro", "./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro"]
+    ports: ["127.0.0.1:3000:3000"]
+    networks: [backend]
   verificar-go:
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    cpus: "1.0"
     profiles: [verificar]
     build: {context: ., dockerfile: infra/backend.Dockerfile, target: test}
+    volumes: ["verification-cache:/root/.cache/go-build"]
     environment:
+      GOMEMLIMIT: 384MiB
+      GOGC: "50"
       MYSQL_TEST_PASSWORD: ${MYSQL_PASSWORD:?Ejecutar scripts/compose}
       MYSQL_TEST_ADDR: mysql:3306
     depends_on:
@@ -86,25 +349,39 @@ services:
       electrodomesticos: {condition: service_healthy}
     networks: [backend]
   verificar-real:
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: "1.0"
     profiles: [verificar]
     image: python:3.12.15-alpine
     working_dir: /project
     volumes: ["./:/project:ro"]
     environment:
       BASE_URL: http://gateway:8080
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Ejecutar scripts/compose}
       M2M_API_KEY: ${M2M_API_KEY:?Ejecutar scripts/compose}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Ejecutar scripts/compose}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?Ejecutar scripts/compose}
       M2M_DENIED_KEY: ${M2M_DENIED_KEY:?Ejecutar scripts/compose}
+      MYSQL_ADDR: mysql-consumo:3306
+      MYSQL_DATABASE: consumo_db
+      MYSQL_USER: consumo
+      MYSQL_PASSWORD: ${CONSUMO_DB_PASSWORD:?Ejecutar scripts/compose}
+      AMQP_URL: amqp://renewable:${RABBITMQ_PASSWORD:?Ejecutar scripts/compose}@rabbitmq:5672/
       HEALTHCHECK_TOKEN: ${HEALTHCHECK_TOKEN:?Ejecutar scripts/compose}
     command: ["python", "-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v"]
     depends_on:
       gateway: {condition: service_healthy}
     networks: [backend]
   verificar-e2e:
+    mem_limit: 768m
+    memswap_limit: 768m
+    cpus: "1.0"
     profiles: [verificar]
     build: {context: ., dockerfile: tests/e2e/Dockerfile}
     environment:
       BASE_URL: http://gateway:8080
-    volumes: ["./docs/evidence/entrega2/e2e:/results"]
+    volumes: ["./docs/evidence/final-2026-11-09/e2e:/results"]
     shm_size: 256mb
     depends_on:
       gateway: {condition: service_healthy}
@@ -122,6 +399,18 @@ services:
     command: ["python", "-m", "unittest", "discover", "-s", "mock", "-p", "test_*.py", "-v"]
     networks: [backend]
 volumes:
+  verification-cache:
   catalogo-data:
+  usuarios-data:
+  consumo-data:
+  solar-data:
+  broker-data:
+  search-data:
+  prometheus-data:
+  logs-data:
+  grafana-data:
+secrets:
+  metrics_token:
+    file: .runtime/metrics-token
 networks:
   backend:

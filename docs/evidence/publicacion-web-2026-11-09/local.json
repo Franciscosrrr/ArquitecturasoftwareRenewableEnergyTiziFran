@@ -1,0 +1,17 @@
+{
+  "completado": true,
+  "baseProbada": "http://web-edge:8080",
+  "httpsPublicoProbado": false,
+  "paginaYJavaScriptIdenticos": true,
+  "htmlSHA256": "3782ee9da98f4106fac231760b2c5627e18ca5f1988f265e97593f4dcfa37f8a",
+  "busquedaSolarYCalculoInvitado": true,
+  "cuentaRegistroLoginRefreshLogout": true,
+  "cookieSecureSoloEntradaWeb": true,
+  "otroOrigenRechazado": true,
+  "rutasTecnicasBloqueadas": true,
+  "privadosSinSesionDenegados": true,
+  "datosCompartidosConAccesoLocal": true,
+  "lugarSinteticoEliminado": true,
+  "sintaxisNginxValidada": true,
+  "activacionPublica": "pendiente de autorización explícita por revisión automática"
+}

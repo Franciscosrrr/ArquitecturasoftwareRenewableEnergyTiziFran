@@ -1,4 +1,4 @@
-name: Verificar entrega 2
+name: Verificar sistema completo
 on: [push, pull_request]
 jobs:
   sistema-real:
@@ -13,7 +13,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: evidencia-e2e
-          path: docs/evidence/entrega2/e2e
+          path: docs/evidence/final-2026-11-09/e2e
       - name: Detener servicios
         if: always()
         run: docker compose down

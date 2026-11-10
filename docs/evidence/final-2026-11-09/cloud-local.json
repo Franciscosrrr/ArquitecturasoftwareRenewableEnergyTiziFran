@@ -1,0 +1,16 @@
+{
+  "imagen": "renewable-cloud-final:latest",
+  "entorno": "Contenedor local; no constituye publicación HTTPS ni medición de cold start Render",
+  "contrato": "1.0.1",
+  "sha256OpenapiLF": "3876121082fa76cd7ca6b25defbc7edc45ea0a4a89b3ee851fcf681e446ffda3",
+  "estimacion200": true,
+  "sinClave401": true,
+  "sinPermiso403": true,
+  "latenciasCalientesMs": [
+    16.993,
+    12.312,
+    6.842
+  ],
+  "cierreSiCaeConsumo": true,
+  "memoriaLimiteMiB": 128
+}

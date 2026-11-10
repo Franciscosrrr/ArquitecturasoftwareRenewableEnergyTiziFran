@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: renewable-consumo-v1
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./infra/cloud.Dockerfile
+    dockerContext: .
+    autoDeployTrigger: "off"
+    envVars:
+      - key: HEALTHCHECK_TOKEN
+        generateValue: true
+      - key: INTERNAL_TOKEN
+        generateValue: true
+      - key: M2M_API_KEY
+        generateValue: true
+      - key: M2M_DENIED_KEY
+        generateValue: true

@@ -1,3 +1,5 @@
+> Documento histórico. Estado vigente: [verificación final](VERIFICACION-FINAL.md) y [arquitectura](ARCHITECTURE.md),2026-11-09. Los pendientes de este hito no describen necesariamente la implementación actual.
+
 # Auditoría de seguridad y resumen del proyecto
 
 > Antecedente histórico de entrega 1. El estado operativo actual y sus evidencias están en [DELIVERY-2](DELIVERY-2.md).
@@ -11,7 +13,7 @@ Los párrafos suministrados por el usuario se trataron como contenido a auditar.
 
 | Comportamiento auditado | Situación encontrada | Resultado de esta revisión |
 |---|---|---|
-| Guardar la contraseña directamente y devolverla al hacer login | No encontrado. Usuarios no tiene login ni repositorio implementados; las rutas de negocio responden 501. El diseño ya exige hashes Argon2id con salt y no devolver contraseñas. | Se reforzaron RF01/RF02 en SPEC: persistir solo el hash y no incluir contraseña ni hash en ninguna respuesta. No se añadió un login ficticio. |
+| Guardar la contraseña directamente y devolverla al hacer login | No encontrado. Usuarios no tiene login ni repositorio implementados; las rutas de negocio responden 501. El diseño ya exige hashes Argon2 id con salt y no devolver contraseñas. | Se reforzaron RF01/RF02 en SPEC: persistir solo el hash y no incluir contraseña ni hash en ninguna respuesta. No se añadió un login ficticio. |
 | Sincronizar el índice únicamente cuando alguien busca | No encontrado. Todavía no hay motor de búsqueda ni indexador implementados. La arquitectura y ADR-005 prevén eventos de cambios del catálogo, outbox e indexador automático. | Se reforzó RF08: altas, modificaciones y desactivaciones deben propagarse incluso sin búsquedas; objetivo de atraso de hasta 5 segundos en condiciones saludables. Su implementación y medición siguen pendientes. |
 | Healthcheck sin autenticación, con respuesta en portugués | Cumplimiento parcial: el mock y los cinco componentes Go tenían salud sin autenticación. Las respuestas ya estaban en español. | Se corrigió el acceso: las rutas de salud exigen una credencial operativa y no revelan estado cuando no está autorizado. Las respuestas siguen en español. |
 
@@ -21,7 +23,7 @@ La ausencia actual de login y búsqueda impide certificar su seguridad en ejecuc
 
 El gateway, Usuarios, Electrodomésticos, Consumo y Solar protegen toda la familia `/health/`. El mock protege sus consultas GET/HEAD de salud. La cabecera requerida es `Authorization: Bearer <HEALTHCHECK_TOKEN>`, independiente de JWT de usuario y de las claves M2M del mock. Una credencial ausente o incorrecta produce 401 con un mensaje mínimo, sin estado de aplicación ni credenciales. No se acepta el token por query string o cookie.
 
-La comparación utiliza digests SHA-256 de longitud fija y comparación en tiempo constante. Ese uso corresponde a una credencial operativa aleatoria; no sustituye Argon2id para contraseñas de usuarios. Las respuestas de salud incluyen `Cache-Control: no-store` y contienen solo el estado necesario. Se retiraron servicio, fase y tipo del diagnóstico público anterior.
+La comparación utiliza digests SHA-256 de longitud fija y comparación en tiempo constante. Ese uso corresponde a una credencial operativa aleatoria; no sustituye Argon2 id para contraseñas de usuarios. Las respuestas de salud incluyen `Cache-Control: no-store` y contienen solo el estado necesario. Se retiraron servicio, fase y tipo del diagnóstico público anterior.
 
 El arranque exige una credencial de al menos 32 caracteres. No existe un valor de despliegue fijo en el código ni en Compose. `scripts/compose.ps1` y `scripts/compose.sh` generan 32 bytes aleatorios en memoria si la variable no está definida y pasan el secreto por entorno a los contenedores. No crean un archivo `.env`; el generador no imprime la credencial. PowerShell restaura el entorno del proceso al finalizar. Las constantes que aparecen en los tests son datos ficticios de prueba y no se usan como configuración del servidor.
 

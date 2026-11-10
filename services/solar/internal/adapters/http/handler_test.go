@@ -11,6 +11,13 @@ import (
 // Credencial ficticia exclusiva de pruebas; no es una configuración del servidor.
 const testHealthToken = "credencial-ficticia-solo-para-pruebas-123456"
 
+/**
+ * Comprueba que salud rechaza credenciales ausentes o incorrectas.
+ *
+ * @method TestHealthRejectsUnauthenticatedRequests
+ * @param {*testing.T} t - Contexto de prueba.
+ * @returns {void} Falla si se exponen estados sin autorización.
+ */
 func TestHealthRejectsUnauthenticatedRequests(t *testing.T) {
 	handler := NewHandler(testHealthToken)
 	for _, path := range []string{"/health/live", "/health/ready", "/health/ready/publico"} {
@@ -37,6 +44,13 @@ func TestHealthRejectsUnauthenticatedRequests(t *testing.T) {
 	}
 }
 
+/**
+ * Distingue proceso vivo de negocio sin configuración.
+ *
+ * @method TestAuthenticatedHealthReportsActualReadiness
+ * @param {*testing.T} t - Contexto de prueba.
+ * @returns {void} Falla si se exponen estados sin autorización.
+ */
 func TestAuthenticatedHealthReportsActualReadiness(t *testing.T) {
 	handler := NewHandler(testHealthToken)
 	for _, test := range []struct {
@@ -68,6 +82,13 @@ func TestAuthenticatedHealthReportsActualReadiness(t *testing.T) {
 	}
 }
 
+/**
+ * Rechaza la configuración de salud con un secreto demasiado corto.
+ *
+ * @method TestInvalidHealthConfigurationFailsClosed
+ * @param {*testing.T} t - Contexto de prueba.
+ * @returns {void} Falla si se exponen estados sin autorización.
+ */
 func TestInvalidHealthConfigurationFailsClosed(t *testing.T) {
 	for _, token := range []string{"", "corta"} {
 		request := httptest.NewRequest(http.MethodGet, "/health/live", nil)

@@ -1,0 +1,70 @@
+{
+  "nota": "Misma consulta y backend caliente; bypass autorizado solo por red interna. Sin latencia artificial. No estima capacidad cloud.",
+  "sinCache": {
+    "solicitudes": 400,
+    "concurrencia": 8,
+    "duracionSegundos": 2.313,
+    "reqPorSegundo": 172.93,
+    "p50Ms": 44.548,
+    "p95Ms": 51.475,
+    "maxMs": 56.96,
+    "estados": {
+      "200": 400
+    },
+    "origenes": {
+      "meilisearch": 400
+    }
+  },
+  "conCache": {
+    "solicitudes": 400,
+    "concurrencia": 8,
+    "duracionSegundos": 0.286,
+    "reqPorSegundo": 1398.46,
+    "p50Ms": 4.293,
+    "p95Ms": 8.098,
+    "maxMs": 41.242,
+    "estados": {
+      "200": 400
+    },
+    "origenes": {
+      "cache": 400
+    }
+  },
+  "m2mCuotaPermitida": {
+    "solicitudes": 15,
+    "concurrencia": 1,
+    "duracionSegundos": 15.35,
+    "reqPorSegundo": 0.98,
+    "p50Ms": 3.465,
+    "p95Ms": 4.323,
+    "maxMs": 4.966,
+    "estados": {
+      "200": 15
+    },
+    "origenes": {
+      "": 15
+    }
+  },
+  "flujoDurable": {
+    "confirmaciones": {
+      "solicitudes": 10,
+      "concurrencia": 1,
+      "duracionSegundos": 7.891,
+      "reqPorSegundo": 1.27,
+      "p50Ms": 18.877,
+      "p95Ms": 21.726,
+      "maxMs": 22.745,
+      "estados": {
+        "201": 10
+      },
+      "origenes": {
+        "": 10
+      }
+    },
+    "estudiosCompletados": 10,
+    "p95VisibilidadSegundos": 1.053,
+    "maxVisibilidadSegundos": 1.056,
+    "dentroDe15s": 10,
+    "nota": "Confirmaciones secuenciales con pacing0.25s excluido de su duración HTTP; el throughput incluye preparar escenarios y observar estudios. Visibilidad observada por consulta, sin inferir el instante exacto de finalización."
+  }
+}

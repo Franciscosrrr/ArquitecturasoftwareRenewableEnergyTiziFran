@@ -24,11 +24,27 @@ type Catalog struct {
 	probe      bool
 }
 
+/**
+ * Construye el resolver HTTP autenticado con timeout y circuito de catálogo.
+ *
+ * @method NewCatalog
+ * @param {string} url - Valor de url requerido por la operación.
+ * @param {string} token - Credencial técnica del servicio.
+ * @returns {*Catalog} Resultado de la operación; error si no puede completarse.
+ */
 func NewCatalog(url, token string) *Catalog {
 	return &Catalog{URL: url, Token: token, Client: platform.Client(2 * time.Second)}
 }
 
 // Circuit breaker: three failed calls open for ten seconds; one half-open probe.
+/**
+ * Obtiene fichas canónicas activas para calcular con sus versiones exactas.
+ *
+ * @method Resolve
+ * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
+ * @param {[]string} ids - Valor de ids requerido por la operación.
+ * @returns {[]application.Ficha, error} Resultado de la operación; error si no puede completarse.
+ */
 func (c *Catalog) Resolve(ctx context.Context, ids []string) ([]application.Ficha, error) {
 	c.mu.Lock()
 	halfOpen := !c.openUntil.IsZero()

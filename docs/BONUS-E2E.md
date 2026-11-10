@@ -1,24 +1,17 @@
-# Bonus anunciado en entrega 2: tests e2e
+# Bonus: navegador contra el sistema real
 
-El equipo anuncia un único bonus: creación de tests end-to-end. Se incluyen pruebas de navegador con Playwright/Chromium para escritorio y móvil, junto con tests HTTP contra el sistema real. No se propone otro bonus.
+Estado actualizado 2026-11-09. Suite completa: **12 casos en Chromium**, seis por tamaño, escritorio 1280×900 y móvil 390×844. Se ejecuta con un solo worker, sin retries automáticos y manteniendo las cuotas reales.
 
-## Recorrido cubierto
+Por tamaño se comprueban tres escenarios de calculadora, uno de cuenta/guardados/historial, uno de búsqueda de paneles y uno de cotización comercial. El caso de cuenta crea lugar/consumo, archiva y restaura sin nueva versión, calcula paneles, observa el estudio durable, edita a v2 conservando el resultado v1, recarga y restaura la sesión, elimina los guardados y cierra sesión. El caso de paneles verifica filtros, ficha técnica opcional y ausencia de desborde horizontal.
 
-El navegador descarga React desde el gateway, consulta Electrodomésticos/MySQL, agrega equipos, completa hábitos, envía un cálculo a Consumo y verifica el resultado renderizado. No se interceptan respuestas ni se sustituye la base por un mock.
+Resultado de la suite completa: **12 aprobados, 0 fallos, 0 omitidos y 0 flaky**. [JSON](evidence/experiencia-cliente-2026-11-09/e2e/resultados.json), [cuenta escritorio](evidence/experiencia-cliente-2026-11-09/e2e/cuenta-escritorio.png), [cuenta móvil](evidence/experiencia-cliente-2026-11-09/e2e/cuenta-movil.png), [búsqueda móvil](evidence/experiencia-cliente-2026-11-09/e2e/paneles-movil.png).
 
-1. Escenario mixto con iluminación, heladera y lavarropas: 47,4 kWh y 1,58 kWh/día, con desglose.
-2. Editar invalida el resultado; recalcular usa el nuevo valor; recargar pierde el borrador y deshabilita calcular sin equipos.
-3. Cantidad cero activa la validación del formulario; quitar equipo deja el escenario vacío; las rutas privadas y M2M rechazan el acceso sin credenciales.
+La publicación web HTTPS tuvo una comprobación adicional de **cuatro casos**, cuenta y paneles en ambos tamaños, aprobados sobre el enlace público. Es un subconjunto de la suite, no otras cuatro funcionalidades ni una ejecución de los doce sobre cloud. [Reporte HTTPS](evidence/publicacion-web-2026-11-09/e2e/resultados.json). El backend seguía ejecutándose en la PC tras Cloudflare; no se interpreta ese ensayo como alojamiento del código en la nube.
 
-Tres casos × dos tamaños de pantalla = seis pruebas de navegador. Los tests HTTP agregan esquema de respuesta, autenticación M2M 401/403, catálogo real, búsqueda/paginación, cuerpo máximo, Content-Type, JSON inválido y salud autenticada.
+Los casos de cálculo y cuenta usan Go/MySQL/Mongo/Rabbit/vendedor reales del entorno. Solo la última respuesta de error de cotización se intercepta para comprobar su presentación en el navegador; la caída del proceso vendedor se verifica aparte en [POSTMORTEM](POSTMORTEM.md). Se distingue esa dependencia simulada del grupo proveedor real, cuyo contrato no se recibió.
 
-## Ejecución
+Imagen oficial Playwright 1.64.1. scripts/verify.ps1 o sh scripts/verify.sh inicia el sistema y verifica secuencialmente. La aprobación y puntuación del bonus corresponden a la cátedra.
 
-```powershell
-.\scripts\compose.ps1 up -d --build
-.\scripts\compose.ps1 --profile verificar run --build --rm verificar-e2e
-```
+## Antecedente conservado
 
-En Linux/macOS usar `sh scripts/compose.sh`. Se utiliza la imagen oficial `mcr.microsoft.com/playwright:v1.64.1-noble` y `@playwright/test` 1.64.1, con un solo worker. Los archivos quedan en `docs/evidence/entrega2/e2e`: reporte JSON, capturas y, ante fallos, trazas/adjuntos. La CI ejecuta el mismo recorrido y conserva los reportes.
-
-La aprobación y el puntaje del bonus corresponden a la cátedra. Los tests no cubren aún identidad, guardados ni Solar, que no forman parte del flujo implementado en este hito.
+La suite del incremento anterior tenía diez casos: [reporte histórico de 10 aprobados](evidence/final-2026-11-09/e2e/resultados.json). La ampliación agregó búsqueda solar y extendió el flujo de cuenta. No se borran esos resultados ni se los presenta como la suite actual.

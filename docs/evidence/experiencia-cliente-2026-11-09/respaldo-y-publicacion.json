@@ -1,0 +1,45 @@
+{
+  "fechaUTC": "2026-11-09T15:10:05.410274+00:00",
+  "completado": true,
+  "observaciones": [
+    {
+      "segundo": 0.032,
+      "accion": "búsqueda solar sana",
+      "http": 200,
+      "origen": "meilisearch",
+      "modelos": 2
+    },
+    {
+      "segundo": 0.954,
+      "accion": "motor detenido: respaldo Mongo conserva paneles y filtros",
+      "http": 200,
+      "origen": "mongo-degradado"
+    },
+    {
+      "segundo": 1.329,
+      "accion": "motor recuperado",
+      "origen": "meilisearch"
+    },
+    {
+      "segundo": 2.5,
+      "accion": "índice derivado eliminado: datos canónicos disponibles",
+      "origen": "mongo-degradado"
+    },
+    {
+      "segundo": 31.907,
+      "accion": "reconciliación reconstruye índice y filtros automáticamente",
+      "segundos": 29.407,
+      "origen": "meilisearch"
+    },
+    {
+      "segundo": 31.938,
+      "accion": "contratos web servidos con versiones correctas"
+    },
+    {
+      "segundo": 33.016,
+      "accion": "Clínica sigue operativa por HTTPS con contrato intacto",
+      "http": 200,
+      "url": "https://emails-bingo-preference-packets.trycloudflare.com"
+    }
+  ]
+}

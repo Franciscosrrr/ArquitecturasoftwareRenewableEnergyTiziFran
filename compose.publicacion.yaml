@@ -1,0 +1,48 @@
+name: renewable-clinica-publica
+services:
+  api-publica:
+    image: renewable-cloud-final:latest
+    build:
+      context: .
+      dockerfile: infra/cloud.Dockerfile
+    restart: unless-stopped
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: "1.0"
+    env_file: .runtime/clinica.env
+    environment:
+      CAPABILITY_ONLY: "true"
+      PORT: "10000"
+      DOCS_DIR: /public-contracts
+      GOMAXPROCS: "2"
+      GOMEMLIMIT: 48MiB
+    volumes: ["./docs/contracts/v1:/public-contracts/v1:ro"]
+    ports: ["127.0.0.1:18081:10000"]
+    read_only: true
+    tmpfs: ["/tmp:size=8m"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 2 -O /dev/null --header=\"Authorization: Bearer $$HEALTHCHECK_TOKEN\" http://127.0.0.1:10000/health/ready >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks: [publicacion]
+  tunnel:
+    image: cloudflare/cloudflared@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    command: ["tunnel", "--no-autoupdate", "--protocol", "http2", "--url", "http://api-publica:10000"]
+    restart: unless-stopped
+    mem_limit: 64m
+    memswap_limit: 64m
+    cpus: "0.5"
+    environment:
+      GOMAXPROCS: "1"
+      GOMEMLIMIT: 40MiB
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      api-publica: {condition: service_healthy}
+    networks: [publicacion]
+networks:
+  publicacion: {}

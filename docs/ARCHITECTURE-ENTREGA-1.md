@@ -1,26 +1,28 @@
 # Arquitectura del sistema
 
+> Documento histórico de Entrega 1. Sus diagramas y estados se conservan como antecedentes; la arquitectura vigente está en [ARCHITECTURE.md](ARCHITECTURE.md).
+
 Entrega 1 · versión 1.2.0. Arquitectura decidida para la propuesta; implementación y validación pendientes.
 
 ## 1. Contexto
 
-![Diagrama de contexto](diagrams/contexto.png)
+![Diagrama de contexto](diagrams/historico/entrega1/contexto.png)
 
 El invitado calcula consumo y recomendación solar sin cuenta ni persistencia. El usuario autenticado gestiona consumos propios y el administrador mantiene catálogos. El grupo consumidor obtiene estimaciones de energía desde una capacidad pública. La capacidad del proveedor asignado se incorporará a un flujo relevante; se propone recurso solar, sin presumir su disponibilidad ni la asignación.
 
-Fuente editable del diagrama: [contexto.mmd](diagrams/contexto.mmd). Esta vista describe el sistema previsto; distingue invitado, usuario autenticado y administrador. Las identidades de los grupos externos están pendientes.
+Fuente editable del diagrama: [contexto.mmd](diagrams/historico/entrega1/contexto.mmd). Esta vista describe el sistema previsto; distingue invitado, usuario autenticado y administrador. Las identidades de los grupos externos están pendientes.
 
 ## 2. Contenedores
 
-![Diagrama de contenedores](diagrams/contenedores.png)
+![Diagrama de contenedores](diagrams/historico/entrega1/contenedores.png)
 
-Representación Mermaid equivalente: [contenedores.mmd](diagrams/contenedores.mmd). PNG y Mermaid usan la misma vista simplificada; comunicaciones REST adicionales y telemetría se describen en la guía de diagramas y en las secciones siguientes. Los PNG se generan directamente desde sus fuentes Mermaid con Mermaid CLI; [instrucciones de diagramas](diagrams/README.md). Las flechas sólidas representan solicitudes/acceso a almacenamiento; las discontinuas, eventos. Toda entrada de negocio de la web pasará por el gateway en la arquitectura completa. El evento ElectrodomesticoActualizado vuelve al indexador del servicio Electrodomésticos, que actualiza Meilisearch; el cambio no depende de una búsqueda.
+Representación Mermaid equivalente: [contenedores.mmd](diagrams/historico/entrega1/contenedores.mmd). PNG y Mermaid usan la misma vista simplificada; comunicaciones REST adicionales y telemetría se describen en la guía de diagramas y en las secciones siguientes. Los PNG se generan directamente desde sus fuentes Mermaid con Mermaid CLI; [instrucciones de diagramas](diagrams/README.md). Las flechas sólidas representan solicitudes/acceso a almacenamiento; las discontinuas, eventos. Toda entrada de negocio de la web pasará por el gateway en la arquitectura completa. El evento ElectrodomesticoActualizado vuelve al indexador del servicio Electrodomésticos, que actualiza Meilisearch; el cambio no depende de una búsqueda.
 
 ### Componentes actuales
 
-![Componentes ejecutables actuales](diagrams/contenedores-actuales.png)
+![Componentes ejecutables actuales](diagrams/historico/entrega1/contenedores-actuales.png)
 
-Fuente: [contenedores-actuales.mmd](diagrams/contenedores-actuales.mmd). El mock es independiente del backend productivo. El perfil estructura agrega los cinco servidores Go sin proxy entre ellos; no existe frontend ni almacenamiento integrado. Esta vista corresponde al compose.yaml actual.
+Fuente: [contenedores-actuales.mmd](diagrams/historico/entrega1/contenedores-actuales.mmd). El mock es independiente del backend productivo. El perfil estructura agrega los cinco servidores Go sin proxy entre ellos; no existe frontend ni almacenamiento integrado. Esta vista corresponde al compose.yaml actual.
 
 ## 3. Límites y propiedad
 
@@ -96,7 +98,7 @@ Readiness cada 5 s, timeout 1 s, retirar tras dos fallos y reincorporar tras dos
 
 ## 8. Identidad y seguridad
 
-Usuarios almacena hashes Argon2id con salt y email normalizado único. Registro crea USUARIO. Las claves privadas JWT pertenecen a Usuarios; otros servicios verifican con claves públicas, emisor, audiencia y vencimiento. Access token inicial 15 min, refresh rotativo 7 días y hash en la BD. Access token en memoria del navegador; refresh en cookie HttpOnly, SameSite y CSRF; Secure en HTTPS. Logout revoca refresh; JWT vigente puede durar hasta su expiración.
+Usuarios almacena hashes Argon2 id con salt y email normalizado único. Registro crea USUARIO. Las claves privadas JWT pertenecen a Usuarios; otros servicios verifican con claves públicas, emisor, audiencia y vencimiento. Access token inicial 15 min, refresh rotativo 7 días y hash en la BD. Access token en memoria del navegador; refresh en cookie HttpOnly, SameSite y CSRF; Secure en HTTPS. Logout revoca refresh; JWT vigente puede durar hasta su expiración.
 
 El gateway define una lista explícita de rutas anónimas de solo lectura/cálculo. No aplica JWT globalmente a toda la web y tampoco publica guardados o administración al abrir el modo invitado. La API M2M mantiene su X-API-Key independiente; ninguna clave se incrusta en React. Cada servicio protege también sus rutas privadas y autoriza por propietario. Altas/modificaciones de catálogos consultan rol/estado vigente; falla de Usuarios impide la escritura administrativa. El administrador no obtiene acceso automático a consumos ajenos. Credenciales M2M de otro grupo solo habilitan la capacidad publicada. No se registran tokens/contraseñas en logs. Las contraseñas y sus hashes tampoco se devuelven en respuestas de login, registro o perfil.
 

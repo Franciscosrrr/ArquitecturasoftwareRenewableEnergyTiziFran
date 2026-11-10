@@ -1,0 +1,5 @@
+ Container renewable-energy-entrega2-verificar-go-run-369725be2dbd Creating 
+ Container renewable-energy-entrega2-verificar-go-run-369725be2dbd Created 
+ok  	renewable.local/platform	1.015s
+?   	renewable.local/platform/cmd/healthcheck	[no test files]
+ok  	renewable.local/solar/internal/adapters/external	1.215s

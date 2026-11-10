@@ -1,0 +1,37 @@
+---
+title: Confirmación, publicación y estudio durable
+---
+sequenceDiagram
+ actor Usuario
+ participant G as Gateway
+ participant I as Usuarios
+ participant C as Consumo
+ participant SQL as MySQL Consumo
+ participant B as RabbitMQ
+ participant S as Solar worker
+ participant M as MongoDB Solar
+ participant P as Vendedor simulado
+ Usuario->>G: Confirmar versiones + Idempotency-Key
+ G->>I: Validar sesión y rol actual
+ I-->>G: Propietario autenticado
+ G->>C: Confirmar como propietario validado
+ C->>SQL: BEGIN / locks / evaluación + idempotencia + outbox / COMMIT
+ SQL-->>C: Evaluación inmutable
+ C-->>Usuario: 201 / publicación PENDIENTE
+ loop Relay recuperable
+ C->>SQL: Leer outbox pendiente y obtener lease
+ C->>B: Publicar persistente y esperar confirm
+ B-->>C: Publisher confirm
+ C->>SQL: Marcar envío confirmado
+ end
+ B->>S: Entrega con prefetch 1 y ACK manual
+ S->>M: Deduplicar y adquirir lease
+ S->>P: Consultar oferta del candidato factible
+ P-->>S: Modelo / cantidad / stock / precio
+ S->>M: Guardar resultado con journaling
+ S->>B: ACK
+ Usuario->>G: Consultar estudio propio
+ G->>S: Propietario validado
+ S->>M: Filtrar por id y propietario
+ M-->>Usuario: Estado y alternativas congeladas
+ Note over B,S: Falla transitoria con retry 1/5/30 s. Incompatible o agotado a DLQ

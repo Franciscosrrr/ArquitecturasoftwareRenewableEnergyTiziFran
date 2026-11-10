@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: Renewable
+    folder: Renewable Energy
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

@@ -20,7 +20,22 @@ type Detail struct {
 }
 type ValidationError struct{ Detail Detail }
 
+/**
+ * Devuelve la representación pública del error sin incluir credenciales.
+ *
+ * @method Error
+ * @returns {string} Resultado de la operación; error si no puede completarse.
+ */
 func (e *ValidationError) Error() string { return e.Detail.Field + ": " + e.Detail.Reason }
+
+/**
+ * Construye un error de validación con campo y causa públicos.
+ *
+ * @method invalid
+ * @param {string} field - Valor de field requerido por la operación.
+ * @param {string} reason - Valor de reason requerido por la operación.
+ * @returns {error} Resultado de la operación; error si no puede completarse.
+ */
 func invalid(field, reason string) error { return &ValidationError{Detail{field, reason}} }
 
 type Breakdown struct {
@@ -37,6 +52,13 @@ type Result struct {
 	TraceID     string      `json:"traceId"`
 }
 
+/**
+ * Decodifica un objeto JSON sin aceptar campos duplicados ni valores fuera de forma.
+ *
+ * @method Object
+ * @param {[]byte} raw - Cuerpo original recibido para validar.
+ * @returns {map[string]any, error} Resultado de la operación; error si no puede completarse.
+ */
 func Object(raw []byte) (map[string]any, error) {
 	d := json.NewDecoder(bytes.NewReader(raw))
 	d.UseNumber()
@@ -50,6 +72,17 @@ func Object(raw []byte) (map[string]any, error) {
 	}
 	return obj, nil
 }
+
+/**
+ * Exige los campos permitidos y obligatorios de la variante de equipo.
+ *
+ * @method shape
+ * @param {map[string]any} m - Valor de m requerido por la operación.
+ * @param {[]string} required - Valor de required requerido por la operación.
+ * @param {[]string} allowed - Valor de allowed requerido por la operación.
+ * @param {string} path - Valor de path requerido por la operación.
+ * @returns {error} Resultado de la operación; error si no puede completarse.
+ */
 func shape(m map[string]any, required, allowed []string, path string) error {
 	for _, key := range required {
 		if value, ok := m[key]; !ok || value == nil {
@@ -70,6 +103,20 @@ func shape(m map[string]any, required, allowed []string, path string) error {
 	}
 	return nil
 }
+
+/**
+ * Lee un número JSON con representación acotada antes de efectuar aritmética.
+ *
+ * @method number
+ * @param {map[string]any} m - Valor de m requerido por la operación.
+ * @param {string} key - Clave de idempotencia o identidad técnica.
+ * @param {string} path - Valor de path requerido por la operación.
+ * @param {int64} lo - Valor de lo requerido por la operación.
+ * @param {int64} hi - Valor de hi requerido por la operación.
+ * @param {bool} positive - Valor de positive requerido por la operación.
+ * @param {bool} integer - Valor de integer requerido por la operación.
+ * @returns {*big.Rat, error} Resultado de la operación; error si no puede completarse.
+ */
 func number(m map[string]any, key, path string, lo, hi int64, positive, integer bool) (*big.Rat, error) {
 	value, ok := m[key].(json.Number)
 	if !ok {
@@ -87,6 +134,13 @@ func number(m map[string]any, key, path string, lo, hi int64, positive, integer 
 
 // Normalize zeroes/exponents before allocating big integers. Every accepted
 // nonzero value has at most six fractional digits and fits the business range.
+/**
+ * Convierte un número validado a racional exacto con seis decimales efectivos.
+ *
+ * @method decimal
+ * @param {string} raw - Cuerpo original recibido para validar.
+ * @returns {*big.Rat, bool} Resultado de la operación; error si no puede completarse.
+ */
 func decimal(raw string) (*big.Rat, bool) {
 	mantissa, exponentText, hasExponent := strings.Cut(strings.ToLower(raw), "e")
 	negative := strings.HasPrefix(mantissa, "-")
@@ -126,6 +180,13 @@ func decimal(raw string) (*big.Rat, bool) {
 
 var idPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
 
+/**
+ * Redondea una salida no negativa a seis decimales con mitad hacia arriba.
+ *
+ * @method rounded
+ * @param {*big.Rat} n - Valor de n requerido por la operación.
+ * @returns {json.Number} Resultado de la operación; error si no puede completarse.
+ */
 func rounded(n *big.Rat) json.Number {
 	scaled := new(big.Rat).Mul(n, big.NewRat(1000000, 1))
 	q, rem := new(big.Int), new(big.Int)
@@ -137,6 +198,16 @@ func rounded(n *big.Rat) json.Number {
 	whole.QuoRem(q, big.NewInt(1000000), frac)
 	return json.Number(fmt.Sprintf("%s.%06d", whole.String(), frac.Int64()))
 }
+
+/**
+ * Calcula energía por equipo y total con racionales, validación cruzada y redondeo final.
+ *
+ * @method Calculate
+ * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
+ * @param {[]byte} raw - Cuerpo original recibido para validar.
+ * @param {string} traceID - Valor de traceID requerido por la operación.
+ * @returns {Result, error} Resultado de la operación; error si no puede completarse.
+ */
 func Calculate(ctx context.Context, raw []byte, traceID string) (Result, error) {
 	_, span := otel.Tracer("consumo").Start(ctx, "consumo.calcular")
 	defer span.End()
@@ -242,17 +313,28 @@ func Calculate(ctx context.Context, raw []byte, traceID string) (Result, error) 
 
 // Ficha is Consumo's own representation of the public catalog contract.
 type Ficha struct {
-	ID     string      `json:"id"`
-	Name   string      `json:"nombre"`
-	Mode   string      `json:"modo"`
-	Power  json.Number `json:"potenciaW"`
-	Cycle  json.Number `json:"energiaPorCicloKWh"`
-	Factor json.Number `json:"factorFuncionamiento"`
+	Version int64       `json:"version"`
+	ID      string      `json:"id"`
+	Name    string      `json:"nombre"`
+	Mode    string      `json:"modo"`
+	Power   json.Number `json:"potenciaW"`
+	Cycle   json.Number `json:"energiaPorCicloKWh"`
+	Factor  json.Number `json:"factorFuncionamiento"`
 }
 type Resolver interface {
 	Resolve(context.Context, []string) ([]Ficha, error)
 }
 
+/**
+ * Resuelve un lote canónico y calcula consumo sin confiar potencias enviadas por el navegador.
+ *
+ * @method CalculateCatalog
+ * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
+ * @param {[]byte} raw - Cuerpo original recibido para validar.
+ * @param {string} traceID - Valor de traceID requerido por la operación.
+ * @param {Resolver} resolver - Valor de resolver requerido por la operación.
+ * @returns {Result, error} Resultado de la operación; error si no puede completarse.
+ */
 func CalculateCatalog(ctx context.Context, raw []byte, traceID string, resolver Resolver) (Result, error) {
 	ctx, span := otel.Tracer("consumo").Start(ctx, "consumo.resolver-catalogo")
 	defer span.End()

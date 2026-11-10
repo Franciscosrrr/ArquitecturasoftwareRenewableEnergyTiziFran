@@ -1,4 +1,8 @@
+> Documento histórico. Estado vigente: [verificación final](VERIFICACION-FINAL.md) y [arquitectura](ARCHITECTURE.md),2026-11-09. Los pendientes de este hito no describen necesariamente la implementación actual.
+
 # Sistema de Administración de Consumo Personalizado
+
+> Documento histórico de Entrega 1. Sus diagramas y estados se conservan como antecedentes; la arquitectura vigente está en [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Propuesta de arquitectura y alcance del Trabajo Práctico Integrador de Arquitectura de Software. Versión 4. Incluye precisiones de diseño y referencia al mock y estructura inicial adjuntos; el sistema productivo sigue pendiente. La documentación detallada vigente se encuentra en [../README.md](../README.md).
 
@@ -88,7 +92,7 @@ Se incorpora un cuarto microservicio para separar identidad de los datos energé
 
 Registro, login, logout, consulta del perfil propio, renovación de sesión y administración de roles. usuarios_db contiene usuarios, roles/asignaciones y sesiones con hashes de refresh tokens. Un usuario tiene identificador estable, nombre, email normalizado único, hash de contraseña, estado y versión de seguridad.
 
-Las contraseñas se guardan como hashes Argon2id con salt, nunca como texto plano, y no se devuelven. Referencia: [OWASP Password Storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
+Las contraseñas se guardan como hashes Argon2 id con salt, nunca como texto plano, y no se devuelven. Referencia: [OWASP Password Storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
 
 ### Capas
 
@@ -284,21 +288,21 @@ Los diagramas canónicos se mantienen en docs/diagrams. Sus PNG se generan desde
 
 ### Contexto previsto
 
-![Contexto del sistema previsto](diagrams/contexto.png)
+![Contexto del sistema previsto](diagrams/historico/entrega1/contexto.png)
 
-Fuente: [contexto.mmd](diagrams/contexto.mmd). Distingue invitado, usuario autenticado, administrador y grupos externos. El proveedor sigue pendiente de asignación.
+Fuente: [contexto.mmd](diagrams/historico/entrega1/contexto.mmd). Distingue invitado, usuario autenticado, administrador y grupos externos. El proveedor sigue pendiente de asignación.
 
 ### Contenedores previstos
 
-![Contenedores de la arquitectura prevista](diagrams/contenedores.png)
+![Contenedores de la arquitectura prevista](diagrams/historico/entrega1/contenedores.png)
 
-Fuente: [contenedores.mmd](diagrams/contenedores.mmd). Representa el diseño futuro, no los contenedores que ya funcionan. Los consumidores de eventos son parte de sus servicios dueños.
+Fuente: [contenedores.mmd](diagrams/historico/entrega1/contenedores.mmd). Representa el diseño futuro, no los contenedores que ya funcionan. Los consumidores de eventos son parte de sus servicios dueños.
 
 ### Sistema ejecutable actual
 
-![Componentes ejecutables actuales](diagrams/contenedores-actuales.png)
+![Componentes ejecutables actuales](diagrams/historico/entrega1/contenedores-actuales.png)
 
-Fuente: [contenedores-actuales.mmd](diagrams/contenedores-actuales.mmd). Compose inicia el mock por defecto; el perfil estructura agrega cinco servidores independientes. El gateway inicial no enruta al mock ni a los servicios. No hay frontend, bases, broker, caché ni buscador desplegados en esta configuración.
+Fuente: [contenedores-actuales.mmd](diagrams/historico/entrega1/contenedores-actuales.mmd). Compose inicia el mock por defecto; el perfil estructura agrega cinco servidores independientes. El gateway inicial no enruta al mock ni a los servicios. No hay frontend, bases, broker, caché ni buscador desplegados en esta configuración.
 
 Usuarios publica claves públicas para validación JWT en el diseño futuro; su base solo la usa Usuarios. Meilisearch, Valkey y el worker de indexación pertenecen a Electrodomésticos. Los consumidores y workers solares pertenecen a Solar. El gateway no posee una base de negocio.
 
@@ -560,7 +564,7 @@ El informe identifica el primer límite observado y el siguiente paso de escalad
 | Frontend | React con JavaScript, HTML y CSS; build dentro de Docker |
 | Servicios | Go con Gin; GORM en repositorios MySQL y driver oficial en MongoDB |
 | Gateway | Go, Gin y net/http/httputil, con selector round-robin y health checks explícitos |
-| Usuarios | Servicio propio en Go, MySQL, Argon2id, JWT y sesiones de refresh |
+| Usuarios | Servicio propio en Go, MySQL, Argon2 id, JWT y sesiones de refresh |
 | Relacional | MySQL Community, InnoDB: usuarios_db, electrodomesticos_db y consumo_db |
 | Documental | MongoDB Community: solar_db |
 | Búsqueda | Meilisearch Community autohospedado, licencia MIT; sin edición Enterprise ni Meilisearch Cloud |

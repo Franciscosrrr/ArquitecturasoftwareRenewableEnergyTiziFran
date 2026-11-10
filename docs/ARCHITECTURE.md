@@ -1,77 +1,63 @@
-# Arquitectura - Entrega 2
+# Arquitectura implementada
 
-Versión 2.0.0 · Estado implementado localmente. El dominio fue aprobado por la cátedra. Las vistas de entrega 1 se conservan como antecedentes del sistema final y no describen todos los componentes ya operativos.
+Revisión 2026-11-09. El entorno completo es local, con cuatro microservicios de negocio, un gateway, dos instancias Solar y dependencias reales. [Contenedores](diagrams/contenedores-actuales.png), [contexto](diagrams/contexto.png), [flujo durable](diagrams/evaluacion-durable.png) y [unidad M2M cloud desplegada](diagrams/cloud-gratuito.png).
 
-## Contenedores actuales
+## Responsabilidades y datos
 
-```mermaid
-flowchart LR
-  persona[Visitante] --> web[React servido por gateway]
-  web --> gateway[Gateway Go / Gin]
-  gateway --> consumo[Consumo Go / capas]
-  gateway --> catalogo[Electrodomésticos Go / capas]
-  consumo -->|HTTP interno autenticado| catalogo
-  catalogo --> mysql[(MySQL electrodomesticos_db)]
-  gateway -. OTLP .-> jaeger[Jaeger local]
-  consumo -. OTLP .-> jaeger
-  catalogo -. OTLP .-> jaeger
-```
-
-Gateway publica 8080 y Jaeger 16686 en loopback. Los servicios de negocio y MySQL quedan en una red de Compose sin puertos publicados. React se compila en el build y se sirve desde el gateway; no hay un servidor Node en ejecución. Jaeger usa almacenamiento en memoria y pierde sus trazas al reiniciar; las evidencias seleccionadas se exportan a archivos.
-
-## Responsabilidades y propiedad
-
-| Componente | Implementación de este hito | Datos propios |
+| Componente | Responsabilidad | Datos propios |
 |---|---|---|
-| Gateway | Lista explícita de rutas, proxy, correlación, límite por origen/cliente, interfaz y contratos | Contadores temporales; sin entidades de negocio |
-| Consumo | Cálculo decimal, validación, capacidad M2M y simulación por catálogo | Ninguna persistencia para simulaciones |
-| Electrodomésticos | Catálogo activo, búsqueda SQL, filtros, orden, paginación y resolución interna por lote | Tabla electrodomesticos, fichas versionadas y semillas en MySQL |
-| Usuarios | Esqueleto de entrega 1, fuera del arranque de entrega 2 | Sin BD implementada |
-| Solar | Esqueleto de entrega 1, fuera del arranque de entrega 2 | Sin BD implementada |
+| Gateway Go | React, contratos, validación de sesión, rutas, cuotas, balanceo | Buckets/estado de health en memoria; ninguna base de negocio |
+| Usuarios | Registro Argon2 id, login/JWT, refresh rotativo, logout, roles | MySQL usuarios_db: usuarios y sesiones |
+| Consumo, capas | Reglas decimales, lugares/configuraciones, confirmación consistente | MySQL consumo_db: snapshots, versiones, idempotencia, outbox |
+| Electrodomésticos, capas | Fichas de equipos para el selector, API/índice compatible, invalidación y worker | MySQL electrodomesticos_db, Meilisearch derivado y Valkey descartable |
+| Solar, hexagonal | Búsqueda de paneles, comparación de alternativas, cotización comercial y trabajo asíncrono | MongoDB solar_db: paneles, pendientes de índice y estudios deduplicados |
+| Vendedor simulado | Oferta, stock y precio por potencia/SKU | Referencias didácticas; no compra ni reserva |
 
-Consumo no recibe credenciales MySQL ni conoce tablas de Electrodomésticos. Solo usa su API HTTP interna de resolución. La clave M2M no aparece en React. El gateway nunca publica `/internal/v1/electrodomesticos/resolver`; el servicio exige un secreto interno independiente.
+Cada base tiene un usuario de aplicación diferente y volumen persistente. Ningún servicio consulta tablas/colecciones de otro. Gateway conoce destinos HTTP y consulta Usuarios para la sesión/rol vigente, limpia cabeceras de identidad aportadas por el cliente y transmite el actor validado con secreto interno. Ser administrador no habilita datos privados de otros propietarios. Los accesos internos y las métricas tienen credenciales técnicas independientes de API keys M2M y tokens de usuario.
 
-## Capas y dependencias
+## Dos estilos y dependencias
 
-Consumo: `HTTP → application → integración HTTP` cuando se usan fichas. El cálculo puro permanece en application, sin Gin ni SQL. Electrodomésticos: `HTTP → repositorio de consultas`; su flujo de lectura no añade un servicio de aplicación sin reglas propias. La persistencia y sus consultas se encapsulan en repository. La validación de transporte permanece en HTTP. `platform` solo contiene infraestructura técnica: trazas, logs, servidor, salud y limitador; no comparte entidades del dominio ni repositorios.
+Consumo usa capas de transporte, aplicación/cálculo, resolver por HTTP y repositorio SQL; no mezcla las fórmulas con Gin o SQL. Solar mantiene dominio puro (racionales, comparación por factibilidad/costo/superficie), aplicación con puertos Estimator/Supplier/ModelSupplier y adaptadores HTTP, proveedor, Mongo y AMQP. El worker coordina deduplicación/persistencia y delega la selección en RunStudy; el dominio no importa drivers. No se utiliza el gateway como bus interno para integrar al vendedor.
 
-Se usa `database/sql` con el driver MySQL para consultas y transacciones explícitas. GORM era una biblioteca prevista; no es necesario para este flujo de lectura y su cambio queda documentado en ADR-003-E2. Solar mantiene el diseño hexagonal para la final; no se presenta su esqueleto como un segundo estilo ya implementado.
+## Flujos
 
-## Flujo operativo
+El invitado obtiene fichas activas, estima consumo, compara paneles con HSP manuales y puede cotizar contra el vendedor. No crea lugares, evaluaciones, estudios ni mensajes de negocio; el borrador vive en memoria del navegador. Al autenticarse se conserva ese borrador hasta Guardar explícitamente. Guardar recalcula en servidor y conserva las fichas/versiones leídas en un único lote.
 
-1. La interfaz carga las fichas activas desde MySQL pasando por el gateway.
-2. El visitante elige ids de catálogo y declara cantidad/hábitos. El borrador vive únicamente en memoria React.
-3. `POST /api/v1/publico/consumo-catalogo` entra al gateway y llega a Consumo con contexto W3C y correlación.
-4. Consumo pide un lote de hasta 100 fichas activas al servicio Electrodomésticos. Este consulta MySQL en un span específico. Una ficha inactiva o inexistente invalida la entrada; no se confía en potencias enviadas por el navegador.
-5. Consumo combina fichas y hábitos, valida todas las reglas y calcula con `big.Rat`. Redondea cada salida a seis decimales, mitad hacia arriba, sin redondeos intermedios para el total.
-6. La interfaz muestra desglose, total y promedio, con traceId. Editar invalida el resultado visible; recargar elimina el borrador. No se escriben configuraciones, evaluaciones, outbox ni eventos.
+Confirmar una configuración requiere versión de configuración/lugar e Idempotency-Key. MySQL bloquea y comprueba ambos registros propios, congela el snapshot e inserta evaluación, registro de idempotencia y outbox juntos. Repetir la misma entrada recupera la evaluación; una entrada distinta con la misma clave devuelve 409. Un catálogo modificado exige actualizar explícitamente la configuración. El bloqueo es local a Consumo; no existe una transacción distribuida con la lectura del catálogo.
 
-La API M2M acepta potencias externas según el contrato 1.0.1 y usa el mismo cálculo. No depende del catálogo ni de MySQL: una caída de la base afecta el flujo por fichas, pero la estimación externa sigue disponible. `POST /api/v1/publico/consumo` conserva el cálculo anónimo con parámetros completos.
+El relay publica ConsumoEvaluado.v1 con confirms. Solar recibe con prefetch1, persiste claim/evento único, calcula y consulta al vendedor por SKU. Falta de stock cambia la alternativa; incompatibilidad se rechaza. Mongo confirma journaling antes del ACK. El usuario consulta PENDIENTE, EN_PROCESAMIENTO, COMPLETADO, SIN_ALTERNATIVA o ERROR. Cambiar cobertura crea otro estudio sobre la evaluación inmutable. Confirmación y estudio no son una única transacción: la consistencia entre servicios es eventual y explícita.
 
-## Almacenamiento
+Un cambio administrativo de equipo se confirma con su outbox. Rabbit entrega ElectrodomesticoActualizado.v1 al worker del catálogo, que lee el estado canónico más reciente y espera la tarea Meilisearch antes de invalidar la generación de caché. No depende de que un usuario busque. Objetivo saludable de atraso≤5 s, medido en integración. Texto, categoría, modo, potencia, páginas y orden se resuelven en el índice. Reindexación usa temporal/swap. Si índice o caché fallan, hay respaldo SQL etiquetado; la validación de fichas siempre evita caché.
 
-MySQL 8.4 con volumen nombrado. El arranque crea la tabla si falta y ejecuta semillas por clave primaria mediante INSERT IGNORE dentro de una transacción. Reiniciar no duplica ni sobrescribe fichas existentes. La búsqueda usa consultas parametrizadas, solo activos, paginación acotada y un orden estable con id como desempate. Count y página se leen en una transacción de solo lectura con snapshot repetible.
+La búsqueda visible para el cliente es de paneles: texto, potencia, superficie por unidad, moneda/precio, orden y páginas. Solar usa otro índice Meilisearch y Mongo canónico; la marca pendiente se escribe junto a la ficha, con leases entre réplicas y limpieza condicionada a versión. Una reconciliación cada minuto permite reconstruir el índice perdido; ante caída se filtra sobre Mongo. El cálculo comercial valida las fichas canónicas y no confía en el índice eventualmente desactualizado. El API/índice previo de equipos se conserva para compatibilidad y el selector de equipos continúa disponible.
 
-El filtro textual usa LIKE literal con escape de comodines; no se declara como búsqueda full text ni como Meilisearch. Los índices B-tree ayudan con activos/nombre/categoría; un LIKE con comodín inicial puede recorrer candidatos. D6 documenta el índice dedicado previsto para la final. En este hito no hay caché: cada lectura consulta MySQL.
+Archivar/restaurar lugares o configuraciones cambia solo estado con control de propiedad/versión, sin nueva versión de contenido. Eliminar marca eliminado_at y excluye el guardado de edición/confirmación, conservando evaluaciones y estudios. Un lugar con consumos guardados, incluidos archivados, exige moverlos o eliminarlos; no hay cascada silenciosa. La migración agrega columnas sin borrar filas.
 
-## Resiliencia, seguridad y observabilidad
+## Distribución y fallas
 
-Gateway: presupuesto de 8 s; Consumo → catálogo: timeout total de 2 s, conexión de 500 ms. Circuit breaker en Consumo abre tras tres fallos, bloquea llamadas 10 s y permite una prueba de recuperación. No hay reintentos automáticos ni datos de éxito inventados. Un fallo devuelve 503; el usuario puede reintentar. El cálculo externo sigue aislado de esta dependencia.
+Gateway distribuye round-robin Solar 1/2. Checks cada 5 s con timeout1 s retiran tras dos fallas y reintegran tras dos éxitos; no se reintenta automáticamente un POST en otra réplica. Ambas instancias comparten Mongo y cola, con deduplicación durable. No es HA integral: gateway, bases, broker y motor tienen una instancia local.
 
-Los healthchecks exigen `Authorization: Bearer HEALTHCHECK_TOKEN`; liveness confirma proceso y readiness verifica las dependencias indispensables de cada componente. Consumo declara readiness para el cálculo stateless; el catálogo comprueba MySQL. Gateway exige disponibilidad de Consumo y catálogo para el flujo de interfaz. La indisponibilidad de Jaeger no impide el negocio.
+HTTP: catálogo 2 s con circuito3 fallas/10 s/una prueba; cotización vendedor 1 s, aplicación pública Solar 4 s, gateway 8 s y M2M 4.5 s. Worker 12 s con reintentos durables1/5/30 s antes deDLQ; mensajes incompatibles van directo. Confirmar consumo no espera al broker. Al caer el vendedor se conserva el consumo y un estudio recuperable; no se inventa precio, stock ni irradiación. [Postmortem](POSTMORTEM.md).
 
-Logs JSON con servicio, ruta normalizada, método, estado, duración, request_id, trace_id y span_id. Sin cuerpos, valores de consumo, credenciales ni SQL. OpenTelemetry transmite spans por OTLP/HTTP a Jaeger. La API devuelve su traceId. Muestreo 100% local para la demostración; ajustar antes de un uso continuo.
+## Operación y observabilidad
 
-Rate limit inicial: token bucket de 1 solicitud/s y ráfaga 10; 429 con Retry-After. Gateway limita por IP observada y por hash de clave M2M; no confía en X-Forwarded-For del cliente. Consumo aplica un segundo límite conservador, y ve al gateway como origen único para visitantes. Esta restricción agregada es una limitación conocida para varios usuarios simultáneos. Los contadores tienen memoria acotada y no se comparten entre réplicas.
+Compose limita memoria/CPU, buffers de bases e indexación; scripts generan secretos una sola vez y compilan secuencialmente. Solo gateway8080, Jaeger16686, Prometheus9090 y Grafana3000 se publican en loopback. /health y /metrics requieren HEALTHCHECK_TOKEN. SQL, Mongo, Rabbit, caché, índice y Loki no exponen puerto al host.
 
-## Evolución y deuda técnica aceptada
+Prometheus mide rutas normalizadas, latencia, errores, caché, outbox, workers y distribución. Grafana se provisiona con dashboard y fuentes Prometheus/Loki/Jaeger. Loki agrega logs JSON mediante buffer no bloqueante y retiene 72 h. Traceparent HTTP/evento conecta confirmación y worker; requestId se conserva como correlación. No se registran cuerpos privados ni credenciales. Jaeger usa memoria y pierde trazas al reiniciar; retiene hasta 512 trazas, con cola de 256 spans y cuatro workers dentro de 128 MiB. El presupuesto Go es 96 MiB. Se verificó la retención tras detectar y corregir un OOM por crecimiento ilimitado. Las alertas son de Prometheus; no se configura envío externo de notificaciones.
 
-- Identidad, permisos de propietario y administración quedan para la final; sus rutas privadas no son funcionales. Anónimos reciben 401 y no hay altas de catálogo públicas.
-- Pendientes: persistencia de Consumo, MySQL de Usuarios, MongoDB de Solar, eventos/outbox, indexación Meilisearch, caché Valkey, JWT y balanceo activo. Las dos réplicas Solar previstas compartirán la misma BD de Solar.
-- El proveedor y consumidor fueron asignados; todavía no hay contrato recibido. D9 es provisional. No hay adaptador externo ficticio ni pruebas que pretendan validar ese contrato desconocido.
-- Jaeger y MySQL son instancias únicas, sin alta disponibilidad ni copia automática. `.env` es un archivo local ignorado, no un gestor productivo de secretos. Las imágenes usan tags versionados, todavía sin digests fijados.
-- La tabla se inicializa idempotentemente; no hay aún un ejecutor de migraciones incrementales para cambios de esquema posteriores.
-- El tablero de métricas, alertas, pruebas de capacidad completas y fallo entre réplicas corresponden a los siguientes hitos. D13 solo extrae conclusiones del ensayo registrado.
-- La interfaz de entrega 2 cubre consumo temporal. No contiene botones de guardado/login/solar que aparenten estar implementados.
+## Límites externos
 
-Ver [ADR](adr/README.md), [evidencias](DELIVERY-2.md) y [antecedente de entrega 1](ARCHITECTURE-ENTREGA-1.md).
+Contrato M2M 1.0.1 de Clínica permanece intacto, sin precio. Render Free aloja esa capacidad Go sin estado; no aloja las bases durables de la aplicación completa. La capacidad ya se publicó por HTTPS mediante un túnel desde la PC, con claves dedicadas entregadas al usuario por separado. El proceso corre en https://renewable-consumo-v1.onrender.com, verificado por HTTPS y contrato; los túneles de la PC son accesos distintos. La comprobación desde el backend de Clínica queda a cargo de ese grupo por indicación del usuario. Su cold start puede superar 1.2 s/5 s. El vendedor sigue simulado por autorización del equipo, pendiente de contrato real; eso no acredita la integración entre grupos que exige el enunciado. [Despliegue](DESPLIEGUE-GRATUITO.md).
+
+Las decisiones y comparaciones con todos los prácticos se conservan en [D1–D13](adr/README.md) y [matriz de clases](CLASES-PRACTICAS.md). Los resultados ejecutados se distinguen de estos límites en [verificación](VERIFICACION-FINAL.md).
+
+## Publicación posterior mediante Cloudflare — 2026-11-09
+
+El usuario autorizó un origen en su PC. La publicación M2M usa Gateway/Consumo mediante un proyecto aislado de dos contenedores y un Quick Tunnel temporal: https://emails-bingo-preference-packets.trycloudflare.com. No utiliza las bases ni la red del sistema completo. Render es la publicación cloud principal, con claves propias; los contenedores del túnel se conservan detenidos para recuperación. El contrato M2M no cambia; no se presenta el túnel como hosting de Workers ni como dirección permanente. [Operación y evidencia](PUBLICACION-CLINICA.md).
+
+
+## Entrada HTTPS de la web completa — 2026-11-09
+
+La web también está publicada, con autorización explícita del usuario: https://conditional-wan-server-learning.trycloudflare.com. Otro proyecto de dos contenedores usa Nginx de 32 MiB y cloudflared de 64 MiB. Nginx marca la cookie de refresh como Secure, preserva Host/Origin y bloquea rutas técnicas; reutiliza el gateway y sus servicios/bases, sin modificar código de aplicación. El túnel web pertenece solo a su red; Nginx conecta además con la red del gateway. No monta credenciales ni abre puertos adicionales. Cuatro casos de navegador HTTPS y la sonda de sesión aprobaron. [Operación y evidencia](PUBLICACION-WEB.md).
+
+Este acceso web y la publicación M2M local anterior son independientes. El túnel M2M local está detenido; la web continúa requiriendo PC/Docker/red y su hostname puede cambiar al reiniciar. El despliegue M2M cloud ya está verificado en https://renewable-consumo-v1.onrender.com, sin cuentas ni bases privadas. [Configuración y evidencia](DESPLIEGUE-GRATUITO.md).

@@ -1,8 +1,10 @@
+> Documento histórico. Estado vigente: [verificación final](VERIFICACION-FINAL.md) y [arquitectura](ARCHITECTURE.md),2026-11-09. Los pendientes de este hito no describen necesariamente la implementación actual.
+
 # Entrega 2 - Dominio propio de punta a punta
 
 Fecha del hito: viernes 23 de octubre de 2026. Preparación y ensayos locales: 22 de octubre, zona America/Buenos_Aires. Integrantes: Tiziano Nicolas (2407889) y Francisco Skrie (2423159).
 
-El dominio está aprobado y los grupos fueron asignados por la cátedra, según confirmó el equipo. Aún no se recibió el contrato/documentación del proveedor. Se anuncia un único bonus: **tests e2e**. El repositorio mantiene un alcance final más amplio; esta matriz describe solo el hito operativo.
+El dominio está aprobado y los grupos fueron asignados por la cátedra, según confirmó el equipo. Aún no se recibió el contrato/documentación del proveedor. Se anuncia un único bonus: **tests e2 e**. El repositorio mantiene un alcance final más amplio; esta matriz describe solo el hito operativo.
 
 ## Matriz de aceptación del enunciado 6.3
 
@@ -38,7 +40,7 @@ No se contabilizan Usuarios ni Solar como servicios de negocio operativos. Los A
 - [Logs correlacionados](evidence/entrega2/logs-correlacionados.jsonl): 3 operaciones con ese traceId, sin cuerpos ni credenciales.
 - [Tests Go e integración MySQL](evidence/entrega2/tests-go.txt): incluye los tests de reglas, cliente, salud y dependencia real. La cobertura de application de Consumo se informa por paquete; no es cobertura global del proyecto.
 - [Tests HTTP reales](evidence/entrega2/tests-http.txt): nueve casos, sin usar el mock como backend.
-- [Reporte e2e](evidence/entrega2/e2e/resultados.json): 6 tests exitosos, 0 inesperados, 0 inestables; duración 16.24 s.
+- [Reporte e2 e](evidence/entrega2/e2e/resultados.json): 6 tests exitosos, 0 inesperados, 0 inestables; duración 16.24 s.
 - [Vista escritorio](evidence/entrega2/e2e/calculadora-escritorio.png) y [vista móvil](evidence/entrega2/e2e/calculadora-movil.png).
 - [Ensayo de tráfico](evidence/entrega2/carga.json) y [muestra de recursos](evidence/entrega2/recursos.txt).
 - [Caída y recuperación reales](evidence/entrega2/fallo-controlado.json), analizadas en [POSTMORTEM](POSTMORTEM.md).
