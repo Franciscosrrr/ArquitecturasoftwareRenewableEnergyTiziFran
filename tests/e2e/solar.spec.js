@@ -12,11 +12,11 @@ async function solarQuoteFlow({page}) {
   await new Promise(resolve=>setTimeout(resolve,3000));
   await page.goto('/');
   await page.getByLabel('Agregar un equipo').selectOption('iluminacion');
-  await page.getByRole('button', {name:'Calcular consumo'}).click();
+  await page.getByRole('button', {name:/^Calcular consumo/}).click();
   await expect(page.locator('caption')).toBeVisible();
   await page.getByRole('button', {name:'Cotizar paneles', exact:true}).click();
-  await expect(page.getByText('Oferta simulada: stock y precios didácticos.')).toBeVisible();
-  await expect(page.getByText(/Stock informado: 1000/)).toBeVisible();
+  await expect(page.locator('.commercial-offer')).toContainText(/Oferta del proveedor:|Oferta simulada:/);
+  await expect(page.locator('.commercial-offer')).toContainText(/Stock informado: [0-9]+/);
   await page.route('**/api/v1/publico/solar/cotizaciones', route => route.fulfill({
     status:503, contentType:'application/json',
     body:JSON.stringify({codigo:'PROVEEDOR_NO_DISPONIBLE',mensaje:'Vendedor temporalmente no disponible.',traceId:'00000000000000000000000000000000',detalles:[]}),

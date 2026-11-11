@@ -13,8 +13,8 @@ import (
  * Conserva la salud mínima del servicio sin configuración de negocio.
  *
  * @method legacyHandler
- * @param {string} healthcheckToken - Valor de healthcheckToken requerido por la operación.
- * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ * @param {string} healthcheckToken - Secreto que protege liveness y readiness.
+ * @returns {http.Handler} Adaptador HTTP con las rutas, controles y dependencias configurados.
  */
 func legacyHandler(healthcheckToken string) http.Handler {
 	health := http.NewServeMux()

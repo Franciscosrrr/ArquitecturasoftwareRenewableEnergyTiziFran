@@ -9,6 +9,7 @@ import (
 	"renewable.local/solar/internal/adapters/persistence"
 	"renewable.local/solar/internal/application"
 	"renewable.local/solar/internal/worker"
+	"strings"
 	"time"
 )
 
@@ -26,14 +27,14 @@ func main() {
 	if mode != "simulado" && mode != "externo" {
 		log.Fatal("Modo proveedor inválido")
 	}
-	if mode == "externo" && (len(base) < 8 || base[:8] != "https://") {
-		log.Fatal("El proveedor externo requiere HTTPS")
+	if mode == "externo" && !strings.HasPrefix(base, "https://") && !(base == "http://20.226.84.78" && platform.Env("PANEL_PROVIDER_ALLOW_HTTP", "false") == "true") {
+		log.Fatal("El proveedor externo requiere HTTPS o la excepción académica explícita para su IP acordada")
 	}
 	estimator, err := external.NewClient(platform.Env("CONSUMO_URL", "http://consumo:8080"), "", 2500*time.Millisecond)
 	if err != nil {
 		log.Fatal("CONSUMO_URL inválida")
 	}
-	supplier, err := external.NewClient(base, platform.Secret("PANEL_PROVIDER_API_KEY"), time.Second)
+	supplier, err := external.NewClient(platform.Env("PANEL_SIMULATOR_URL", "http://proveedor-paneles-sim:8080"), platform.Secret("PANEL_PROVIDER_API_KEY"), time.Second)
 	if err != nil {
 		log.Fatal("URL comercial inválida")
 	}
@@ -44,8 +45,20 @@ func main() {
 		log.Fatal("No se pudo inicializar MongoDB Solar")
 	}
 	defer store.Client.Disconnect(context.Background())
-	consumer := worker.Consumer{Store: store, Supplier: supplier}
+	planner := &application.ResilientSupplier{Primary: supplier, Fallback: supplier, Catalog: store, External: mode == "externo"}
+	if mode == "externo" {
+		key := platform.Secret("PANEL_COMPARATOR_API_KEY")
+		if key == "" {
+			log.Fatal("Falta la credencial privada del Comparador de Proveedores")
+		}
+		client, err := external.NewClient(base, key, time.Second)
+		if err != nil {
+			log.Fatal("URL comercial inválida")
+		}
+		planner.Primary = &external.Comparator{Client: client, Catalog: store}
+	}
+	consumer := worker.Consumer{Store: store, Supplier: planner}
 	go consumer.Run(context.Background())
-	service := application.Service{Estimator: estimator, Supplier: supplier, Mode: mode}
+	service := application.Service{Estimator: estimator, Supplier: planner, Mode: mode}
 	platform.Serve(transport.NewFullHandler(platform.Secret("HEALTHCHECK_TOKEN"), service, store, platform.Secret("INTERNAL_TOKEN")))
 }

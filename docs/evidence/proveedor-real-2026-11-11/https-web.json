@@ -1,0 +1,12 @@
+{
+  "fecha": "2026-11-11",
+  "webUrl": "https://boring-eclipse-copying-did.trycloudflare.com",
+  "webHTTP": 200,
+  "cotizacionHTTP": 200,
+  "origen": "externo",
+  "proveedor": "Cordoba Energia SA",
+  "sku": "PAN-550W-MONO",
+  "requestId": "c18963c96447e77b7b02c3b581c1e7e2",
+  "tipo": "Cloudflare Quick Tunnel desde la PC, temporal",
+  "nota": "El navegador usa HTTPS; la conexión Solar-proveedor sigue HTTP académico"
+}

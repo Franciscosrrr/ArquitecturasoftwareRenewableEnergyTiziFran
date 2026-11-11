@@ -67,5 +67,9 @@ func (s Service) Execute(ctx context.Context, input Request, traceID string) (Re
 	if err = quote.Validate(watts); err != nil {
 		return Result{}, err
 	}
-	return Result{consumption, watts, quote, s.Mode, traceID}, nil
+	mode := s.Mode
+	if quote.Source != "" {
+		mode = quote.Source
+	}
+	return Result{consumption, watts, quote, mode, traceID}, nil
 }

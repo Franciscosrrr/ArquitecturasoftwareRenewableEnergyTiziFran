@@ -1,8 +1,47 @@
-# Ensayo final — broker, réplica y dependencias,2026-11-09
+# Postmortem — conexión comercial y respaldo identificado, 11/11/2026
+
+## Contexto e impacto
+
+Comparador de Proveedores 1.1.0 estaba integrado y había respondido correctamente desde Solar. Se ensayó una falla de conexión saliente **en las dos réplicas locales**, sin alterar la VM del otro grupo. Las cotizaciones siguieron devolviendo 200 con origen simulado; la UI lo explicó y el historial preservó esa procedencia. Un 200 degradado no equivale a una oferta comercial real ni demuestra disponibilidad del proveedor.
+
+## Línea temporal del ensayo
+
+La secuencia siguiente expresa el orden observado; no se midieron latencias ni un SLA en este ensayo.
+
+| Paso | Acción y observación |
+|---|---|
+| 1 | Con proveedor real: 21 casos HTTP y 14 de navegador aprobados; ofertas con flete/descuento recibidas desde Solar. |
+| 2 | Override temporal solo de Solar/Solar-2 a https://127.0.0.1:1; ambas réplicas mantuvieron su salud interna. |
+| 3 | Una cotización respondió modoProveedor=simulado y motivoSimulacion=PROVEEDOR_NO_DISPONIBLE. |
+| 4 | Aprobaron 2 comprobaciones HTTP, 3 de identidad/historial y 4 casos de navegador de escritorio/móvil con el respaldo. |
+| 5 | El bloque finally restauró el destino real, retiró el override y esperó las dos réplicas saludables. |
+| 6 | Una nueva cotización respondió origen externo; la portada y la cotización pública también se comprobaron por HTTPS. |
+
+## Detección y respuesta
+
+El cliente detectó rechazo de conexión; el planificador abandonó esa selección y la recalculó íntegramente con el simulador. Las respuestas y el historial conservaron origen/motivo. El código incrementa el contador de respaldo de estudios/cotizaciones; no se afirma haber provocado una alerta de Prometheus específica por este cambio a 200 simulado. La detección de degradación debe observar procedencia y métricas, además de estados HTTP.
+
+No se mezclaron precios reales con simulados. El snapshot anterior de las evaluaciones se conservó. La falta de oferta válida de un SKU sigue siendo una condición de negocio: no se transforma en stock simulado. Una caída conjunta del simulador no se oculta con éxito; conserva error recuperable y la política durable correspondiente.
+
+## Causa, recuperación y mejoras
+
+Causa deliberada: destino local sin proceso escuchando, usado para representar indisponibilidad de red sin modificar el proveedor. Recuperación: restauración de la configuración real en finally y comprobación posterior de una oferta externa. Pruebas unitarias separadas cubren timeout, 429/Retry-After, circuito, prueba de recuperación y contratos incompatibles; no se atribuyen a fallas provocadas en Azure.
+
+Deuda aceptada: el enlace entregado por el proveedor usa HTTP. Solicitar HTTPS y retirar la excepción específica cuando esté disponible. Mantener visibles las etiquetas de simulación, revisar métricas de degradación y repetir la prueba de contrato ante una actualización del proveedor. La evidencia no acredita una compra, reserva, precio congelado ni alta disponibilidad del host.
+
+## Evidencia
+
+[Ensayo y resultados](evidence/proveedor-real-2026-11-11/README.md), [respuesta simulada](evidence/proveedor-real-2026-11-11/respuesta-respaldo.json), [respuesta real recuperada](evidence/proveedor-real-2026-11-11/respuesta-real-recuperada.json) y [HTTPS](evidence/proveedor-real-2026-11-11/https-web.json). El contrato M2M de Clínica conservó su hash.
+
+## Ensayos anteriores conservados
+
+Los registros siguientes corresponden a sus fechas. Las referencias al vendedor aún simulado, a una respuesta 503 sin respaldo y a pendientes de instrumentación describen esos ensayos históricos.
+
+### Ensayo final — broker, réplica y dependencias,2026-11-09
 
 Entorno: proyecto renewable-energy-entrega2 del repositorio original, con datos persistentes y límites aplicados. Prueba reversible completada; [16 observaciones](evidence/final-2026-11-09/fallas.json) y [ejecución](evidence/final-2026-11-09/fallas-ejecucion.txt). Los ensayos anteriores se conservan después de esta sección como historia.
 
-## Impacto y línea temporal
+#### Impacto y línea temporal
 
 | Segundos desde inicio | Observación |
 |---:|---|
@@ -27,13 +66,13 @@ RabbitMQ detenido: confirmar devolvió 201 con publicación PENDIENTE y no perdi
 
 Una réplica Solar detenida se retiró del reparto: cuatro respuestas posteriores vinieron de Solar 1, mientras Prometheus mostraba RenewableTargetDown firing para solar-2. Después del reinicio y dos checks exitosos volvieron ambas instancias. El vendedor detenido produjo trabajo recuperable; la evaluación siguió200 y el estudio terminó después de restaurarlo. Caché y buscador caídos juntos devolvieron200 desde sql-degradado. Reiniciar Usuarios/Consumo/Solar conservó sesión, configuración y documento Mongo.
 
-## Detección, causa y respuesta
+#### Detección, causa y respuesta
 
 Se observaron estado durable/publicación, respuestas, cabecera de réplica, contadores, alerta de Prometheus y trazas/logs. La causa fue la parada deliberada de dependencias únicas y de una de dos réplicas. El gateway mantiene la capacidad de enrutar a una réplica sana; outbox, confirms y deduplicación desacoplan el commit SQL del procesamiento.
 
 Durante el desarrollo del ensayo se encontró que el SDK de caché interpretaba MaxRetries=0 como su valor por defecto y mantenía intentos de conexión adicionales. Eso retrasaba el respaldo hasta el timeout del gateway. Se corrigió a MaxRetries=-1, un intento de dial y contexto total de 300 ms para caché, conservando el contexto original para buscador/SQL. El ensayo final volvió a detener ambas dependencias y comprobó el200 de respaldo. También se separó X-Gateway-Instance-ID de X-Instance-ID para que la observación identifique la réplica real.
 
-## Correcciones detectadas al repetir la verificación
+#### Correcciones detectadas al repetir la verificación
 
 El primer ensayo HTTP posterior mostró un alta ausente durante más de 8 s; la outbox confirmó el envío unos 9 s después del commit. El relay no observaba el cierre de un canal AMQP mientras estaba inactivo y conservaba el backoff acumulado de una caída anterior. Ambos relays ahora observan NotifyClose en espera y la reconexión vuelve a 1 s después de una ejecución estable de al menos 15 s. La prueba ampliada recrea el broker, comprueba que su DLQ persistente conserva mensajes y exige visibilidad del alta en menos de 5 s después de reconectar.
 
@@ -41,27 +80,27 @@ Durante el diagnóstico se observó OOMKilled con el límite de RabbitMQ de 256 
 
 Una segunda repetición encontró dos resultados por la búsqueda parcial predeterminada de Meilisearch: el identificador separado por guion compartía un token con una ficha residual del primer fallo. Se usa un identificador único sin separador y limpieza registrada con addCleanup; no se cambió el comportamiento del buscador para satisfacer la prueba. Las dos fichas propias residuales se desactivaron. La suite final de 17 HTTP y los módulos Go/race pasaron. Ambos intentos previos se conservan en la evidencia.
 
-## Qué se mantiene como límite
+#### Qué se mantiene como límite
 
 Gateway, bases, broker y motor tienen una instancia local; el ensayo no acredita HA integral ni recuperación de pérdida de disco. Retry1/5/30 s es una política acotada, con posible demora por cola; una DLQ incompatible requiere corregir/versionar el productor. La fuente de irradiación y vendedor reales siguen pendientes. Antes de uso productivo hacen falta copias/restauración, capacidad sostenida y política operativa del equipo. La evidencia demuestra las fallas concretas ensayadas.
 
-## Consumo de recursos detectado por el equipo
+#### Consumo de recursos detectado por el equipo
 
 Durante builds coexistían dos proyectos y compilación paralela; Windows llegó a alrededor de 95%de memoria, frente al 93%de la captura del usuario, y disco saturado. Se detuvo el duplicado, limitaron contenedores/buffers, construyó por servicio y separó el compilador temporal de la ejecución normal. El usuario eligió no cambiar WSL global. La muestra final y los presupuestos figuran en [RECURSOS-LOCALES](RECURSOS-LOCALES.md).
 
 ---
 
-## Ensayos históricos conservados
+#### Ensayos históricos conservados
 
-# Postmortem - caída controlada de MySQL
+### Postmortem - caída controlada de MySQL
 
 Ensayo local realizado el 22 de octubre de 2026, zona America/Buenos_Aires (UTC-03:00). Solo se detuvo MySQL del proyecto Compose renewable-energy-entrega2. No se borraron volúmenes ni se afectaron otros proyectos.
 
-## Impacto
+#### Impacto
 
 La simulación por fichas dejó de obtener el catálogo y respondió 503 controlado. La API M2M con parámetros externos siguió funcionando: HTTP 200 en 6.253 ms. No hubo guardados anónimos ni se sustituyeron fichas por valores inventados.
 
-## Línea temporal
+#### Línea temporal
 
 | Hora local | Hecho observado |
 |---|---|
@@ -74,23 +113,23 @@ La simulación por fichas dejó de obtener el catálogo y respondió 503 control
 | 21:04:13 | catalog_restart_requested |
 | 21:04:14 | catalog_restart_idempotent |
 
-## Detección y respuesta
+#### Detección y respuesta
 
 Cuatro solicitudes por catálogo devolvieron 503. Duraciones: 2013.956 ms, 2014.714 ms, 1761.045 ms, 24.369 ms. Las tres primeras alcanzaron la dependencia; el circuito evitó otra consulta en la cuarta, reduciendo su duración. Readiness de Electrodomésticos refleja la pérdida de MySQL y el gateway deja de estar listo para el flujo completo, pero conserva el direccionamiento de rutas que pueden responder.
 
 Se solicitó iniciar MySQL y el catálogo se recuperó en 10.10 s desde esa acción, incluyendo espera de recuperación y la ventana del circuito. Un reinicio posterior de Electrodomésticos verificó que las semillas conservan 6 fichas frente a 6 iniciales. No fue necesario reiniciar Consumo ni gateway ni modificar datos.
 
-## Causa
+#### Causa
 
 Falla deliberada de una dependencia indispensable del catálogo: una única instancia MySQL. El cálculo M2M no depende de ese catálogo, por lo que el aislamiento por ruta mantuvo su disponibilidad.
 
-## Qué funcionó y qué falta
+#### Qué funcionó y qué falta
 
 Timeout HTTP, circuit breaker, respuesta recuperable, separación entre proceso vivo/readiness y semillas idempotentes. Faltan métricas/alertas sobre el circuito y MySQL, una política de copias/restauración y observación sostenida de recuperación. El ensayo no demuestra alta disponibilidad ni tolerancia a caída entre réplicas.
 
 Reproducir voluntariamente con Python disponible: `python tests/failure_probe.py`, desde la raíz con el sistema iniciado. El script detiene temporalmente la base de este proyecto y la vuelve a iniciar incluso si falla una comprobación del período de caída. [Datos originales](evidence/entrega2/fallo-controlado.json).
 
-## Ensayo adicional - vendedor de paneles simulado - 2026-11-08
+#### Ensayo adicional - vendedor de paneles simulado - 2026-11-08
 
 Se detuvo únicamente proveedor-paneles-sim del proyecto. No se borraron volúmenes ni se detuvo MySQL, Consumo, gateway o Solar. El script restauró el vendedor en un bloque finally. Es una prueba local real de dependencia simulada, no una caída del grupo proveedor externo ni evidencia de alta disponibilidad.
 

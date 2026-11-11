@@ -14,10 +14,10 @@ def one(url,headers=None,body=None):
      * Mide una solicitud completa incluyendo lectura de su respuesta.
      *
      * @method one
-     * @param {Any} url - Parámetro url de la operación.
-     * @param {Any} headers - Parámetro headers de la operación.
-     * @param {Any} body - Parámetro body de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {str} url - URL o ruta de destino de la solicitud.
+     * @param {dict|None} headers - Cabeceras adicionales de la solicitud HTTP.
+     * @param {dict|None} body - Cuerpo JSON opcional de la solicitud.
+     * @returns {tuple} Duración en milisegundos, estado HTTP y origen de la lectura.
      */
     """
     started=time.perf_counter()
@@ -32,10 +32,10 @@ def summary(values,elapsed,concurrency=8):
      * Resume latencias, throughput, estados y origen de resultados.
      *
      * @method summary
-     * @param {Any} values - Parámetro values de la operación.
-     * @param {Any} elapsed - Parámetro elapsed de la operación.
+     * @param {list} values - Muestras de solicitudes con duración y estado que se resumen.
+     * @param {float} elapsed - Duración total medida del escenario, en segundos.
      * @param {Any} concurrency - Concurrencia efectiva del escenario.
-     * @returns {Any} Resultado verificado de la operación.
+     * @returns {dict} Resumen de estados, latencias y capacidad observada; no representa un SLA.
      */
     """
     ordered=sorted(value[0] for value in values)
@@ -46,8 +46,8 @@ def benchmark(cache):
      * Compara una consulta caliente con y sin caché usando el mismo backend.
      *
      * @method benchmark
-     * @param {Any} cache - Parámetro cache de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {bool} cache - Selecciona el escenario con caché para compararlo con la lectura sin caché.
+     * @returns {dict} Resumen de las muestras del escenario de lectura con la caché seleccionada.
      */
     """
     catalog=os.getenv('CATALOG_BASE','http://electrodomesticos:8080')

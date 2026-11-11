@@ -75,3 +75,8 @@ Estas precisiones conservan el propósito didáctico y explican las condiciones 
 ## Aplicación posterior del práctico 6 a paneles — 2026-11-09
 
 La búsqueda del cliente se traslada a paneles sin sustituir Meilisearch por Solr ni agregar infraestructura. Se usan los conceptos de fuente canónica, índice derivado, filtros, orden, páginas y reconstrucción: Mongo conserva fichas y pendientes atómicos; Solar sincroniza por leases y verifica la tarea del motor. Un respaldo Mongo conserva lectura ante caída. La elección previa y sus límites frente a los analizadores/boosts de Solr siguen justificados en D6; no se atribuye superioridad general de rendimiento. El API/índice de equipos se mantiene para compatibilidad y el selector del cálculo.
+
+
+## Integración comercial vigente — 11/11/2026
+
+El cliente real de Comparador de Proveedores aplica el límite de dominio tratado en Clase 2: potencia/superficie locales, precio/stock externos, contrato adaptado por un puerto. Se mantienen Go, MySQL/Mongo, Valkey y Meilisearch por los motivos y costos ya documentados; no se reemplazan por el solo hecho de recibir otra API. Timeout/circuito/Retry-After y respaldo identificado se registran en D9/D10 y en la evidencia del proveedor real. Las referencias de simulación del análisis del 08/09 se conservan como evolución.

@@ -10,12 +10,25 @@ import (
 	"time"
 )
 
+/**
+ * Conserva la URL de una réplica Solar, su salud y los éxitos consecutivos de recuperación.
+ *
+ * @method target
+ * @returns {target} Representación tipada usada por este componente.
+ */
 type target struct {
 	URL                 string
 	Healthy             bool
 	Initialized         bool
 	Failures, Successes int
 }
+
+/**
+ * Distribuye solicitudes entre réplicas saludables y protege su estado concurrente.
+ *
+ * @method Balancer
+ * @returns {Balancer} Representación tipada usada por este componente.
+ */
 type Balancer struct {
 	mu      sync.Mutex
 	targets []target
@@ -29,9 +42,9 @@ type Balancer struct {
  *
  * @method New
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {[]string} urls - Valor de urls requerido por la operación.
+ * @param {[]string} urls - URLs internas de las réplicas Solar a comprobar y balancear.
  * @param {string} token - Credencial técnica del servicio.
- * @returns {*Balancer} Resultado de la operación; error si no puede completarse.
+ * @returns {*Balancer} Instancia configurada del componente con sus dependencias y estado inicial.
  */
 func New(ctx context.Context, urls []string, token string) *Balancer {
 	b := &Balancer{token: token, client: platform.Client(time.Second)}
@@ -110,7 +123,7 @@ func (b *Balancer) Check(ctx context.Context) {
  * Selecciona la siguiente réplica saludable mediante round robin concurrente.
  *
  * @method Next
- * @returns {string, error} Resultado de la operación; error si no puede completarse.
+ * @returns {string, error} URL de una réplica saludable; error si no existe un destino disponible.
  */
 func (b *Balancer) Next() (string, error) {
 	b.mu.Lock()
@@ -131,7 +144,7 @@ func (b *Balancer) Next() (string, error) {
  * Comprueba si la dependencia necesaria puede atender la operación.
  *
  * @method Ready
- * @returns {bool} Resultado de la operación; error si no puede completarse.
+ * @returns {bool} true si hay al menos una réplica Solar saludable; false en caso contrario.
  */
 func (b *Balancer) Ready() bool {
 	b.mu.Lock()

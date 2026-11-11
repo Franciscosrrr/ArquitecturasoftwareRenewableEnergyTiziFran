@@ -6,23 +6,46 @@ import (
 	"sort"
 )
 
+/**
+ * Describe una ficha técnica local versionada; la oferta opcional es una vista comercial no persistida.
+ *
+ * @method Panel
+ * @returns {Panel} Representación tipada usada por este componente.
+ */
 type Panel struct {
-	ID        string `json:"id" bson:"_id"`
-	Name      string `json:"nombre"`
-	Source    string `json:"fuente"`
-	Watts     int64  `json:"potenciaW"`
-	AreaMilli int64  `json:"superficieEfectivaMilliM2"`
-	UnitCents int64  `json:"precioCentavos"`
-	Currency  string `json:"moneda"`
-	Active    bool   `json:"activo"`
-	Version   int64  `json:"version"`
+	ID           string `json:"id" bson:"_id"`
+	Name         string `json:"nombre"`
+	Source       string `json:"fuente"`
+	Watts        int64  `json:"potenciaW"`
+	AreaMilli    int64  `json:"superficieEfectivaMilliM2"`
+	UnitCents    int64  `json:"precioCentavos"`
+	Currency     string `json:"moneda"`
+	Active       bool   `json:"activo"`
+	Version      int64  `json:"version"`
+	Offer        *Quote `json:"oferta,omitempty" bson:"-"`
+	OfferSource  string `json:"origenOferta,omitempty" bson:"-"`
+	Availability string `json:"disponibilidad,omitempty" bson:"-"`
 }
+
+/**
+ * Agrupa recurso solar manual, rendimiento, cobertura y superficie útil para dimensionar.
+ *
+ * @method StudyOptions
+ * @returns {StudyOptions} Representación tipada usada por este componente.
+ */
 type StudyOptions struct {
 	Sun      DecimalNumber  `json:"horasSolPico"`
 	Yield    DecimalNumber  `json:"factorRendimiento"`
 	Coverage DecimalNumber  `json:"coberturaObjetivo"`
 	Area     *DecimalNumber `json:"superficieM2"`
 }
+
+/**
+ * Conserva cantidad, generación diaria, cobertura, superficie y viabilidad de una alternativa.
+ *
+ * @method Candidate
+ * @returns {Candidate} Representación tipada usada por este componente.
+ */
 type Candidate struct {
 	Panel      Panel       `json:"panel"`
 	Quantity   int64       `json:"cantidad"`
@@ -34,6 +57,13 @@ type Candidate struct {
 	Feasible   bool        `json:"cumpleObjetivo"`
 	Watts      int64       `json:"potenciaObjetivoW"`
 }
+
+/**
+ * Reúne alternativas, selección, oferta con procedencia y limitaciones del estudio.
+ *
+ * @method Recommendation
+ * @returns {Recommendation} Representación tipada usada por este componente.
+ */
 type Recommendation struct {
 	Status     string       `json:"estado"`
 	Criteria   string       `json:"criterio"`
@@ -48,8 +78,8 @@ type Recommendation struct {
  * Redondea un racional no negativo a seis decimales con mitad hacia arriba.
  *
  * @method Round6
- * @param {*big.Rat} v - Valor de v requerido por la operación.
- * @returns {json.Number} Resultado de la operación; error si no puede completarse.
+ * @param {*big.Rat} v - Valor recibido o racional a convertir según el tipo declarado.
+ * @returns {json.Number} Número JSON redondeado a seis decimales, sin perder precisión en pasos intermedios.
  */
 func Round6(v *big.Rat) json.Number {
 	scaled := new(big.Rat).Mul(v, big.NewRat(1000000, 1))
@@ -65,8 +95,8 @@ func Round6(v *big.Rat) json.Number {
  * Obtiene el entero superior y detecta desbordamiento de int64.
  *
  * @method ceil
- * @param {*big.Rat} v - Valor de v requerido por la operación.
- * @returns {int64} Resultado de la operación; error si no puede completarse.
+ * @param {*big.Rat} v - Valor recibido o racional a convertir según el tipo declarado.
+ * @returns {int64} Entero superior del racional; -1 cuando el resultado no cabe en int64.
  */
 func ceil(v *big.Rat) int64 {
 	q, rem := new(big.Int), new(big.Int)
@@ -84,10 +114,10 @@ func ceil(v *big.Rat) int64 {
  * Compara generación, superficie y costo sin efectuar operaciones de infraestructura.
  *
  * @method Recommend
- * @param {json.Number} daily - Valor de daily requerido por la operación.
- * @param {StudyOptions} o - Valor de o requerido por la operación.
- * @param {[]Panel} panels - Valor de panels requerido por la operación.
- * @returns {Recommendation, error} Resultado de la operación; error si no puede completarse.
+ * @param {json.Number} daily - Consumo diario estimado, expresado en kWh.
+ * @param {StudyOptions} o - HSP, rendimiento, cobertura y superficie del dimensionamiento.
+ * @param {[]Panel} panels - Fichas locales activas con potencia, área, fuente y versión.
+ * @returns {Recommendation, error} Alternativas técnicas y selección de referencia, o error por supuestos fuera de rango.
  */
 func Recommend(daily json.Number, o StudyOptions, panels []Panel) (Recommendation, error) {
 	result := Recommendation{Status: "SIN_ALTERNATIVA", Criteria: "menor costo de paneles, menor superficie e id", Options: o, Candidates: []Candidate{}, Note: "Recurso solar manual explícito. Estimación didáctica; no garantiza autonomía horaria ni reemplaza un estudio técnico."}

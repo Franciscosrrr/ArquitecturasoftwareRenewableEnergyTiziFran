@@ -14,17 +14,30 @@ import (
 	"go.opentelemetry.io/otel"
 )
 
+/**
+ * Identifica un campo rechazado y el motivo público de validación.
+ *
+ * @method Detail
+ * @returns {Detail} Representación tipada usada por este componente.
+ */
 type Detail struct {
 	Field  string `json:"campo"`
 	Reason string `json:"motivo"`
 }
+
+/**
+ * Transporta una infracción de negocio con campo y causa sin detalles internos.
+ *
+ * @method ValidationError
+ * @returns {ValidationError} Representación tipada usada por este componente.
+ */
 type ValidationError struct{ Detail Detail }
 
 /**
  * Devuelve la representación pública del error sin incluir credenciales.
  *
  * @method Error
- * @returns {string} Resultado de la operación; error si no puede completarse.
+ * @returns {string} Descripción pública y saneada del error.
  */
 func (e *ValidationError) Error() string { return e.Detail.Field + ": " + e.Detail.Reason }
 
@@ -32,16 +45,29 @@ func (e *ValidationError) Error() string { return e.Detail.Field + ": " + e.Deta
  * Construye un error de validación con campo y causa públicos.
  *
  * @method invalid
- * @param {string} field - Valor de field requerido por la operación.
- * @param {string} reason - Valor de reason requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {string} field - Ruta del campo que incumple la regla de validación.
+ * @param {string} reason - Motivo público del rechazo del campo.
+ * @returns {error} Error de validación con campo y motivo públicos.
  */
 func invalid(field, reason string) error { return &ValidationError{Detail{field, reason}} }
 
+/**
+ * Relaciona el identificador del equipo con su energía estimada en kWh.
+ *
+ * @method Breakdown
+ * @returns {Breakdown} Representación tipada usada por este componente.
+ */
 type Breakdown struct {
 	ID     string      `json:"id"`
 	Energy json.Number `json:"energiaPeriodoKWh"`
 }
+
+/**
+ * Reúne consumo total y diario, desglose, supuestos, algoritmo y correlación del cálculo.
+ *
+ * @method Result
+ * @returns {Result} Representación tipada usada por este componente.
+ */
 type Result struct {
 	Version     string      `json:"versionAlgoritmo"`
 	Days        int         `json:"diasPeriodo"`
@@ -57,7 +83,7 @@ type Result struct {
  *
  * @method Object
  * @param {[]byte} raw - Cuerpo original recibido para validar.
- * @returns {map[string]any, error} Resultado de la operación; error si no puede completarse.
+ * @returns {map[string]any, error} Objeto JSON con números conservados; error ante forma, claves duplicadas o datos inválidos.
  */
 func Object(raw []byte) (map[string]any, error) {
 	d := json.NewDecoder(bytes.NewReader(raw))
@@ -77,11 +103,11 @@ func Object(raw []byte) (map[string]any, error) {
  * Exige los campos permitidos y obligatorios de la variante de equipo.
  *
  * @method shape
- * @param {map[string]any} m - Valor de m requerido por la operación.
- * @param {[]string} required - Valor de required requerido por la operación.
- * @param {[]string} allowed - Valor de allowed requerido por la operación.
- * @param {string} path - Valor de path requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {map[string]any} m - Objeto JSON ya decodificado cuyos campos se verifican.
+ * @param {[]string} required - Nombres de campos que deben estar presentes.
+ * @param {[]string} allowed - Conjunto de campos admitidos para esta variante.
+ * @param {string} path - Ruta del campo JSON o de la operación HTTP indicada por este adaptador.
+ * @returns {error} nil si están los campos requeridos y no hay campos ajenos; error de validación en otro caso.
  */
 func shape(m map[string]any, required, allowed []string, path string) error {
 	for _, key := range required {
@@ -108,14 +134,14 @@ func shape(m map[string]any, required, allowed []string, path string) error {
  * Lee un número JSON con representación acotada antes de efectuar aritmética.
  *
  * @method number
- * @param {map[string]any} m - Valor de m requerido por la operación.
+ * @param {map[string]any} m - Objeto JSON ya decodificado cuyos campos se verifican.
  * @param {string} key - Clave de idempotencia o identidad técnica.
- * @param {string} path - Valor de path requerido por la operación.
- * @param {int64} lo - Valor de lo requerido por la operación.
- * @param {int64} hi - Valor de hi requerido por la operación.
- * @param {bool} positive - Valor de positive requerido por la operación.
- * @param {bool} integer - Valor de integer requerido por la operación.
- * @returns {*big.Rat, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} path - Ruta del campo JSON o de la operación HTTP indicada por este adaptador.
+ * @param {int64} lo - Límite inferior permitido para el número.
+ * @param {int64} hi - Límite superior permitido para el número.
+ * @param {bool} positive - Exige un valor estrictamente positivo cuando es verdadero.
+ * @param {bool} integer - Exige que el número no tenga fracción cuando es verdadero.
+ * @returns {*big.Rat, error} Racional exacto dentro de los límites o error de validación con la ruta del campo.
  */
 func number(m map[string]any, key, path string, lo, hi int64, positive, integer bool) (*big.Rat, error) {
 	value, ok := m[key].(json.Number)
@@ -139,7 +165,7 @@ func number(m map[string]any, key, path string, lo, hi int64, positive, integer 
  *
  * @method decimal
  * @param {string} raw - Cuerpo original recibido para validar.
- * @returns {*big.Rat, bool} Resultado de la operación; error si no puede completarse.
+ * @returns {*big.Rat, bool} Racional exacto y bandera de validez de su representación decimal.
  */
 func decimal(raw string) (*big.Rat, bool) {
 	mantissa, exponentText, hasExponent := strings.Cut(strings.ToLower(raw), "e")
@@ -184,8 +210,8 @@ var idPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
  * Redondea una salida no negativa a seis decimales con mitad hacia arriba.
  *
  * @method rounded
- * @param {*big.Rat} n - Valor de n requerido por la operación.
- * @returns {json.Number} Resultado de la operación; error si no puede completarse.
+ * @param {*big.Rat} n - Racional exacto que se redondeará para la respuesta JSON.
+ * @returns {json.Number} Número JSON con seis decimales y redondeo mitad hacia arriba.
  */
 func rounded(n *big.Rat) json.Number {
 	scaled := new(big.Rat).Mul(n, big.NewRat(1000000, 1))
@@ -205,8 +231,8 @@ func rounded(n *big.Rat) json.Number {
  * @method Calculate
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {[]byte} raw - Cuerpo original recibido para validar.
- * @param {string} traceID - Valor de traceID requerido por la operación.
- * @returns {Result, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} traceID - Identificador de la traza asociada al resultado o al estudio.
+ * @returns {Result, error} Consumo, desglose y supuestos; error de validación si la entrada viola las reglas.
  */
 func Calculate(ctx context.Context, raw []byte, traceID string) (Result, error) {
 	_, span := otel.Tracer("consumo").Start(ctx, "consumo.calcular")
@@ -321,7 +347,22 @@ type Ficha struct {
 	Cycle   json.Number `json:"energiaPorCicloKWh"`
 	Factor  json.Number `json:"factorFuncionamiento"`
 }
+
+/**
+ * Desacopla el cálculo de consumo de la obtención de fichas canónicas del catálogo.
+ *
+ * @method Resolver
+ * @returns {Resolver} Representación tipada usada por este componente.
+ */
 type Resolver interface {
+	/**
+	 * Obtiene fichas canónicas activas para calcular el consumo sin depender del transporte.
+	 *
+	 * @method Resolve
+	 * @param {context.Context} ctx - Presupuesto de lectura del catálogo.
+	 * @param {[]string} ids - Identificadores de fichas activas solicitadas.
+	 * @returns {[]Ficha, error} Fichas activas solicitadas o error de validación, ausencia o dependencia.
+	 */
 	Resolve(context.Context, []string) ([]Ficha, error)
 }
 
@@ -331,9 +372,9 @@ type Resolver interface {
  * @method CalculateCatalog
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {[]byte} raw - Cuerpo original recibido para validar.
- * @param {string} traceID - Valor de traceID requerido por la operación.
- * @param {Resolver} resolver - Valor de resolver requerido por la operación.
- * @returns {Result, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} traceID - Identificador de la traza asociada al resultado o al estudio.
+ * @param {Resolver} resolver - Puerto que recupera las fichas canónicas activas del catálogo.
+ * @returns {Result, error} Consumo calculado con fichas canónicas; error de entrada o de la dependencia de catálogo.
  */
 func CalculateCatalog(ctx context.Context, raw []byte, traceID string, resolver Resolver) (Result, error) {
 	ctx, span := otel.Tracer("consumo").Start(ctx, "consumo.resolver-catalogo")

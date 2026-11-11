@@ -22,10 +22,23 @@ var ErrCredentials = errors.New("credenciales inválidas")
 var ErrConflict = errors.New("recurso duplicado o transición inválida")
 var ErrValidation = errors.New("datos inválidos")
 
+/**
+ * Administra identidades y sesiones en SQL y la clave de firma del access token.
+ *
+ * @method Store
+ * @returns {Store} Representación tipada usada por este componente.
+ */
 type Store struct {
 	DB     *sql.DB
 	Secret string
 }
+
+/**
+ * Entrega access token e identidad; mantiene el refresh fuera de la serialización JSON.
+ *
+ * @method Session
+ * @returns {Session} Representación tipada usada por este componente.
+ */
 type Session struct {
 	Access  string         `json:"accessToken"`
 	User    platform.Actor `json:"usuario"`
@@ -36,8 +49,8 @@ type Session struct {
  * Deriva una contraseña con Argon2id y salt aleatorio independiente por usuario.
  *
  * @method Hash
- * @param {string} password - Valor de password requerido por la operación.
- * @returns {string, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} password - Contraseña recibida o de conexión; nunca se incluye en la respuesta ni en logs.
+ * @returns {string, error} Hash Argon2id con salt y parámetros codificados o error de validación/aleatoriedad.
  */
 func Hash(password string) (string, error) {
 	if utf8.RuneCountInString(password) < 12 || len(password) > 512 {
@@ -55,9 +68,9 @@ func Hash(password string) (string, error) {
  * Verifica el hash Argon2id y rechaza representaciones incompatibles.
  *
  * @method Check
- * @param {string} password - Valor de password requerido por la operación.
- * @param {string} encoded - Valor de encoded requerido por la operación.
- * @returns {bool} Resultado de la operación; error si no puede completarse.
+ * @param {string} password - Contraseña recibida o de conexión; nunca se incluye en la respuesta ni en logs.
+ * @param {string} encoded - Hash Argon2id codificado que se compara con la contraseña recibida.
+ * @returns {bool} true si la contraseña coincide con el hash válido; false si no coincide o el formato es inválido.
  */
 func Check(password, encoded string) bool {
 	parts := strings.Split(encoded, "$")
@@ -80,8 +93,8 @@ func Check(password, encoded string) bool {
  * Normaliza el email y rechaza nombres de presentación o direcciones inválidas.
  *
  * @method Normalize
- * @param {string} email - Valor de email requerido por la operación.
- * @returns {string, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} email - Dirección de correo que se normaliza para identificar la cuenta.
+ * @returns {string, error} Email normalizado o error si la dirección no es aceptable.
  */
 func Normalize(email string) (string, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
@@ -97,7 +110,7 @@ func Normalize(email string) (string, error) {
  *
  * @method Migrate
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Migrate(ctx context.Context) error {
 	for _, statement := range []string{
@@ -116,10 +129,10 @@ func (s *Store) Migrate(ctx context.Context) error {
  *
  * @method Create
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} email - Valor de email requerido por la operación.
- * @param {string} password - Valor de password requerido por la operación.
- * @param {string} role - Valor de role requerido por la operación.
- * @returns {platform.Actor, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} email - Dirección de correo que se normaliza para identificar la cuenta.
+ * @param {string} password - Contraseña recibida o de conexión; nunca se incluye en la respuesta ni en logs.
+ * @param {string} role - Rol controlado de la cuenta; se valida antes de persistirlo.
+ * @returns {platform.Actor, error} Actor creado sin credenciales sensibles o error de validación, duplicado o SQL.
  */
 func (s *Store) Create(ctx context.Context, email, password, role string) (platform.Actor, error) {
 	email, err := Normalize(email)
@@ -149,9 +162,9 @@ func (s *Store) Create(ctx context.Context, email, password, role string) (platf
  *
  * @method Bootstrap
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} email - Valor de email requerido por la operación.
- * @param {string} password - Valor de password requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {string} email - Dirección de correo que se normaliza para identificar la cuenta.
+ * @param {string} password - Contraseña recibida o de conexión; nunca se incluye en la respuesta ni en logs.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Bootstrap(ctx context.Context, email, password string) error {
 	var count int
@@ -169,9 +182,9 @@ func (s *Store) Bootstrap(ctx context.Context, email, password string) error {
  * Firma un access token de quince minutos ligado a una sesión revocable.
  *
  * @method token
- * @param {platform.Actor} user - Valor de user requerido por la operación.
- * @param {string} session - Valor de session requerido por la operación.
- * @returns {string, error} Resultado de la operación; error si no puede completarse.
+ * @param {platform.Actor} user - Usuario de conexión SQL o actor autenticado según el tipo declarado.
+ * @param {string} session - Identificador de sesión revocable al que se liga el access token.
+ * @returns {string, error} Access token firmado o error de firma/configuración.
  */
 func (s *Store) token(user platform.Actor, session string) (string, error) {
 	now := time.Now()
@@ -184,9 +197,9 @@ func (s *Store) token(user platform.Actor, session string) (string, error) {
  *
  * @method Login
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} email - Valor de email requerido por la operación.
- * @param {string} password - Valor de password requerido por la operación.
- * @returns {Session, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} email - Dirección de correo que se normaliza para identificar la cuenta.
+ * @param {string} password - Contraseña recibida o de conexión; nunca se incluye en la respuesta ni en logs.
+ * @returns {Session, error} Sesión y tokens nuevos o error de credenciales/persistencia.
  */
 func (s *Store) Login(ctx context.Context, email, password string) (Session, error) {
 	normalized, err := Normalize(email)
@@ -217,8 +230,8 @@ func (s *Store) Login(ctx context.Context, email, password string) (Session, err
  *
  * @method Validate
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} raw - Cuerpo original recibido para validar.
- * @returns {platform.Actor, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} raw - Token de acceso o renovación recibido, según la operación.
+ * @returns {platform.Actor, error} Actor de una sesión vigente o error de credenciales, firma, expiración o revocación.
  */
 func (s *Store) Validate(ctx context.Context, raw string) (platform.Actor, error) {
 	claims := &jwt.RegisteredClaims{}
@@ -239,8 +252,8 @@ func (s *Store) Validate(ctx context.Context, raw string) (platform.Actor, error
  *
  * @method Refresh
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} raw - Cuerpo original recibido para validar.
- * @returns {Session, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} raw - Token de acceso o renovación recibido, según la operación.
+ * @returns {Session, error} Sesión con refresh rotado o error de credenciales/transacción.
  */
 func (s *Store) Refresh(ctx context.Context, raw string) (Session, error) {
 	tx, err := s.DB.BeginTx(ctx, nil)
@@ -273,8 +286,8 @@ func (s *Store) Refresh(ctx context.Context, raw string) (Session, error) {
  *
  * @method Logout
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} refresh - Valor de refresh requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {string} refresh - Token de renovación cuyo hash identifica la sesión a revocar.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Logout(ctx context.Context, refresh string) error {
 	_, err := s.DB.ExecContext(ctx, "DELETE FROM sesiones WHERE refresh_hash=?", platform.Digest(refresh))
@@ -286,7 +299,7 @@ func (s *Store) Logout(ctx context.Context, refresh string) error {
  *
  * @method Users
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {[]platform.Actor, error} Resultado de la operación; error si no puede completarse.
+ * @returns {[]platform.Actor, error} Identidades visibles para administración, sin hashes, o error SQL.
  */
 func (s *Store) Users(ctx context.Context) ([]platform.Actor, error) {
 	rows, err := s.DB.QueryContext(ctx, "SELECT id,email,rol FROM usuarios ORDER BY email LIMIT 100")
@@ -311,8 +324,8 @@ func (s *Store) Users(ctx context.Context) ([]platform.Actor, error) {
  * @method Role
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} id - Identificador del recurso solicitado.
- * @param {string} role - Valor de role requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {string} role - Rol controlado de la cuenta; se valida antes de persistirlo.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Role(ctx context.Context, id, role string) error {
 	if role != "USUARIO" && role != "ADMINISTRADOR" {

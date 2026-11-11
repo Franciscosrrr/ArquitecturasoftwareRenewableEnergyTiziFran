@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "ArquitecturasoftwareRenewableEnergy - Calculadora invitada",
-    "version": "1.1.0",
-    "description": "Cálculos temporales implementados sin guardados anónimos. Recurso manual explícito; sin proveedor de irradiación por ubicación acordado. Se conservan campos de consumo y de comparación solar. La capacidad M2M separada conserva1.0.1."
+    "version": "1.2.0",
+    "description": "Cálculos temporales implementados sin guardados anónimos. Recurso manual explícito; sin proveedor de irradiación por ubicación acordado. Se conservan campos de consumo y de comparación solar. La capacidad M2M separada conserva1.0.1. Integración comercial 2026-11-11: ofertas reales con flete/descuento y respaldo simulado identificado. La capacidad de Clínica 1.0.1 se conserva."
   },
   "servers": [
     {
@@ -1004,8 +1004,113 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128
+          },
+          "cotizacion": {
+            "$ref": "#/components/schemas/OfertaPanel"
           }
         }
+      },
+      "OfertaPanel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cotizacionId",
+          "sku",
+          "potenciaPanelW",
+          "cantidad",
+          "stockDisponible",
+          "precioUnitarioCentavos",
+          "totalCentavos",
+          "moneda"
+        ],
+        "properties": {
+          "cotizacionId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 64,
+            "description": "Vacío para ofertas reales: el proveedor no persiste una cotización. Solo el simulador asigna una identidad didáctica."
+          },
+          "sku": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "potenciaPanelW": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2000
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "stockDisponible": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "precioUnitarioCentavos": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000
+          },
+          "totalCentavos": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000
+          },
+          "moneda": {
+            "type": "string",
+            "enum": [
+              "ARS"
+            ]
+          },
+          "origen": {
+            "type": "string",
+            "enum": [
+              "externo",
+              "simulado"
+            ]
+          },
+          "motivoSimulacion": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "skuProveedor": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "proveedorId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "proveedorNombre": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "referenciaProveedor": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "fleteCentavos": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000
+          },
+          "descuentoPorcentaje": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "descuentoAplicado": {
+            "type": "boolean"
+          },
+          "consultadoEn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "Importes en centavos ARS adaptados con precisión decimal. En origen externo el total informado incluye flete y descuento aplicado; no se impone precio unitario por cantidad. La oferta es una foto del momento, sin reserva ni precio congelado."
       }
     }
   },

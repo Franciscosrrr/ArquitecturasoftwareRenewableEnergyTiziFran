@@ -18,8 +18,8 @@ def one(_=None):
      * Mide una solicitud completa incluyendo lectura de su respuesta.
      *
      * @method one
-     * @param {Any} _ - Parámetro _ de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Any} _ - Argumento de compatibilidad que este callback no utiliza.
+     * @returns {dict} Estado HTTP y duración en milisegundos de la solicitud.
      */
     """
     req=Request(BASE+'/api/v1/publico/consumo',data=BODY,headers={'Content-Type':'application/json'})
@@ -35,8 +35,8 @@ def summary(values):
      * Resume latencias, throughput, estados y origen de resultados.
      *
      * @method summary
-     * @param {Any} values - Parámetro values de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {list} values - Muestras de solicitudes con duración y estado que se resumen.
+     * @returns {dict} Resumen de estados, latencias y capacidad observada; no representa un SLA.
      */
     """
     latencies=sorted(v['ms'] for v in values)

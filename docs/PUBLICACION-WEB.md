@@ -1,6 +1,6 @@
 # Publicación HTTPS de la página local
 
-Fecha: 2026-11-09. **Publicada y verificada:** [https://conditional-wan-server-learning.trycloudflare.com](https://conditional-wan-server-learning.trycloudflare.com). El usuario autorizó explícitamente publicar la web completa, incluido el tránsito de login, sesiones y datos por Cloudflare. La autorización resolvió el bloqueo inicial de revisión automática. El acceso local y el túnel M2M de Clínica siguen operativos.
+Fecha: 2026-11-11. **Publicada y verificada:** [https://boring-eclipse-copying-did.trycloudflare.com](https://boring-eclipse-copying-did.trycloudflare.com). El usuario autorizó explícitamente publicar la web completa, incluido el tránsito de login, sesiones y datos por Cloudflare. Se verificaron portada y cotización real por HTTPS después de restaurar el proveedor. La aplicación local y esta web dependen de la PC/Docker; la API de Clínica en Render es independiente. El túnel M2M local antiguo permanece detenido. [Evidencia actual](evidence/proveedor-real-2026-11-11/https-web.json).
 
 Usar las mismas cuentas que en localhost o crear una nueva. Se requiere iniciar sesión de nuevo por tratarse de otro hostname. El enlace es público; las capacidades privadas exigen autenticación y permisos.
 

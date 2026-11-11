@@ -43,7 +43,7 @@ func TestTargetWatts(t *testing.T) {
  * @returns {void} Falla si se acepta una oferta comercial inconsistente.
  */
 func TestQuoteInvariants(t *testing.T) {
-	valid := Quote{"q1", "panel", 450, 2, 10, 25000000, 50000000, "ARS"}
+	valid := Quote{ID: "q1", SKU: "panel", PanelWatts: 450, Quantity: 2, Stock: 10, UnitCents: 25000000, TotalCents: 50000000, Currency: "ARS"}
 	if err := valid.Validate(494); err != nil {
 		t.Fatal(err)
 	}

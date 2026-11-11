@@ -1,2 +1,4 @@
-// Acceso exclusivo a la base propia. Adaptadores SQL pendientes.
+/**
+ * mysql.go implementa la lectura, validación y persistencia del catálogo SQL propio.
+ */
 package repository

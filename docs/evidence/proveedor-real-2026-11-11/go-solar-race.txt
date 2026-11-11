@@ -1,0 +1,14 @@
+ Container renewable-energy-entrega2-verificar-go-run-4d2f0f9e25fe Creating 
+ Container renewable-energy-entrega2-verificar-go-run-4d2f0f9e25fe Created 
+?   	renewable.local/solar/cmd/server	[no test files]
+?   	renewable.local/solar/cmd/supplier	[no test files]
+ok  	renewable.local/solar/internal/adapters/external	1.339s
+ok  	renewable.local/solar/internal/adapters/http	1.047s
+?   	renewable.local/solar/internal/adapters/messaging	[no test files]
+?   	renewable.local/solar/internal/adapters/persistence	[no test files]
+ok  	renewable.local/solar/internal/adapters/search	1.017s
+?   	renewable.local/solar/internal/adapters/simulator	[no test files]
+ok  	renewable.local/solar/internal/application	1.019s
+ok  	renewable.local/solar/internal/domain	1.009s
+?   	renewable.local/solar/internal/ports	[no test files]
+ok  	renewable.local/solar/internal/worker	1.017s

@@ -13,7 +13,7 @@ import (
  *
  * @method example
  * @param {*testing.T} t - Contexto de verificación de la prueba.
- * @returns {[]byte} Resultado de la operación; error si no puede completarse.
+ * @returns {[]byte} Cuerpo JSON del ejemplo publicado usado como entrada de la prueba.
  */
 func example(t *testing.T) []byte {
 	t.Helper()
@@ -116,6 +116,12 @@ func TestCyclesArePerUnitAndZeroIsValid(t *testing.T) {
 	}
 }
 
+/**
+ * Suministra fichas controladas para verificar el cálculo sin infraestructura.
+ *
+ * @method fakeCatalog
+ * @returns {fakeCatalog} Representación tipada usada por este componente.
+ */
 type fakeCatalog struct {
 	items []Ficha
 	err   error
@@ -125,7 +131,7 @@ type fakeCatalog struct {
  * Obtiene fichas canónicas activas para calcular con sus versiones exactas.
  *
  * @method Resolve
- * @returns {[]Ficha, error} Resultado de la operación; error si no puede completarse.
+ * @returns {[]Ficha, error} Fichas activas solicitadas o error de validación, ausencia o dependencia.
  */
 func (f fakeCatalog) Resolve(context.Context, []string) ([]Ficha, error) { return f.items, f.err }
 

@@ -1,0 +1,22 @@
+{
+  "consumo": {
+    "totalPeriodoKWh": 47.4,
+    "promedioDiarioKWh": 1.58,
+    "diasPeriodo": 30
+  },
+  "potenciaObjetivoW": 494,
+  "cotizacion": {
+    "cotizacionId": "sim-modelo-PANEL-SIM-550",
+    "sku": "PANEL-SIM-550",
+    "potenciaPanelW": 550,
+    "cantidad": 1,
+    "stockDisponible": 100,
+    "precioUnitarioCentavos": 30000000,
+    "totalCentavos": 30000000,
+    "moneda": "ARS",
+    "origen": "simulado",
+    "motivoSimulacion": "PROVEEDOR_NO_DISPONIBLE"
+  },
+  "modoProveedor": "simulado",
+  "traceId": "eddd42ffe4e2315e3642412178139954"
+}

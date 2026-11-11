@@ -1,4 +1,6 @@
-# API privada 1.0.0
+# API privada 1.2.0
+
+Actualización 11/11/2026: los estudios conservan la procedencia comercial de la oferta, proveedor, referencia, fecha, flete, descuento y motivo de simulación cuando se usa el respaldo. El total comercial real incluye flete y descuento aplicado; no se exige igualdad con precio unitario por cantidad. [Contrato del proveedor y reglas de respaldo](../comparador-proveedores-v1.1.0/README.md). El contrato M2M 1.0.1 de Clínica se conserva por separado.
 
 [OpenAPI procesable](openapi.json). Gateway local: http://localhost:8080. Todos los cuerpos son JSON; se rechazan campos desconocidos y cuerpos mayores de 256 KiB. Las rutas de usuario requieren `Authorization: Bearer ACCESS_TOKEN`; las administrativas requieren además rol ADMINISTRADOR verificado en Usuarios. Credenciales M2M de Clínica no habilitan estas rutas. Cambiar un id ajeno devuelve 404; el rol de administrador no permite leer escenarios ajenos.
 

@@ -10,19 +10,32 @@ import (
 	"time"
 )
 
+/**
+ * Agrupa conexión y canal AMQP, devoluciones del broker y exclusión del publicador.
+ *
+ * @method Bus
+ * @returns {Bus} Representación tipada usada por este componente.
+ */
 type Bus struct {
 	Conn     *amqp.Connection
 	Ch       *amqp.Channel
 	returned chan amqp.Return
 	mu       sync.Mutex
 }
+
+/**
+ * Identifica un mensaje incompatible que debe ir a DLQ sin reintentos transitorios.
+ *
+ * @method PoisonError
+ * @returns {PoisonError} Representación tipada usada por este componente.
+ */
 type PoisonError struct{ Reason string }
 
 /**
  * Devuelve la representación pública del error sin incluir credenciales.
  *
  * @method Error
- * @returns {string} Resultado de la operación; error si no puede completarse.
+ * @returns {string} Descripción pública y saneada del error.
  */
 func (e *PoisonError) Error() string { return e.Reason }
 
@@ -30,8 +43,8 @@ func (e *PoisonError) Error() string { return e.Reason }
  * Asocia un tipo de evento con su cola de trabajo.
  *
  * @method QueueFor
- * @param {string} key - Clave de idempotencia o identidad técnica.
- * @returns {string} Resultado de la operación; error si no puede completarse.
+ * @param {string} key - Routing key que identifica el evento de dominio y su cola.
+ * @returns {string} Nombre de la cola asociada a la routing key de dominio.
  */
 func QueueFor(key string) string {
 	if key == "consumo.evaluado.v1" {
@@ -44,7 +57,7 @@ func QueueFor(key string) string {
  * Abre AMQP y declara exchanges, colas durables y confirmaciones del publicador.
  *
  * @method OpenBus
- * @returns {*Bus, error} Resultado de la operación; error si no puede completarse.
+ * @returns {*Bus, error} Conexión y canal con topología declarada; error si AMQP no puede inicializarse.
  */
 func OpenBus() (*Bus, error) {
 	conn, err := amqp.DialConfig(Env("AMQP_URL", ""), amqp.Config{Heartbeat: 10 * time.Second, Dial: func(network, address string) (net.Conn, error) {
@@ -113,12 +126,12 @@ func (b *Bus) Close() { _ = b.Ch.Close(); _ = b.Conn.Close() }
  *
  * @method Publish
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} exchange - Valor de exchange requerido por la operación.
- * @param {string} key - Clave de idempotencia o identidad técnica.
+ * @param {string} exchange - Exchange AMQP al que se publica el evento.
+ * @param {string} key - Routing key que identifica el evento de dominio y su cola.
  * @param {[]byte} raw - Cuerpo original recibido para validar.
- * @param {amqp.Table} headers - Valor de headers requerido por la operación.
- * @param {string} expiration - Valor de expiration requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {amqp.Table} headers - Metadatos AMQP, incluidos contador de intento y correlación cuando corresponda.
+ * @param {string} expiration - Tiempo de expiración AMQP en milisegundos, o vacío para no fijarlo.
+ * @returns {error} nil tras publisher confirm sin devolución; error si no se confirma la publicación.
  */
 func (b *Bus) Publish(ctx context.Context, exchange, key string, raw []byte, headers amqp.Table, expiration string) error {
 	b.mu.Lock()
@@ -153,7 +166,7 @@ func (b *Bus) Publish(ctx context.Context, exchange, key string, raw []byte, hea
  *
  * @method RetryLoop
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {func(context.Context) error} run - Valor de run requerido por la operación.
+ * @param {func(context.Context) error} run - Tarea cancelable que debe reconectarse ante errores transitorios.
  * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
  */
 func RetryLoop(ctx context.Context, run func(context.Context) error) {
@@ -181,9 +194,9 @@ func RetryLoop(ctx context.Context, run func(context.Context) error) {
  *
  * @method Consume
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} key - Clave de idempotencia o identidad técnica.
- * @param {func(context.Context, []byte) error} handle - Valor de handle requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {string} key - Routing key que identifica el evento de dominio y su cola.
+ * @param {func(context.Context, []byte) error} handle - Procesador del mensaje; su resultado decide ACK, reintento o DLQ.
+ * @returns {error} Error de conexión o consumo; nil al finalizar por cancelación cuando corresponde.
  */
 func Consume(ctx context.Context, key string, handle func(context.Context, []byte) error) error {
 	b, err := OpenBus()

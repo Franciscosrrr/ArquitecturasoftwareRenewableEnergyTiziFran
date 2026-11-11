@@ -16,13 +16,42 @@ import (
 	"time"
 )
 
+/**
+ * Define la consulta comercial por modelo exacto que utiliza el worker solar.
+ *
+ * @method Supplier
+ * @returns {Supplier} Representación tipada usada por este componente.
+ */
 type Supplier interface {
+	/**
+	 * Consulta la oferta del modelo exacto solicitado por el estudio.
+	 *
+	 * @method QuoteModel
+	 * @param {context.Context} ctx - Presupuesto de la interacción comercial.
+	 * @param {int64} watts - Potencia objetivo en W.
+	 * @param {string} sku - Modelo local que se debe cotizar.
+	 * @returns {domain.Quote, error} Oferta del modelo exacto o error de stock, dependencia o contrato.
+	 */
 	QuoteModel(context.Context, int64, string) (domain.Quote, error)
 }
+
+/**
+ * Coordina consumo AMQP, deduplicación, cálculo y persistencia antes de confirmar el mensaje.
+ *
+ * @method Consumer
+ * @returns {Consumer} Representación tipada usada por este componente.
+ */
 type Consumer struct {
 	Store    *persistence.Store
 	Supplier Supplier
 }
+
+/**
+ * Representa ConsumoEvaluado.v1 y los datos congelados necesarios para crear un estudio.
+ *
+ * @method Event
+ * @returns {Event} Representación tipada usada por este componente.
+ */
 type Event struct {
 	ID           string              `json:"eventId"`
 	Type         string              `json:"tipo"`
@@ -40,7 +69,7 @@ type Event struct {
  *
  * @method Parse
  * @param {[]byte} raw - Cuerpo original recibido para validar.
- * @returns {Event, error} Resultado de la operación; error si no puede completarse.
+ * @returns {Event, error} Evento compatible o error permanente de mensaje que debe conservarse en DLQ.
  */
 func Parse(raw []byte) (Event, error) {
 	var e Event
@@ -81,7 +110,7 @@ func eventHash(event Event) (string, error) {
  * @method Handle
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {[]byte} raw - Cuerpo original recibido para validar.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil después de persistir o detectar un duplicado; error para aplicar la política de mensajería.
  */
 func (c Consumer) Handle(ctx context.Context, raw []byte) error {
 	event, err := Parse(raw)

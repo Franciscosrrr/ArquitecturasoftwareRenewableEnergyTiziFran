@@ -16,7 +16,7 @@ class ContractTest(unittest.TestCase):
      * Agrupa verificaciones del flujo ContractTest.
      *
      * @method ContractTest
-     * @returns {ContractTest} Resultado verificado de la operación.
+     * @returns {ContractTest} Tipo que agrupa el estado y las verificaciones descritas.
      */
     """
     @classmethod
@@ -25,7 +25,7 @@ class ContractTest(unittest.TestCase):
          * Valida y ejecuta setUpClass según el contrato de prueba.
          *
          * @method setUpClass
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         cls.server = create_server(port=0, healthcheck_token=TEST_HEALTH_TOKEN)
@@ -40,7 +40,7 @@ class ContractTest(unittest.TestCase):
          * Valida y ejecuta tearDownClass según el contrato de prueba.
          *
          * @method tearDownClass
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         cls.server.shutdown()
@@ -52,7 +52,7 @@ class ContractTest(unittest.TestCase):
          * Espera la reposición de cuota antes de una prueba independiente.
          *
          * @method setUp
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         Handler.limiter = Limiter()
@@ -62,12 +62,12 @@ class ContractTest(unittest.TestCase):
          * Valida y ejecuta request según el contrato de prueba.
          *
          * @method request
-         * @param {Any} data - Parámetro data de la operación.
-         * @param {Any} path - Parámetro path de la operación.
-         * @param {Any} key - Parámetro key de la operación.
-         * @param {Any} extra - Parámetro extra de la operación.
-         * @param {Any} raw - Parámetro raw de la operación.
-         * @returns {Any} Resultado verificado de la operación.
+         * @param {Any} data - Datos estructurados que se validan o registran sin credenciales.
+         * @param {str} path - Ruta HTTP o JSON que identifica el recurso o campo de la operación.
+         * @param {str|None} key - Identidad o credencial utilizada por esta operación de prueba.
+         * @param {dict|None} extra - Cabeceras o datos adicionales de la operación, según el helper.
+         * @param {bytes|None} raw - Cuerpo HTTP original para ensayar también JSON o framing inválidos.
+         * @returns {tuple} Estado HTTP, JSON y cabeceras de la operación probada.
          */
         """
         headers = {'Content-Type': 'application/json', 'X-Request-Id': 'prueba-001'}
@@ -90,10 +90,10 @@ class ContractTest(unittest.TestCase):
          * Valida y ejecuta health request según el contrato de prueba.
          *
          * @method health_request
-         * @param {Any} auth - Parámetro auth de la operación.
-         * @param {Any} method - Parámetro method de la operación.
-         * @param {Any} path - Parámetro path de la operación.
-         * @returns {Any} Resultado verificado de la operación.
+         * @param {str|None} auth - Valor completo de Authorization, o None para omitirlo.
+         * @param {str} method - Método HTTP que se debe enviar.
+         * @param {str} path - Ruta HTTP o JSON que identifica el recurso o campo de la operación.
+         * @returns {tuple} Estado HTTP, cabeceras y cuerpo original de la consulta de salud.
          */
         """
         conn = http.client.HTTPConnection(*self.server.server_address, timeout=5)
@@ -109,7 +109,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba health rejects missing or wrong credentials.
          *
          * @method test_health_rejects_missing_or_wrong_credentials
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for method in ('GET', 'HEAD'):
@@ -129,7 +129,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba health with operational credential.
          *
          * @method test_health_with_operational_credential
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         code, headers, body = self.health_request('Bearer ' + TEST_HEALTH_TOKEN)
@@ -145,7 +145,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba server requires operational credential.
          *
          * @method test_server_requires_operational_credential
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for token in ('', 'corta'):
@@ -157,7 +157,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba reference calculation.
          *
          * @method test_reference_calculation
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         code, result, _ = self.request()
@@ -171,7 +171,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba guest same calculation without credentials.
          *
          * @method test_guest_same_calculation_without_credentials
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.assertEqual(self.request(path=CONSUMO, key=None)[1], self.request()[1])
@@ -181,7 +181,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba authentication.
          *
          * @method test_authentication
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for key in (None, 'incorrecta'):
@@ -193,7 +193,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba business rules.
          *
          * @method test_business_rules
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         cases = []
@@ -208,7 +208,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba schema rejection.
          *
          * @method test_schema_rejection
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for change in ({'cantidad': 0}, {'cantidad': True}, {'cantidad': 1.5}, {'modo':'OTRO'}, {'potenciaW':None}, {'horasPorDia':25}, {'extra':1}, {'energiaPorCicloKWh':1}):
@@ -220,7 +220,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba framing.
          *
          * @method test_framing
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.assertEqual(self.request(raw='{')[0], 400)
@@ -234,7 +234,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba period and array bounds.
          *
          * @method test_period_and_array_bounds
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for d in ({'diasPeriodo':0, 'equipos':self.valid['equipos']}, {'diasPeriodo':30,'equipos':[]}, {'diasPeriodo':30,'equipos':self.valid['equipos']*34}):
@@ -245,7 +245,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba rounding not per item.
          *
          * @method test_rounding_not_per_item
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         data = {'diasPeriodo':3,'equipos':[{'id':str(i),'modo':'POTENCIA','cantidad':1,'potenciaW':0.0005,'horasPorDia':1,'diasUso':1,'factorFuncionamiento':1} for i in range(3)]}
@@ -260,7 +260,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba forced errors.
          *
          * @method test_forced_errors
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for code in (429,500,503):
@@ -274,7 +274,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba real rate limit.
          *
          * @method test_real_rate_limit
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         codes = [self.request()[0] for _ in range(11)]
@@ -286,7 +286,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba solar reference.
          *
          * @method test_solar_reference
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         code, result, _ = self.request(self.sun, SOLAR, key=None)
@@ -301,7 +301,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba solar valid extreme inputs conform to response contract.
          *
          * @method test_solar_valid_extreme_inputs_conform_to_response_contract
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         data = dict(self.sun, promedioDiarioKWh=1000000000000, coberturaObjetivo=1, rendimientoGlobal=0.000001,
@@ -317,7 +317,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba validation identifies observed field.
          *
          * @method test_validation_identifies_observed_field
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         data = copy.deepcopy(self.valid)
@@ -336,7 +336,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba solar zero.
          *
          * @method test_solar_zero
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         data = dict(self.sun, promedioDiarioKWh=0)
@@ -349,7 +349,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba solar insufficient area.
          *
          * @method test_solar_insufficient_area
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         data = dict(self.sun, superficieUtilM2=0)
@@ -363,7 +363,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba unassigned provider.
          *
          * @method test_unassigned_provider
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         data = dict(self.sun, recursoSolar={'tipo':'UBICACION','latitud':-31,'longitud':-64})
@@ -374,7 +374,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba excessive precision extreme exponent.
          *
          * @method test_excessive_precision_extreme_exponent
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         raw = json.dumps(self.valid).replace('0.3','1e-100000')
@@ -385,7 +385,7 @@ class ContractTest(unittest.TestCase):
          * Comprueba contract refs and examples.
          *
          * @method test_contract_refs_and_examples
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for doc in DOCS.values():
@@ -394,8 +394,8 @@ class ContractTest(unittest.TestCase):
                  * Valida y ejecuta walk según el contrato de prueba.
                  *
                  * @method walk
-                 * @param {Any} node - Parámetro node de la operación.
-                 * @returns {Any} Resultado verificado de la operación.
+                 * @param {Any} node - Nodo del contrato que se recorre para comprobar referencias.
+                 * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
                  */
                 """
                 if isinstance(node,dict):

@@ -15,9 +15,9 @@ def record(action,**data):
      * Registra una observación de falla con tiempo relativo y sin secretos.
      *
      * @method record
-     * @param {Any} action - Parámetro action de la operación.
+     * @param {str} action - Acción observada que se registra en la cronología de la prueba.
      * @param {Any} data - Campos de evidencia sin secretos.
-     * @returns {Any} Resultado verificado de la operación.
+     * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
      */
     """
     events.append({'segundo':round(time.monotonic()-START,3),'accion':action,**data})
@@ -27,9 +27,9 @@ def docker(*args,input=None):
      * Ejecuta Compose con argumentos separados y comprueba su código de salida.
      *
      * @method docker
-     * @param {Any} input - Parámetro input de la operación.
+     * @param {dict} input - Entrada del cálculo que se contrasta con el contrato.
      * @param {Any} args - Argumentos separados del comando o callback.
-     * @returns {Any} Resultado verificado de la operación.
+     * @returns {str} Salida textual del comando Compose; propaga el fallo si el proceso termina con error.
      */
     """
     result=subprocess.run(COMMAND+list(args),cwd=ROOT,input=input,text=True,capture_output=True,timeout=120)
@@ -40,8 +40,8 @@ def sql(query):
      * Consulta evidencia SQL mediante las credenciales internas del contenedor.
      *
      * @method sql
-     * @param {Any} query - Parámetro query de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {str} query - Consulta SQL o parámetros de búsqueda que ejecuta el helper.
+     * @returns {str} Salida de la consulta SQL realizada dentro del contenedor de prueba.
      */
     """
     return docker('exec','-T','mysql-consumo','sh','-c','MYSQL_PWD="$MYSQL_PASSWORD" mysql -u"$MYSQL_USER" -D "$MYSQL_DATABASE" -N -B -e '+"'"+query+"'")
@@ -50,8 +50,8 @@ def prom(query):
      * Consulta Prometheus para verificar métricas y alertas reales.
      *
      * @method prom
-     * @param {Any} query - Parámetro query de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {str} query - Consulta SQL o parámetros de búsqueda que ejecuta el helper.
+     * @returns {list} Series devueltas por la consulta de Prometheus.
      */
     """
     from urllib.parse import urlencode
@@ -61,10 +61,10 @@ def ready(client,study_id,seconds=30):
      * Espera un resultado durable hasta el plazo de recuperación.
      *
      * @method ready
-     * @param {Any} client - Parámetro client de la operación.
-     * @param {Any} study_id - Parámetro study_id de la operación.
-     * @param {Any} seconds - Parámetro seconds de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Client} client - Cliente de prueba con sesión y cookies propias.
+     * @param {str} study_id - Identificador del estudio propio que se espera completar.
+     * @param {float} seconds - Plazo máximo de espera de la comprobación, en segundos.
+     * @returns {dict} Estudio completado; falla la comprobación si no se recupera dentro del plazo.
      */
     """
     deadline=time.monotonic()+seconds
@@ -78,9 +78,9 @@ def publish(payload,dlq=False):
      * Inyecta un evento de prueba mediante la API administrativa del broker.
      *
      * @method publish
-     * @param {Any} payload - Parámetro payload de la operación.
-     * @param {Any} dlq - Parámetro dlq de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Any} payload - Contenido que se serializa o utiliza como cuerpo de la prueba.
+     * @param {bool} dlq - Selecciona la cola de mensajes no procesables cuando es verdadero.
+     * @returns {str} Salida del publicador de eventos de prueba ejecutado en el contenedor.
      */
     """
     return docker('run','--rm','--no-deps','-T','verificar-real','python','-B','tests/broker_probe.py','publish',*(['dlq'] if dlq else []),input=json.dumps(payload))

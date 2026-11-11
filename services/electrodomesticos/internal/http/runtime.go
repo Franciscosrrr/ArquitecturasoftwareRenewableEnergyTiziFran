@@ -16,6 +16,12 @@ import (
 	"unicode/utf8"
 )
 
+/**
+ * Configura los destinos, credenciales y dependencias del adaptador HTTP de este servicio.
+ *
+ * @method Config
+ * @returns {Config} Representación tipada usada por este componente.
+ */
 type Config struct {
 	Store         *repository.Store
 	Features      *features.Runtime
@@ -27,8 +33,8 @@ type Config struct {
  *
  * @method NewHandler
  * @param {string} token - Credencial técnica del servicio.
- * @param {...Config} configs - Valor de configs requerido por la operación.
- * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ * @param {...Config} configs - Configuración opcional de dependencias y rutas del adaptador HTTP.
+ * @returns {http.Handler} Adaptador HTTP con las rutas, controles y dependencias configurados.
  */
 func NewHandler(token string, configs ...Config) http.Handler {
 	r := platform.Router()

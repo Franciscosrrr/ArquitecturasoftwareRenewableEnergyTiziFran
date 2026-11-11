@@ -16,7 +16,7 @@ class Administration(unittest.TestCase):
          * Verifica roles vigentes sin reemitir JWT y conservación del último administrador.
          *
          * @method test_role_change_is_immediate_and_last_admin_is_preserved
-         * @returns {None} Falla si un token conserva permisos revocados o desaparece el último administrador.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         admin,user=Client(),Client();_,session=user.account()
@@ -35,7 +35,7 @@ class Administration(unittest.TestCase):
          * Comprueba alta y edición Mongo con versión, sin exponer fichas inactivas al invitado.
          *
          * @method test_panel_cas_and_inactive_visibility
-         * @returns {None} Falla si una versión obsoleta sobrescribe el catálogo solar.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         admin=Client();status,session,_=admin.call('/auth/login',{'email':'admin@renewable.local','password':os.environ['ADMIN_PASSWORD']})

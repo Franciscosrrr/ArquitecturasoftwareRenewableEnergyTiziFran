@@ -29,3 +29,8 @@ Se observaron 10/10 estudios completados dentro de 15 s, p95 de visibilidad 1.05
 El p95 del catálogo fue menor de 500 ms y el de confirmación menor de 1 s en esta carga; el objetivo saludable de estudios se cumplió en esta muestra. No son un SLA ni prueban 100 equipos por configuración bajo carga. Los límites numéricos/100 equipos se verifican por separado en pruebas del algoritmo/contrato. Las fallas se ensayan aparte en POSTMORTEM para no confundir carga saludable y recuperación.
 
 Reproducir con el sistema iniciado: `scripts/compose.ps1 --profile verificar run --no-deps --rm verificar-real python -B tests/load_final.py` (usar compose.sh en Linux). Requiere un entorno de prueba: crea un usuario y diez escenarios propios para comprobar persistencia. La cuota de producción no se desactiva. Las métricas y el dashboard muestran hit/miss, latencia y distribución; [observabilidad](OBSERVABILITY.md).
+
+
+## Alcance frente al proveedor real — 11/11/2026
+
+Estos resultados corresponden a la carga ejecutada el 09/11, antes de integrar Comparador de Proveedores. No miden la capacidad máxima ni el p95 del ranking externo. Las comprobaciones del proveedor real y el respaldo del 11/11 se registran por separado en VERIFICACION-FINAL.md.

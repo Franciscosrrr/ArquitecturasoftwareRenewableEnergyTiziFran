@@ -10,7 +10,7 @@ import (
  * Abre el pool SQL con credenciales y tiempos de espera propios del servicio.
  *
  * @method OpenSQL
- * @returns {*sql.DB, error} Resultado de la operación; error si no puede completarse.
+ * @returns {*sql.DB, error} Pool SQL configurado o error de conexión/inicialización.
  */
 func OpenSQL() (*sql.DB, error) {
 	cfg := mysql.NewConfig()

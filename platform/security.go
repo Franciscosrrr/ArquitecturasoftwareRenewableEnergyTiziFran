@@ -11,6 +11,12 @@ import (
 	"net/http"
 )
 
+/**
+ * Representa la identidad validada, su email y su rol sin incluir credenciales.
+ *
+ * @method Actor
+ * @returns {Actor} Representación tipada usada por este componente.
+ */
 type Actor struct {
 	ID    string `json:"id"`
 	Email string `json:"email"`
@@ -21,7 +27,7 @@ type Actor struct {
  * Genera un UUID aleatorio para una nueva entidad de negocio.
  *
  * @method RandomID
- * @returns {string} Resultado de la operación; error si no puede completarse.
+ * @returns {string} UUID aleatorio para identificar un nuevo recurso de negocio.
  */
 func RandomID() string {
 	b := make([]byte, 16)
@@ -37,7 +43,7 @@ func RandomID() string {
  * Genera una credencial aleatoria sin imprimirla.
  *
  * @method RandomSecret
- * @returns {string} Resultado de la operación; error si no puede completarse.
+ * @returns {string} Secreto aleatorio representado como hexadecimal.
  */
 func RandomSecret() string {
 	b := make([]byte, 32)
@@ -51,8 +57,8 @@ func RandomSecret() string {
  * Calcula SHA-256 para comparar contenido o guardar credenciales derivadas.
  *
  * @method Digest
- * @param {string} s - Valor de s requerido por la operación.
- * @returns {string} Resultado de la operación; error si no puede completarse.
+ * @param {string} s - Contenido del que se calcula una huella SHA-256.
+ * @returns {string} Huella SHA-256 hexadecimal del contenido recibido.
  */
 func Digest(s string) string { sum := sha256.Sum256([]byte(s)); return hex.EncodeToString(sum[:]) }
 
@@ -60,9 +66,9 @@ func Digest(s string) string { sum := sha256.Sum256([]byte(s)); return hex.Encod
  * Compara una credencial técnica en tiempo constante y rechaza configuraciones débiles.
  *
  * @method CredentialOK
- * @param {string} actual - Valor de actual requerido por la operación.
- * @param {string} expected - Valor de expected requerido por la operación.
- * @returns {bool} Resultado de la operación; error si no puede completarse.
+ * @param {string} actual - Credencial presentada por el llamador.
+ * @param {string} expected - Credencial técnica configurada en el servidor.
+ * @returns {bool} true si la credencial coincide de forma segura y la configuración es válida.
  */
 func CredentialOK(actual, expected string) bool {
 	a := sha256.Sum256([]byte(actual))
@@ -75,8 +81,8 @@ func CredentialOK(actual, expected string) bool {
  *
  * @method Decode
  * @param {*gin.Context} c - Solicitud HTTP en curso.
- * @param {any} v - Valor de v requerido por la operación.
- * @returns {bool} Resultado de la operación; error si no puede completarse.
+ * @param {any} v - Valor recibido o racional a convertir según el tipo declarado.
+ * @returns {bool} true si se leyó un objeto compatible; false después de responder el error HTTP.
  */
 func Decode(c *gin.Context, v any) bool {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 262144)
@@ -95,8 +101,8 @@ func Decode(c *gin.Context, v any) bool {
  *
  * @method Internal
  * @param {string} token - Credencial técnica del servicio.
- * @param {bool} admin - Valor de admin requerido por la operación.
- * @returns {gin.HandlerFunc} Resultado de la operación; error si no puede completarse.
+ * @param {bool} admin - Exige además el rol de administrador cuando es verdadero.
+ * @returns {gin.HandlerFunc} Middleware que rechaza credenciales internas o permisos insuficientes.
  */
 func Internal(token string, admin bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -119,6 +125,6 @@ func Internal(token string, admin bool) gin.HandlerFunc {
  *
  * @method ActorID
  * @param {*gin.Context} c - Solicitud HTTP en curso.
- * @returns {string} Resultado de la operación; error si no puede completarse.
+ * @returns {string} Identificador de propietario validado previamente por el middleware.
  */
 func ActorID(c *gin.Context) string { return c.GetHeader("X-Actor-ID") }

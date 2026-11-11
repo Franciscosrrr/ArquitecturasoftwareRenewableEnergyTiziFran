@@ -1,0 +1,8 @@
+ Container renewable-energy-entrega2-verificar-go-run-4242ec6b0025 Creating 
+ Container renewable-energy-entrega2-verificar-go-run-4242ec6b0025 Created 
+--- FAIL: TestComparatorOpenAPICompatibility (0.01s)
+    comparator_test.go:285: parámetro incompatible Producto
+FAIL
+FAIL	renewable.local/solar/internal/adapters/external	0.045s
+FAIL
+

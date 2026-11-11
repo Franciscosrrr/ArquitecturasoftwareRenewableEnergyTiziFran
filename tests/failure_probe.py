@@ -17,9 +17,9 @@ def record(event,**details):
      * Registra una observación de falla con tiempo relativo y sin secretos.
      *
      * @method record
-     * @param {Any} event - Parámetro event de la operación.
+     * @param {dict} event - Evento de evaluación que se publica como entrada de la prueba.
      * @param {Any} details - Parámetro de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
      */
     """
     timeline.append({'time':datetime.now(timezone(timedelta(hours=-3))).isoformat(),'event':event,**details})
@@ -29,7 +29,7 @@ def docker(*args):
      *
      * @method docker
      * @param {Any} args - Argumentos separados del comando o callback.
-     * @returns {Any} Resultado verificado de la operación.
+     * @returns {str} Salida textual del comando Compose; propaga el fallo si el proceso termina con error.
      */
     """
     result=subprocess.run(['docker','compose',*args],cwd=ROOT,capture_output=True,text=True)
@@ -40,10 +40,10 @@ def call(path,body,headers=None):
      * Ejecuta HTTP real y devuelve estado, JSON y cabeceras sin ocultar errores.
      *
      * @method call
-     * @param {Any} path - Parámetro path de la operación.
-     * @param {Any} body - Parámetro body de la operación.
-     * @param {Any} headers - Parámetro headers de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {str} path - Ruta HTTP o JSON que identifica el recurso o campo de la operación.
+     * @param {dict|None} body - Cuerpo JSON opcional de la solicitud.
+     * @param {dict|None} headers - Cabeceras adicionales de la solicitud HTTP.
+     * @returns {dict} Estado HTTP, duración en milisegundos y correlación observada.
      */
     """
     start=time.perf_counter();req=Request(BASE+path,data=json.dumps(body).encode(),headers={'Content-Type':'application/json',**(headers or {})})
@@ -55,7 +55,7 @@ def count():
      * Valida y ejecuta count según el contrato de prueba.
      *
      * @method count
-     * @returns {Any} Resultado verificado de la operación.
+     * @returns {int} Cantidad leída de SQL para comprobar la persistencia del catálogo.
      */
     """
     return int(docker('exec','-T','mysql','sh','-c','MYSQL_PWD="$MYSQL_PASSWORD" mysql -u"$MYSQL_USER" -N -D "$MYSQL_DATABASE" -e "SELECT COUNT(*) FROM electrodomesticos"'))
@@ -64,7 +64,7 @@ def wait_catalog():
      * Valida y ejecuta wait catalog según el contrato de prueba.
      *
      * @method wait_catalog
-     * @returns {Any} Resultado verificado de la operación.
+     * @returns {dict} Observación de la consulta cuando el catálogo vuelve a responder, o error por plazo agotado.
      */
     """
     for _ in range(20):

@@ -1,0 +1,132 @@
+{
+  "fecha": "2026-11-11",
+  "go": {
+    "functions": 244,
+    "interface_methods": 8,
+    "types": 68,
+    "signatures_unchanged": true
+  },
+  "javascript": {
+    "named_units": 37,
+    "inline_callbacks_reviewed_in_context": 139
+  },
+  "python": {
+    "units": 106,
+    "functions": 93,
+    "classes": 13
+  },
+  "documentation_issues": [],
+  "markdown_files_inventoried": 72,
+  "markdown_files_link_checked": 69,
+  "broken_local_links": [],
+  "unresolved_markdown_anchors": [],
+  "adrs": [
+    {
+      "number": 1,
+      "file": "ADR-001.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 2,
+      "file": "ADR-002.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 3,
+      "file": "ADR-003.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 4,
+      "file": "ADR-004.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 5,
+      "file": "ADR-005.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 6,
+      "file": "ADR-006.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 7,
+      "file": "ADR-007.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 8,
+      "file": "ADR-008.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 9,
+      "file": "ADR-009.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 10,
+      "file": "ADR-010.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 11,
+      "file": "ADR-011.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 12,
+      "file": "ADR-012.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    },
+    {
+      "number": 13,
+      "file": "ADR-013.md",
+      "context": true,
+      "why": true,
+      "alternatives": true,
+      "consequences": true
+    }
+  ],
+  "m2m_v101_sha256": "3876121082fa76cd7ca6b25defbc7edc45ea0a4a89b3ee851fcf681e446ffda3",
+  "credential_leaks": [],
+  "validation_scope": "AST Go/Python, parser JS/JSX, firmas, JSDoc nombrado, enlaces de documentación mantenida y contratos; evidencia histórica no se modifica retrospectivamente; callbacks inline bajo documentación contenedora"
+}

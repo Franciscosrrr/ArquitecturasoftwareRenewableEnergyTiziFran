@@ -1,0 +1,13 @@
+ Container renewable-energy-entrega2-verificar-real-run-701e5142c2f0 Creating 
+ Container renewable-energy-entrega2-verificar-real-run-701e5142c2f0 Created 
+test_admin_index_cache_version_and_deactivation (test_durable.DurableFlow.test_admin_index_cache_version_and_deactivation)
+/** ... ok
+test_concurrent_confirmation_has_one_effect_and_place_version_is_frozen (test_durable.DurableFlow.test_concurrent_confirmation_has_one_effect_and_place_version_is_frozen)
+/** ... ok
+test_identity_ownership_immutable_snapshot_and_variants (test_durable.DurableFlow.test_identity_ownership_immutable_snapshot_and_variants)
+/** ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 12.163s
+
+OK

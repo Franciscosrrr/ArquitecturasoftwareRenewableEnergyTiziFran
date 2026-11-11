@@ -1,0 +1,3249 @@
+{
+  "go": [
+    {
+      "file": "gateway/cmd/server/server.go",
+      "name": "main",
+      "kind": "function",
+      "line": 14,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/balancing/balancer.go",
+      "name": "target",
+      "kind": "struct",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/balancing/balancer.go",
+      "name": "Balancer",
+      "kind": "struct",
+      "line": 32,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/balancing/balancer.go",
+      "name": "New",
+      "kind": "function",
+      "line": 49,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/balancing/balancer.go",
+      "name": "Check",
+      "kind": "function",
+      "line": 81,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/balancing/balancer.go",
+      "name": "Next",
+      "kind": "function",
+      "line": 128,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/balancing/balancer.go",
+      "name": "Ready",
+      "kind": "function",
+      "line": 149,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/balancing/balancer_test.go",
+      "name": "TestHealthRetirementRecoveryAndDistribution",
+      "kind": "function",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/http/full.go",
+      "name": "fullHandler",
+      "kind": "function",
+      "line": 32,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/http/handler_test.go",
+      "name": "TestCapabilityOnlyContractSurface",
+      "kind": "function",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/http/handler_test.go",
+      "name": "TestHealthRejectsUnauthenticatedRequests",
+      "kind": "function",
+      "line": 61,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/http/handler_test.go",
+      "name": "TestAuthenticatedHealthReportsActualReadiness",
+      "kind": "function",
+      "line": 94,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/http/handler_test.go",
+      "name": "TestInvalidHealthConfigurationFailsClosed",
+      "kind": "function",
+      "line": 132,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/http/runtime.go",
+      "name": "Config",
+      "kind": "struct",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "gateway/internal/http/runtime.go",
+      "name": "NewHandler",
+      "kind": "function",
+      "line": 36,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "Bus",
+      "kind": "struct",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "PoisonError",
+      "kind": "struct",
+      "line": 32,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "Error",
+      "kind": "function",
+      "line": 40,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "QueueFor",
+      "kind": "function",
+      "line": 49,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "OpenBus",
+      "kind": "function",
+      "line": 62,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "Close",
+      "kind": "function",
+      "line": 122,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "Publish",
+      "kind": "function",
+      "line": 136,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "RetryLoop",
+      "kind": "function",
+      "line": 172,
+      "issues": []
+    },
+    {
+      "file": "platform/bus.go",
+      "name": "Consume",
+      "kind": "function",
+      "line": 201,
+      "issues": []
+    },
+    {
+      "file": "platform/cmd/healthcheck/main.go",
+      "name": "main",
+      "kind": "function",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "platform/limiter_test.go",
+      "name": "TestM2MRateAndBurst",
+      "kind": "function",
+      "line": 17,
+      "issues": []
+    },
+    {
+      "file": "platform/limiter_test.go",
+      "name": "TestConcurrentLimiterPreservesBurst",
+      "kind": "function",
+      "line": 56,
+      "issues": []
+    },
+    {
+      "file": "platform/loki.go",
+      "name": "LokiWriter",
+      "kind": "struct",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "platform/loki.go",
+      "name": "Write",
+      "kind": "function",
+      "line": 28,
+      "issues": []
+    },
+    {
+      "file": "platform/loki.go",
+      "name": "NewLogWriter",
+      "kind": "function",
+      "line": 47,
+      "issues": []
+    },
+    {
+      "file": "platform/metrics.go",
+      "name": "MetricsMiddleware",
+      "kind": "function",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "platform/metrics.go",
+      "name": "Metrics",
+      "kind": "function",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Env",
+      "kind": "function",
+      "line": 39,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Secret",
+      "kind": "function",
+      "line": 53,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Init",
+      "kind": "function",
+      "line": 69,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "TraceID",
+      "kind": "function",
+      "line": 100,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "requestIDKey",
+      "kind": "struct",
+      "line": 108,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "RequestID",
+      "kind": "function",
+      "line": 117,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Error",
+      "kind": "function",
+      "line": 133,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Router",
+      "kind": "function",
+      "line": 148,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Instrument",
+      "kind": "function",
+      "line": 192,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Health",
+      "kind": "function",
+      "line": 203,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Serve",
+      "kind": "function",
+      "line": 245,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Client",
+      "kind": "function",
+      "line": 271,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "bucket",
+      "kind": "struct",
+      "line": 283,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Limiter",
+      "kind": "struct",
+      "line": 291,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "NewLimiter",
+      "kind": "function",
+      "line": 305,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "Allow",
+      "kind": "function",
+      "line": 317,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "JSON",
+      "kind": "function",
+      "line": 354,
+      "issues": []
+    },
+    {
+      "file": "platform/runtime.go",
+      "name": "NewRateLimiter",
+      "kind": "function",
+      "line": 369,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "Actor",
+      "kind": "struct",
+      "line": 20,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "RandomID",
+      "kind": "function",
+      "line": 32,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "RandomSecret",
+      "kind": "function",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "Digest",
+      "kind": "function",
+      "line": 63,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "CredentialOK",
+      "kind": "function",
+      "line": 73,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "Decode",
+      "kind": "function",
+      "line": 87,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "Internal",
+      "kind": "function",
+      "line": 107,
+      "issues": []
+    },
+    {
+      "file": "platform/security.go",
+      "name": "ActorID",
+      "kind": "function",
+      "line": 130,
+      "issues": []
+    },
+    {
+      "file": "platform/sql.go",
+      "name": "OpenSQL",
+      "kind": "function",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/cmd/server/main.go",
+      "name": "main",
+      "kind": "function",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Detail",
+      "kind": "struct",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "ValidationError",
+      "kind": "struct",
+      "line": 34,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Error",
+      "kind": "function",
+      "line": 42,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "invalid",
+      "kind": "function",
+      "line": 52,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Breakdown",
+      "kind": "struct",
+      "line": 60,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Result",
+      "kind": "struct",
+      "line": 71,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Object",
+      "kind": "function",
+      "line": 88,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "shape",
+      "kind": "function",
+      "line": 112,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "number",
+      "kind": "function",
+      "line": 146,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "decimal",
+      "kind": "function",
+      "line": 170,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "rounded",
+      "kind": "function",
+      "line": 216,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Calculate",
+      "kind": "function",
+      "line": 237,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Ficha",
+      "kind": "struct",
+      "line": 341,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Resolver",
+      "kind": "interface",
+      "line": 357,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "Resolve",
+      "kind": "interface_method",
+      "line": 366,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate.go",
+      "name": "CalculateCatalog",
+      "kind": "function",
+      "line": 379,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "example",
+      "kind": "function",
+      "line": 18,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "TestMixedConsumption",
+      "kind": "function",
+      "line": 34,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "TestValidation",
+      "kind": "function",
+      "line": 56,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "TestRoundingWithoutIntermediateLoss",
+      "kind": "function",
+      "line": 84,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "TestCyclesArePerUnitAndZeroIsValid",
+      "kind": "function",
+      "line": 102,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "fakeCatalog",
+      "kind": "struct",
+      "line": 125,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "Resolve",
+      "kind": "function",
+      "line": 136,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/calculate_test.go",
+      "name": "TestCatalogUsesServerPower",
+      "kind": "function",
+      "line": 145,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/application/normalization_test.go",
+      "name": "TestNumericRepresentationsPreserveContract",
+      "kind": "function",
+      "line": 17,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/http/contract_test.go",
+      "name": "TestClinicaV101Compatibility",
+      "kind": "function",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/http/contract_test.go",
+      "name": "TestClinicaEquipmentProfiles",
+      "kind": "function",
+      "line": 76,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/http/handler_test.go",
+      "name": "TestHealthRejectsUnauthenticatedRequests",
+      "kind": "function",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/http/handler_test.go",
+      "name": "TestAuthenticatedHealthReportsActualReadiness",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/http/handler_test.go",
+      "name": "TestInvalidHealthConfigurationFailsClosed",
+      "kind": "function",
+      "line": 92,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/http/runtime.go",
+      "name": "Config",
+      "kind": "struct",
+      "line": 24,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/http/runtime.go",
+      "name": "NewHandler",
+      "kind": "function",
+      "line": 39,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/integration/catalog.go",
+      "name": "Catalog",
+      "kind": "struct",
+      "line": 24,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/integration/catalog.go",
+      "name": "NewCatalog",
+      "kind": "function",
+      "line": 41,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/integration/catalog.go",
+      "name": "Resolve",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/integration/catalog_test.go",
+      "name": "TestCircuitOpensAndRecovers",
+      "kind": "function",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/integration/catalog_test.go",
+      "name": "TestCancellationStopsCall",
+      "kind": "function",
+      "line": 58,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "Snapshot",
+      "kind": "struct",
+      "line": 24,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "Service",
+      "kind": "struct",
+      "line": 37,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "captureResolver",
+      "kind": "struct",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "Resolve",
+      "kind": "function",
+      "line": 61,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "validOptions",
+      "kind": "function",
+      "line": 74,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "newEvent",
+      "kind": "function",
+      "line": 96,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "fail",
+      "kind": "function",
+      "line": 110,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/http.go",
+      "name": "Register",
+      "kind": "function",
+      "line": 138,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/lifecycle.go",
+      "name": "SetArchived",
+      "kind": "function",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/lifecycle.go",
+      "name": "Delete",
+      "kind": "function",
+      "line": 59,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/lifecycle_http.go",
+      "name": "registerLifecycle",
+      "kind": "function",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Place",
+      "kind": "struct",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Config",
+      "kind": "struct",
+      "line": 38,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Evaluation",
+      "kind": "struct",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "SolarOptions",
+      "kind": "struct",
+      "line": 70,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Event",
+      "kind": "struct",
+      "line": 83,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Store",
+      "kind": "struct",
+      "line": 101,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Migrate",
+      "kind": "function",
+      "line": 110,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Places",
+      "kind": "function",
+      "line": 165,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Place",
+      "kind": "function",
+      "line": 191,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "SavePlace",
+      "kind": "function",
+      "line": 209,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Config",
+      "kind": "function",
+      "line": 237,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Configs",
+      "kind": "function",
+      "line": 254,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "SaveConfig",
+      "kind": "function",
+      "line": 280,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Evaluation",
+      "kind": "function",
+      "line": 320,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "History",
+      "kind": "function",
+      "line": 363,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Existing",
+      "kind": "function",
+      "line": 405,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Confirm",
+      "kind": "function",
+      "line": 433,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "AddStudy",
+      "kind": "function",
+      "line": 519,
+      "issues": []
+    },
+    {
+      "file": "services/consumo/internal/private/store.go",
+      "name": "Relay",
+      "kind": "function",
+      "line": 563,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/cmd/server/server.go",
+      "name": "main",
+      "kind": "function",
+      "line": 20,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Document",
+      "kind": "struct",
+      "line": 28,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Runtime",
+      "kind": "struct",
+      "line": 39,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "New",
+      "kind": "function",
+      "line": 57,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Init",
+      "kind": "function",
+      "line": 68,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "All",
+      "kind": "function",
+      "line": 80,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "request",
+      "kind": "function",
+      "line": 111,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "task",
+      "kind": "function",
+      "line": 147,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "setup",
+      "kind": "function",
+      "line": 191,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Rebuild",
+      "kind": "function",
+      "line": 207,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Search",
+      "kind": "function",
+      "line": 242,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "List",
+      "kind": "function",
+      "line": 291,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Save",
+      "kind": "function",
+      "line": 353,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Relay",
+      "kind": "function",
+      "line": 389,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "IndexEvent",
+      "kind": "function",
+      "line": 448,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/catalog.go",
+      "name": "Start",
+      "kind": "function",
+      "line": 484,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/features/http.go",
+      "name": "Register",
+      "kind": "function",
+      "line": 24,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/http/handler_test.go",
+      "name": "TestHealthRejectsUnauthenticatedRequests",
+      "kind": "function",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/http/handler_test.go",
+      "name": "TestAuthenticatedHealthReportsActualReadiness",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/http/handler_test.go",
+      "name": "TestInvalidHealthConfigurationFailsClosed",
+      "kind": "function",
+      "line": 92,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/http/runtime.go",
+      "name": "Config",
+      "kind": "struct",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/http/runtime.go",
+      "name": "NewHandler",
+      "kind": "function",
+      "line": 39,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "Item",
+      "kind": "struct",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "Store",
+      "kind": "struct",
+      "line": 43,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "Query",
+      "kind": "struct",
+      "line": 51,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "Page",
+      "kind": "struct",
+      "line": 63,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "Open",
+      "kind": "function",
+      "line": 80,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "Migrate",
+      "kind": "function",
+      "line": 108,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "scanRows",
+      "kind": "function",
+      "line": 146,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "List",
+      "kind": "function",
+      "line": 171,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql.go",
+      "name": "Resolve",
+      "kind": "function",
+      "line": 233,
+      "issues": []
+    },
+    {
+      "file": "services/electrodomesticos/internal/repository/mysql_test.go",
+      "name": "TestMySQLIntegration",
+      "kind": "function",
+      "line": 18,
+      "issues": []
+    },
+    {
+      "file": "services/solar/cmd/server/main.go",
+      "name": "main",
+      "kind": "function",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "services/solar/cmd/supplier/main.go",
+      "name": "main",
+      "kind": "function",
+      "line": 14,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator.go",
+      "name": "PanelCatalog",
+      "kind": "interface",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator.go",
+      "name": "Panels",
+      "kind": "interface_method",
+      "line": 31,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator.go",
+      "name": "Comparator",
+      "kind": "struct",
+      "line": 37,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator.go",
+      "name": "ProviderSKU",
+      "kind": "function",
+      "line": 53,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator.go",
+      "name": "moneyCents",
+      "kind": "function",
+      "line": 72,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator.go",
+      "name": "finish",
+      "kind": "function",
+      "line": 95,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator.go",
+      "name": "QuoteModel",
+      "kind": "function",
+      "line": 123,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "comparatorCatalog",
+      "kind": "struct",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "Panels",
+      "kind": "function",
+      "line": 32,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "TestComparatorCommercialContract",
+      "kind": "function",
+      "line": 45,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "TestComparatorRejectsBreakingResponses",
+      "kind": "function",
+      "line": 85,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "TestComparatorErrorsAndRetryAfter",
+      "kind": "function",
+      "line": 111,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "TestComparatorTimeoutCircuitAndRecovery",
+      "kind": "function",
+      "line": 153,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "TestComparatorDoesNotRedirectSecrets",
+      "kind": "function",
+      "line": 191,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/comparator_test.go",
+      "name": "TestComparatorOpenAPICompatibility",
+      "kind": "function",
+      "line": 211,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/contract_test.go",
+      "name": "TestSupplierContract",
+      "kind": "function",
+      "line": 29,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/contract_test.go",
+      "name": "TestDetectsBreakingSupplierChanges",
+      "kind": "function",
+      "line": 64,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/contract_test.go",
+      "name": "TestFailureProtection",
+      "kind": "function",
+      "line": 96,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/contract_test.go",
+      "name": "TestRejectsRedirect",
+      "kind": "function",
+      "line": 148,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/contract_test.go",
+      "name": "TestHalfOpenAllowsOneConcurrentProbe",
+      "kind": "function",
+      "line": 167,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/http.go",
+      "name": "Client",
+      "kind": "struct",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/http.go",
+      "name": "NewClient",
+      "kind": "function",
+      "line": 40,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/http.go",
+      "name": "post",
+      "kind": "function",
+      "line": 59,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/http.go",
+      "name": "Estimate",
+      "kind": "function",
+      "line": 98,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/http.go",
+      "name": "Quote",
+      "kind": "function",
+      "line": 124,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/http.go",
+      "name": "QuoteModel",
+      "kind": "function",
+      "line": 137,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/http.go",
+      "name": "quote",
+      "kind": "function",
+      "line": 150,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/model_contract_test.go",
+      "name": "TestModelContractAndStock",
+      "kind": "function",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/external/model_contract_test.go",
+      "name": "TestRequestedModelCannotBeSubstituted",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/handler.go",
+      "name": "NewHandler",
+      "kind": "function",
+      "line": 26,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/handler.go",
+      "name": "NewFullHandler",
+      "kind": "function",
+      "line": 40,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/handler.go",
+      "name": "newHandler",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/handler_test.go",
+      "name": "TestHealthRejectsUnauthenticatedRequests",
+      "kind": "function",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/handler_test.go",
+      "name": "TestAuthenticatedHealthReportsActualReadiness",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/handler_test.go",
+      "name": "TestInvalidHealthConfigurationFailsClosed",
+      "kind": "function",
+      "line": 92,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/integration_test.go",
+      "name": "TestSolarHTTPFlowAndFailure",
+      "kind": "function",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/priced_catalog.go",
+      "name": "panelPricer",
+      "kind": "interface",
+      "line": 13,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/priced_catalog.go",
+      "name": "PricePanels",
+      "kind": "interface_method",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/priced_catalog.go",
+      "name": "pricedCatalog",
+      "kind": "function",
+      "line": 35,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/http/private.go",
+      "name": "registerPrivate",
+      "kind": "function",
+      "line": 34,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Study",
+      "kind": "struct",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Store",
+      "kind": "struct",
+      "line": 46,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Open",
+      "kind": "function",
+      "line": 58,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Ready",
+      "kind": "function",
+      "line": 87,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Panels",
+      "kind": "function",
+      "line": 97,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "SavePanel",
+      "kind": "function",
+      "line": 121,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Get",
+      "kind": "function",
+      "line": 155,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "List",
+      "kind": "function",
+      "line": 170,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Claim",
+      "kind": "function",
+      "line": 193,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Complete",
+      "kind": "function",
+      "line": 230,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/mongo.go",
+      "name": "Failed",
+      "kind": "function",
+      "line": 243,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/panel_index.go",
+      "name": "ClaimPanelIndex",
+      "kind": "function",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/panel_index.go",
+      "name": "FinishPanelIndex",
+      "kind": "function",
+      "line": 35,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/persistence/panel_index.go",
+      "name": "ReindexPanels",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/client.go",
+      "name": "Runtime",
+      "kind": "struct",
+      "line": 26,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/client.go",
+      "name": "New",
+      "kind": "function",
+      "line": 39,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/client.go",
+      "name": "request",
+      "kind": "function",
+      "line": 53,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/client.go",
+      "name": "task",
+      "kind": "function",
+      "line": 93,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/client.go",
+      "name": "setup",
+      "kind": "function",
+      "line": 136,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/client.go",
+      "name": "Run",
+      "kind": "function",
+      "line": 152,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/client.go",
+      "name": "List",
+      "kind": "function",
+      "line": 220,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/query.go",
+      "name": "Query",
+      "kind": "struct",
+      "line": 20,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/query.go",
+      "name": "Page",
+      "kind": "struct",
+      "line": 32,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/query.go",
+      "name": "Parse",
+      "kind": "function",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/query.go",
+      "name": "normalize",
+      "kind": "function",
+      "line": 109,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/query.go",
+      "name": "Fallback",
+      "kind": "function",
+      "line": 121,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/query_test.go",
+      "name": "TestQueryBounds",
+      "kind": "function",
+      "line": 16,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/search/query_test.go",
+      "name": "TestFallbackFiltersAndUnknownPrice",
+      "kind": "function",
+      "line": 39,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/simulator/handler.go",
+      "name": "NewHandler",
+      "kind": "function",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/adapters/simulator/v2.go",
+      "name": "registerV2",
+      "kind": "function",
+      "line": 20,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/quote.go",
+      "name": "Request",
+      "kind": "struct",
+      "line": 13,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/quote.go",
+      "name": "Result",
+      "kind": "struct",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/quote.go",
+      "name": "Service",
+      "kind": "struct",
+      "line": 33,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/quote.go",
+      "name": "Execute",
+      "kind": "function",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "PanelCatalog",
+      "kind": "interface",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "Panels",
+      "kind": "interface_method",
+      "line": 24,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "ResilientSupplier",
+      "kind": "struct",
+      "line": 30,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "QuoteModel",
+      "kind": "function",
+      "line": 46,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "canSimulate",
+      "kind": "function",
+      "line": 58,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "PlanStudy",
+      "kind": "function",
+      "line": 72,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "Quote",
+      "kind": "function",
+      "line": 97,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "PricePanels",
+      "kind": "function",
+      "line": 124,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient.go",
+      "name": "pricePanels",
+      "kind": "function",
+      "line": 148,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient_test.go",
+      "name": "commercialProbe",
+      "kind": "struct",
+      "line": 12,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient_test.go",
+      "name": "QuoteModel",
+      "kind": "function",
+      "line": 29,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient_test.go",
+      "name": "TestRealOfferDeterminesSelection",
+      "kind": "function",
+      "line": 53,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient_test.go",
+      "name": "TestWholeStudyFallbackAndRecovery",
+      "kind": "function",
+      "line": 69,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient_test.go",
+      "name": "TestNoStockDoesNotActivateSimulation",
+      "kind": "function",
+      "line": 92,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/resilient_test.go",
+      "name": "TestCatalogFallbackAndNoStock",
+      "kind": "function",
+      "line": 110,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study.go",
+      "name": "ModelSupplier",
+      "kind": "interface",
+      "line": 13,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study.go",
+      "name": "QuoteModel",
+      "kind": "interface_method",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study.go",
+      "name": "RunStudy",
+      "kind": "function",
+      "line": 37,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study.go",
+      "name": "runStudy",
+      "kind": "function",
+      "line": 57,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study_test.go",
+      "name": "supplierProbe",
+      "kind": "struct",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study_test.go",
+      "name": "QuoteModel",
+      "kind": "function",
+      "line": 29,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study_test.go",
+      "name": "TestCommercialStockChangesSelectedAlternative",
+      "kind": "function",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study_test.go",
+      "name": "TestZeroConsumptionSkipsSeller",
+      "kind": "function",
+      "line": 68,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/application/study_test.go",
+      "name": "TestUnknownReferencePriceUsesCommercialOffer",
+      "kind": "function",
+      "line": 83,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/commercial.go",
+      "name": "validateCommercial",
+      "kind": "function",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "boundedRat",
+      "kind": "function",
+      "line": 18,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "DecimalNumber",
+      "kind": "type",
+      "line": 46,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "MarshalJSON",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "UnmarshalJSON",
+      "kind": "function",
+      "line": 68,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "Consumption",
+      "kind": "struct",
+      "line": 86,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "Quote",
+      "kind": "struct",
+      "line": 95,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "TargetWatts",
+      "kind": "function",
+      "line": 125,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote.go",
+      "name": "Validate",
+      "kind": "function",
+      "line": 151,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote_test.go",
+      "name": "TestTargetWatts",
+      "kind": "function",
+      "line": 16,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/quote_test.go",
+      "name": "TestQuoteInvariants",
+      "kind": "function",
+      "line": 45,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend.go",
+      "name": "Panel",
+      "kind": "struct",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend.go",
+      "name": "StudyOptions",
+      "kind": "struct",
+      "line": 36,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend.go",
+      "name": "Candidate",
+      "kind": "struct",
+      "line": 49,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend.go",
+      "name": "Recommendation",
+      "kind": "struct",
+      "line": 67,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend.go",
+      "name": "Round6",
+      "kind": "function",
+      "line": 84,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend.go",
+      "name": "ceil",
+      "kind": "function",
+      "line": 101,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend.go",
+      "name": "Recommend",
+      "kind": "function",
+      "line": 122,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend_test.go",
+      "name": "TestRecommendationPhysicalAndRankingInvariants",
+      "kind": "function",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend_test.go",
+      "name": "TestRecommendationNonComparablePricesAndInactivePanels",
+      "kind": "function",
+      "line": 50,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend_test.go",
+      "name": "TestSolarInputBounds",
+      "kind": "function",
+      "line": 65,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend_test.go",
+      "name": "TestInfeasibleSurfaceAndInvalidCatalogEntry",
+      "kind": "function",
+      "line": 100,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/domain/recommend_test.go",
+      "name": "TestFeasiblePriceComparabilityAndDeterministicTie",
+      "kind": "function",
+      "line": 115,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/ports/integration.go",
+      "name": "Estimator",
+      "kind": "interface",
+      "line": 12,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/ports/integration.go",
+      "name": "Estimate",
+      "kind": "interface_method",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/ports/integration.go",
+      "name": "Supplier",
+      "kind": "interface",
+      "line": 27,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/ports/integration.go",
+      "name": "Quote",
+      "kind": "interface_method",
+      "line": 36,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "Supplier",
+      "kind": "interface",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "QuoteModel",
+      "kind": "interface_method",
+      "line": 35,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "Consumer",
+      "kind": "struct",
+      "line": 44,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "Event",
+      "kind": "struct",
+      "line": 55,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "Parse",
+      "kind": "function",
+      "line": 74,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "eventHash",
+      "kind": "function",
+      "line": 91,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "Handle",
+      "kind": "function",
+      "line": 115,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer.go",
+      "name": "Run",
+      "kind": "function",
+      "line": 178,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer_test.go",
+      "name": "TestCanonicalEventHash",
+      "kind": "function",
+      "line": 16,
+      "issues": []
+    },
+    {
+      "file": "services/solar/internal/worker/consumer_test.go",
+      "name": "TestIncompatibleEventIsPoison",
+      "kind": "function",
+      "line": 41,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/cmd/server/main.go",
+      "name": "main",
+      "kind": "function",
+      "line": 18,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/http/business.go",
+      "name": "Config",
+      "kind": "struct",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/http/business.go",
+      "name": "NewHandler",
+      "kind": "function",
+      "line": 33,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/http/handler.go",
+      "name": "legacyHandler",
+      "kind": "function",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/http/handler_test.go",
+      "name": "TestHealthRejectsUnauthenticatedRequests",
+      "kind": "function",
+      "line": 21,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/http/handler_test.go",
+      "name": "TestAuthenticatedHealthReportsActualReadiness",
+      "kind": "function",
+      "line": 54,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/http/handler_test.go",
+      "name": "TestInvalidHealthConfigurationFailsClosed",
+      "kind": "function",
+      "line": 92,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Store",
+      "kind": "struct",
+      "line": 31,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Session",
+      "kind": "struct",
+      "line": 42,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Hash",
+      "kind": "function",
+      "line": 55,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Check",
+      "kind": "function",
+      "line": 75,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Normalize",
+      "kind": "function",
+      "line": 99,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Migrate",
+      "kind": "function",
+      "line": 115,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Create",
+      "kind": "function",
+      "line": 137,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Bootstrap",
+      "kind": "function",
+      "line": 169,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "token",
+      "kind": "function",
+      "line": 189,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Login",
+      "kind": "function",
+      "line": 204,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Validate",
+      "kind": "function",
+      "line": 236,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Refresh",
+      "kind": "function",
+      "line": 258,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Logout",
+      "kind": "function",
+      "line": 292,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Users",
+      "kind": "function",
+      "line": 304,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity.go",
+      "name": "Role",
+      "kind": "function",
+      "line": 330,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity_test.go",
+      "name": "TestArgonSaltAndVerification",
+      "kind": "function",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "services/usuarios/internal/identity/identity_test.go",
+      "name": "TestEmailCanonicalAndDisplayNamesRejected",
+      "kind": "function",
+      "line": 36,
+      "issues": []
+    }
+  ],
+  "javascript": [
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "Account",
+      "kind": "FunctionDeclaration",
+      "line": 11,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "adopt",
+      "kind": "FunctionDeclaration",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "api",
+      "kind": "FunctionDeclaration",
+      "line": 35,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "refresh",
+      "kind": "FunctionDeclaration",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "run",
+      "kind": "FunctionDeclaration",
+      "line": 61,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "authenticate",
+      "kind": "FunctionDeclaration",
+      "line": 71,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "createPlace",
+      "kind": "FunctionDeclaration",
+      "line": 79,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "save",
+      "kind": "FunctionDeclaration",
+      "line": 86,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "keyFor",
+      "kind": "FunctionDeclaration",
+      "line": 94,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "evaluate",
+      "kind": "FunctionDeclaration",
+      "line": 102,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "newStudy",
+      "kind": "FunctionDeclaration",
+      "line": 110,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "archive",
+      "kind": "FunctionDeclaration",
+      "line": 119,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "remove",
+      "kind": "FunctionDeclaration",
+      "line": 128,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "PlaceEditor",
+      "kind": "FunctionDeclaration",
+      "line": 139,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "Study",
+      "kind": "FunctionDeclaration",
+      "line": 148,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "Admin",
+      "kind": "FunctionDeclaration",
+      "line": 157,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "load",
+      "kind": "FunctionDeclaration",
+      "line": 168,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Account.jsx",
+      "name": "submit",
+      "kind": "FunctionDeclaration",
+      "line": 176,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/CatalogSearch.jsx",
+      "name": "CatalogSearch",
+      "kind": "FunctionDeclaration",
+      "line": 8,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/CatalogSearch.jsx",
+      "name": "search",
+      "kind": "FunctionDeclaration",
+      "line": 17,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/CatalogSearch.jsx",
+      "name": "change",
+      "kind": "FunctionDeclaration",
+      "line": 26,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/CommercialOffer.jsx",
+      "name": "CommercialOffer",
+      "kind": "FunctionDeclaration",
+      "line": 11,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Comparison.jsx",
+      "name": "Comparison",
+      "kind": "FunctionDeclaration",
+      "line": 10,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/Comparison.jsx",
+      "name": "compare",
+      "kind": "FunctionDeclaration",
+      "line": 19,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/main.jsx",
+      "name": "format",
+      "kind": "ArrowFunctionExpression",
+      "line": 16,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/main.jsx",
+      "name": "App",
+      "kind": "FunctionDeclaration",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/main.jsx",
+      "name": "load",
+      "kind": "FunctionDeclaration",
+      "line": 31,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/main.jsx",
+      "name": "add",
+      "kind": "FunctionDeclaration",
+      "line": 40,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/main.jsx",
+      "name": "update",
+      "kind": "FunctionDeclaration",
+      "line": 50,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/main.jsx",
+      "name": "calculate",
+      "kind": "FunctionDeclaration",
+      "line": 58,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/main.jsx",
+      "name": "Field",
+      "kind": "FunctionDeclaration",
+      "line": 68,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/SolarQuote.jsx",
+      "name": "SolarQuote",
+      "kind": "FunctionDeclaration",
+      "line": 12,
+      "issues": []
+    },
+    {
+      "file": "frontend/src/SolarQuote.jsx",
+      "name": "requestQuote",
+      "kind": "FunctionDeclaration",
+      "line": 28,
+      "issues": []
+    },
+    {
+      "file": "tests/e2e/cuenta.spec.js",
+      "name": "durableAccountFlow",
+      "kind": "FunctionDeclaration",
+      "line": 10,
+      "issues": []
+    },
+    {
+      "file": "tests/e2e/paneles.spec.js",
+      "name": "solarPanelSearch",
+      "kind": "FunctionDeclaration",
+      "line": 10,
+      "issues": []
+    },
+    {
+      "file": "tests/e2e/proveedor.spec.js",
+      "name": "providerOriginFlow",
+      "kind": "FunctionDeclaration",
+      "line": 11,
+      "issues": []
+    },
+    {
+      "file": "tests/e2e/solar.spec.js",
+      "name": "solarQuoteFlow",
+      "kind": "FunctionDeclaration",
+      "line": 11,
+      "issues": []
+    }
+  ],
+  "python": [
+    {
+      "file": "tests/cloud_publication.py",
+      "name": "NoRedirect",
+      "kind": "ClassDef",
+      "line": 10,
+      "issues": []
+    },
+    {
+      "file": "tests/cloud_publication.py",
+      "name": "call",
+      "kind": "FunctionDef",
+      "line": 35,
+      "issues": []
+    },
+    {
+      "file": "tests/cloud_publication.py",
+      "name": "verify",
+      "kind": "FunctionDef",
+      "line": 59,
+      "issues": []
+    },
+    {
+      "file": "tests/cloud_publication.py",
+      "name": "redirect_request",
+      "kind": "FunctionDef",
+      "line": 18,
+      "issues": []
+    },
+    {
+      "file": "tests/failure_probe.py",
+      "name": "record",
+      "kind": "FunctionDef",
+      "line": 15,
+      "issues": []
+    },
+    {
+      "file": "tests/failure_probe.py",
+      "name": "docker",
+      "kind": "FunctionDef",
+      "line": 26,
+      "issues": []
+    },
+    {
+      "file": "tests/failure_probe.py",
+      "name": "call",
+      "kind": "FunctionDef",
+      "line": 38,
+      "issues": []
+    },
+    {
+      "file": "tests/failure_probe.py",
+      "name": "count",
+      "kind": "FunctionDef",
+      "line": 53,
+      "issues": []
+    },
+    {
+      "file": "tests/failure_probe.py",
+      "name": "wait_catalog",
+      "kind": "FunctionDef",
+      "line": 62,
+      "issues": []
+    },
+    {
+      "file": "tests/fault_final.py",
+      "name": "record",
+      "kind": "FunctionDef",
+      "line": 13,
+      "issues": []
+    },
+    {
+      "file": "tests/fault_final.py",
+      "name": "docker",
+      "kind": "FunctionDef",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "tests/fault_final.py",
+      "name": "sql",
+      "kind": "FunctionDef",
+      "line": 38,
+      "issues": []
+    },
+    {
+      "file": "tests/fault_final.py",
+      "name": "prom",
+      "kind": "FunctionDef",
+      "line": 48,
+      "issues": []
+    },
+    {
+      "file": "tests/fault_final.py",
+      "name": "ready",
+      "kind": "FunctionDef",
+      "line": 59,
+      "issues": []
+    },
+    {
+      "file": "tests/fault_final.py",
+      "name": "publish",
+      "kind": "FunctionDef",
+      "line": 76,
+      "issues": []
+    },
+    {
+      "file": "tests/load_final.py",
+      "name": "one",
+      "kind": "FunctionDef",
+      "line": 12,
+      "issues": []
+    },
+    {
+      "file": "tests/load_final.py",
+      "name": "summary",
+      "kind": "FunctionDef",
+      "line": 30,
+      "issues": []
+    },
+    {
+      "file": "tests/load_final.py",
+      "name": "benchmark",
+      "kind": "FunctionDef",
+      "line": 44,
+      "issues": []
+    },
+    {
+      "file": "tests/load_final.py",
+      "name": "asynchronous_flow",
+      "kind": "FunctionDef",
+      "line": 61,
+      "issues": []
+    },
+    {
+      "file": "tests/load_probe.py",
+      "name": "one",
+      "kind": "FunctionDef",
+      "line": 16,
+      "issues": []
+    },
+    {
+      "file": "tests/load_probe.py",
+      "name": "summary",
+      "kind": "FunctionDef",
+      "line": 33,
+      "issues": []
+    },
+    {
+      "file": "tests/test_admin.py",
+      "name": "Administration",
+      "kind": "ClassDef",
+      "line": 6,
+      "issues": []
+    },
+    {
+      "file": "tests/test_admin.py",
+      "name": "test_role_change_is_immediate_and_last_admin_is_preserved",
+      "kind": "FunctionDef",
+      "line": 14,
+      "issues": []
+    },
+    {
+      "file": "tests/test_admin.py",
+      "name": "test_panel_cas_and_inactive_visibility",
+      "kind": "FunctionDef",
+      "line": 33,
+      "issues": []
+    },
+    {
+      "file": "tests/test_comparator_integration.py",
+      "name": "CommercialIntegration",
+      "kind": "ClassDef",
+      "line": 14,
+      "issues": []
+    },
+    {
+      "file": "tests/test_comparator_integration.py",
+      "name": "test_quote_source_and_commercial_total",
+      "kind": "FunctionDef",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "tests/test_comparator_integration.py",
+      "name": "test_catalog_source_and_price_filter",
+      "kind": "FunctionDef",
+      "line": 44,
+      "issues": []
+    },
+    {
+      "file": "tests/test_contract_assets.py",
+      "name": "ContractAssets",
+      "kind": "ClassDef",
+      "line": 6,
+      "issues": []
+    },
+    {
+      "file": "tests/test_contract_assets.py",
+      "name": "test_shared_v101_is_byte_frozen",
+      "kind": "FunctionDef",
+      "line": 14,
+      "issues": []
+    },
+    {
+      "file": "tests/test_contract_assets.py",
+      "name": "test_all_contract_references_resolve",
+      "kind": "FunctionDef",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "tests/test_customer_flows.py",
+      "name": "CustomerFlows",
+      "kind": "ClassDef",
+      "line": 6,
+      "issues": []
+    },
+    {
+      "file": "tests/test_customer_flows.py",
+      "name": "test_archive_delete_and_immutable_history",
+      "kind": "FunctionDef",
+      "line": 14,
+      "issues": []
+    },
+    {
+      "file": "tests/test_customer_flows.py",
+      "name": "test_solar_search_filters_and_latest_version",
+      "kind": "FunctionDef",
+      "line": 49,
+      "issues": []
+    },
+    {
+      "file": "tests/test_customer_flows.py",
+      "name": "cleanup",
+      "kind": "FunctionDef",
+      "line": 61,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "Client",
+      "kind": "ClassDef",
+      "line": 16,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "DurableFlow",
+      "kind": "ClassDef",
+      "line": 73,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "__init__",
+      "kind": "FunctionDef",
+      "line": 24,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "call",
+      "kind": "FunctionDef",
+      "line": 36,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "account",
+      "kind": "FunctionDef",
+      "line": 56,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "test_identity_ownership_immutable_snapshot_and_variants",
+      "kind": "FunctionDef",
+      "line": 81,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "test_concurrent_confirmation_has_one_effect_and_place_version_is_frozen",
+      "kind": "FunctionDef",
+      "line": 141,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "test_admin_index_cache_version_and_deactivation",
+      "kind": "FunctionDef",
+      "line": 175,
+      "issues": []
+    },
+    {
+      "file": "tests/test_durable.py",
+      "name": "submit",
+      "kind": "FunctionDef",
+      "line": 153,
+      "issues": []
+    },
+    {
+      "file": "tests/test_guest_solar.py",
+      "name": "GuestSolar",
+      "kind": "ClassDef",
+      "line": 8,
+      "issues": []
+    },
+    {
+      "file": "tests/test_guest_solar.py",
+      "name": "test_comparison_source_surface_zero_and_contract",
+      "kind": "FunctionDef",
+      "line": 16,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "call",
+      "kind": "FunctionDef",
+      "line": 25,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "RealServices",
+      "kind": "ClassDef",
+      "line": 51,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "setUp",
+      "kind": "FunctionDef",
+      "line": 59,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_m2m_matches_contract",
+      "kind": "FunctionDef",
+      "line": 70,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_catalog_flow_uses_mysql",
+      "kind": "FunctionDef",
+      "line": 86,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_guest_requires_no_account",
+      "kind": "FunctionDef",
+      "line": 99,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_authentication",
+      "kind": "FunctionDef",
+      "line": 112,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_catalog_read_search_pagination",
+      "kind": "FunctionDef",
+      "line": 125,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_invalid_days_and_client_power",
+      "kind": "FunctionDef",
+      "line": 142,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_json_and_size_limits",
+      "kind": "FunctionDef",
+      "line": 159,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_private_routes_and_health",
+      "kind": "FunctionDef",
+      "line": 171,
+      "issues": []
+    },
+    {
+      "file": "tests/test_real.py",
+      "name": "test_web_and_published_contract",
+      "kind": "FunctionDef",
+      "line": 185,
+      "issues": []
+    },
+    {
+      "file": "tests/web_edge.py",
+      "name": "call",
+      "kind": "FunctionDef",
+      "line": 10,
+      "issues": []
+    },
+    {
+      "file": "tests/web_edge.py",
+      "name": "refresh_cookie",
+      "kind": "FunctionDef",
+      "line": 37,
+      "issues": []
+    },
+    {
+      "file": "tests/web_edge.py",
+      "name": "verify",
+      "kind": "FunctionDef",
+      "line": 53,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "ValidationError",
+      "kind": "ClassDef",
+      "line": 22,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "validate",
+      "kind": "FunctionDef",
+      "line": 45,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "precision",
+      "kind": "FunctionDef",
+      "line": 105,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "rounded",
+      "kind": "FunctionDef",
+      "line": 123,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "consumo",
+      "kind": "FunctionDef",
+      "line": 135,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "solar",
+      "kind": "FunctionDef",
+      "line": 159,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "Limiter",
+      "kind": "ClassDef",
+      "line": 182,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "Handler",
+      "kind": "ClassDef",
+      "line": 221,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "create_server",
+      "kind": "FunctionDef",
+      "line": 360,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "__init__",
+      "kind": "FunctionDef",
+      "line": 30,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "__init__",
+      "kind": "FunctionDef",
+      "line": 190,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "allow",
+      "kind": "FunctionDef",
+      "line": 200,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "log_message",
+      "kind": "FunctionDef",
+      "line": 231,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "send_json",
+      "kind": "FunctionDef",
+      "line": 242,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "error",
+      "kind": "FunctionDef",
+      "line": 266,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "do_GET",
+      "kind": "FunctionDef",
+      "line": 280,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "do_HEAD",
+      "kind": "FunctionDef",
+      "line": 298,
+      "issues": []
+    },
+    {
+      "file": "mock/server.py",
+      "name": "do_POST",
+      "kind": "FunctionDef",
+      "line": 308,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "ContractTest",
+      "kind": "ClassDef",
+      "line": 14,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "setUpClass",
+      "kind": "FunctionDef",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "tearDownClass",
+      "kind": "FunctionDef",
+      "line": 38,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "setUp",
+      "kind": "FunctionDef",
+      "line": 50,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "request",
+      "kind": "FunctionDef",
+      "line": 60,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "health_request",
+      "kind": "FunctionDef",
+      "line": 88,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_health_rejects_missing_or_wrong_credentials",
+      "kind": "FunctionDef",
+      "line": 107,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_health_with_operational_credential",
+      "kind": "FunctionDef",
+      "line": 127,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_server_requires_operational_credential",
+      "kind": "FunctionDef",
+      "line": 143,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_reference_calculation",
+      "kind": "FunctionDef",
+      "line": 155,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_guest_same_calculation_without_credentials",
+      "kind": "FunctionDef",
+      "line": 169,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_authentication",
+      "kind": "FunctionDef",
+      "line": 179,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_business_rules",
+      "kind": "FunctionDef",
+      "line": 191,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_schema_rejection",
+      "kind": "FunctionDef",
+      "line": 206,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_framing",
+      "kind": "FunctionDef",
+      "line": 218,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_period_and_array_bounds",
+      "kind": "FunctionDef",
+      "line": 232,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_rounding_not_per_item",
+      "kind": "FunctionDef",
+      "line": 243,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_forced_errors",
+      "kind": "FunctionDef",
+      "line": 258,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_real_rate_limit",
+      "kind": "FunctionDef",
+      "line": 272,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_solar_reference",
+      "kind": "FunctionDef",
+      "line": 284,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_solar_valid_extreme_inputs_conform_to_response_contract",
+      "kind": "FunctionDef",
+      "line": 299,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_validation_identifies_observed_field",
+      "kind": "FunctionDef",
+      "line": 315,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_solar_zero",
+      "kind": "FunctionDef",
+      "line": 334,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_solar_insufficient_area",
+      "kind": "FunctionDef",
+      "line": 347,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_unassigned_provider",
+      "kind": "FunctionDef",
+      "line": 361,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_excessive_precision_extreme_exponent",
+      "kind": "FunctionDef",
+      "line": 372,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "test_contract_refs_and_examples",
+      "kind": "FunctionDef",
+      "line": 383,
+      "issues": []
+    },
+    {
+      "file": "mock/test_contract.py",
+      "name": "walk",
+      "kind": "FunctionDef",
+      "line": 392,
+      "issues": []
+    }
+  ]
+}

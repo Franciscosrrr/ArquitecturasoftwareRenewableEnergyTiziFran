@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Renewable Energy - cotización solar",
-    "version": "1.0.0",
-    "description": "API web separada de la capacidad M2M consumo 1.0.1. Proveedor simulado explícito en Compose; sin persistencia."
+    "version": "1.1.0",
+    "description": "API web separada de la capacidad M2M consumo 1.0.1. Proveedor simulado explícito en Compose; sin persistencia. Integración comercial 2026-11-11: ofertas reales con flete/descuento y respaldo simulado identificado. La capacidad de Clínica 1.0.1 se conserva."
   },
   "servers": [
     {
@@ -696,8 +696,9 @@
         "properties": {
           "cotizacionId": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "minLength": 0,
+            "maxLength": 64,
+            "description": "Vacío para ofertas reales: el proveedor no persiste una cotización. Solo el simulador asigna una identidad didáctica."
           },
           "sku": {
             "type": "string",
@@ -716,8 +717,7 @@
           },
           "stockDisponible": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 1000000
+            "minimum": 0
           },
           "precioUnitarioCentavos": {
             "type": "integer",
@@ -726,17 +726,61 @@
           },
           "totalCentavos": {
             "type": "integer",
-            "minimum": 1,
-            "maximum": 1000000000000
+            "minimum": 0,
+            "maximum": 1000000000000000
           },
           "moneda": {
             "type": "string",
             "enum": [
               "ARS"
             ]
+          },
+          "origen": {
+            "type": "string",
+            "enum": [
+              "externo",
+              "simulado"
+            ]
+          },
+          "motivoSimulacion": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "skuProveedor": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "proveedorId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "proveedorNombre": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "referenciaProveedor": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "fleteCentavos": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000
+          },
+          "descuentoPorcentaje": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "descuentoAplicado": {
+            "type": "boolean"
+          },
+          "consultadoEn": {
+            "type": "string",
+            "format": "date-time"
           }
         },
-        "description": "cantidad=ceil(potenciaObjetivoW/potenciaPanelW); stockDisponible>=cantidad; totalCentavos=cantidad*precioUnitarioCentavos. Cotizar no reserva ni compra. Importe en centavos de ARS; no es tarifa eléctrica."
+        "description": "Importes en centavos ARS adaptados con precisión decimal. En origen externo el total informado incluye flete y descuento aplicado; no se impone precio unitario por cantidad. La oferta es una foto del momento, sin reserva ni precio congelado."
       }
     }
   }

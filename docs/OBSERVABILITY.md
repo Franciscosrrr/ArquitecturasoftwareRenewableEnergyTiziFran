@@ -11,3 +11,8 @@ Métricas propias: `renewable_http_requests_total`, `renewable_http_duration_sec
 Alertas de Prometheus: RenewableTargetDown después de 15 s de up=0; RenewableHighErrorRate si errores5 xx superan 5 % durante 5 min con tráfico mínimo. Se muestran en Grafana/Prometheus; no se configura envío a Slack/email ni se afirma que se envíen notificaciones. [Ensayo](POSTMORTEM.md) incluye la caída de una réplica y observación de la alerta activa.
 
 Ejemplos PromQL: `sum by(job)(rate(renewable_http_requests_total[1m]))`, `sum(rate(renewable_operations_total{component="cache",outcome="hit"}[5m])) / clamp_min(sum(rate(renewable_operations_total{component="cache",outcome=~"hit|miss"}[5m])),0.001)`, `renewable_state{component="balanceador"}` y `ALERTS{alertstate="firing"}`. No confundir la cuota M2M con una prueba de capacidad sin límite.
+
+
+## Integración comercial — 11/11/2026
+
+`renewable_operations_total{component="proveedor_paneles",outcome="respaldo_simulado"}` registra la activación del respaldo durante estudios/cotizaciones por fallas técnicas. No equivale al total de tarjetas del catálogo ni garantiza una alerta por cada uso simulado. Respuesta e historial conservan `origen` y `motivoSimulacion`; una oferta real conserva `referenciaProveedor` y `consultadoEn`. La referencia permite correlacionar con el grupo proveedor, no recuperar una cotización persistida allí. [Ensayo y recuperación](evidence/proveedor-real-2026-11-11/README.md).

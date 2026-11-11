@@ -1,16 +1,18 @@
 ---
-title: Contexto vigente - 2026-11-09
+title: Contexto vigente - 2026-11-11
 ---
 flowchart LR
  V["Visitante<br/>Borrador temporal sin escrituras"] --> SYS["Renewable Energy<br/>Consumo y estudios solares"]
  U["Usuario autenticado<br/>Lugares, guardados e historial propios"] --> SYS
  A["Administrador<br/>Catálogos y roles"] --> SYS
  C["Portal Paciente Clínica"] -->|"Estimación M2M 1.0.1<br/>Su tarifa y costo quedan en Clínica"| SYS
- SYS -->|"Solar consulta stock y cotización"| P["Vendedor de paneles SIMULADO<br/>Contrato real pendiente"]
- N["Sistema completo operativo localmente.<br/>HTTPS: despliegue gratuito preparado,<br/>cuenta y URL pública pendientes."]
+ SYS -->|"Solar consulta stock y cotización"| P["Comparador de Proveedores real<br/>Precio y stock por SKU/cantidad"]
+ N["API M2M HTTPS en Render.<br/>Web completa: PC y túnel HTTPS.<br/>Proveedor real: HTTP académico.<br/>Fichas técnicas locales de referencia."]
  classDef active fill:#e6f4ee,stroke:#417c64,color:#203b50
  classDef external fill:#e9f2fb,stroke:#557a96,color:#203b50
  classDef pending fill:#fff4de,stroke:#a87827,color:#563c14
  class SYS active
  class V,U,A,C,P external
  class N pending
+
+ SYS -. "Si falla: aviso de simulación" .-> SIM["Paneles simulados de respaldo<br/>Datos didácticos identificados"]

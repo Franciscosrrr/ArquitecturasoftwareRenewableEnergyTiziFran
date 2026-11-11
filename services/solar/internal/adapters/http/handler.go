@@ -32,10 +32,10 @@ func NewHandler(token string, services ...application.Service) http.Handler {
  *
  * @method NewFullHandler
  * @param {string} token - Credencial técnica del servicio.
- * @param {application.Service} service - Valor de service requerido por la operación.
- * @param {*persistence.Store} store - Valor de store requerido por la operación.
- * @param {string} internal - Valor de internal requerido por la operación.
- * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ * @param {application.Service} service - Nombre estable del servicio para trazas, logs y métricas.
+ * @param {*persistence.Store} store - Repositorio canónico del componente, que conserva la propiedad de sus datos.
+ * @param {string} internal - Secreto técnico usado para las operaciones entre servicios.
+ * @returns {http.Handler} Adaptador HTTP con las rutas, controles y dependencias configurados.
  */
 func NewFullHandler(token string, service application.Service, store *persistence.Store, internal string) http.Handler {
 	return newHandler(token, []application.Service{service}, store, internal)
@@ -46,10 +46,10 @@ func NewFullHandler(token string, service application.Service, store *persistenc
  *
  * @method newHandler
  * @param {string} token - Credencial técnica del servicio.
- * @param {[]application.Service} services - Valor de services requerido por la operación.
- * @param {*persistence.Store} store - Valor de store requerido por la operación.
- * @param {string} internal - Valor de internal requerido por la operación.
- * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ * @param {[]application.Service} services - Casos de uso configurados para las rutas solares.
+ * @param {*persistence.Store} store - Repositorio canónico del componente, que conserva la propiedad de sus datos.
+ * @param {string} internal - Secreto técnico usado para las operaciones entre servicios.
+ * @returns {http.Handler} Adaptador HTTP con las rutas, controles y dependencias configurados.
  */
 func newHandler(token string, services []application.Service, store *persistence.Store, internal string) http.Handler {
 	r := platform.Router()
@@ -59,7 +59,15 @@ func newHandler(token string, services []application.Service, store *persistence
 	}
 	if store != nil {
 		ready = store.Ready
-		registerPrivate(r, store, internal)
+		if len(services) > 0 {
+			if supplier, ok := services[0].Supplier.(application.ModelSupplier); ok {
+				registerPrivate(r, store, internal, supplier)
+			} else {
+				registerPrivate(r, store, internal)
+			}
+		} else {
+			registerPrivate(r, store, internal)
+		}
 	}
 	platform.Health(r, token, ready)
 	if len(services) > 0 {

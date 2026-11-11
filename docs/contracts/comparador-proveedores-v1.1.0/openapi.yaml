@@ -1,0 +1,536 @@
+openapi: 3.0.3
+info:
+  title: Proveedores recomendados
+  version: 1.1.0
+  description: |
+    Capacidad que publica el grupo **comparador de proveedores** para que otro
+    sistema (hoy, el grupo de paneles solares) pueda preguntar **quién conviene
+    para comprar un producto**: dado un SKU y una cantidad, devuelve las ofertas
+    de los proveedores ordenadas por costo total.
+
+    - **Versión vigente del contrato:** `1.1.0` (ruta `/api/v1/...`).
+    - **Entrada única:** todo se consume por el `api-gateway`. La ruta es la
+      misma en el gateway y en `proveedores-service`, así que no hace falta
+      saber que hay un gateway en el medio.
+    - **Autenticación:** header `X-API-Key`.
+    - **Idempotencia:** la operación es un `GET` sin efectos; se puede
+      reintentar sin riesgo.
+    - **Errores:** `application/problem+json` (RFC 9457) con la extensión
+      `code`. Cada `code` está explicado en
+      [`docs/contracts/README.md`](https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md).
+    - **Límite de tasa (desde 1.1.0):** el gateway limita las requests por
+      clave con un token bucket (50 por segundo sostenidas, ráfagas de 100).
+      Lo que exceda recibe `429 LIMITE_EXCEDIDO` con el header `Retry-After`
+      (segundos): esperar ese tiempo y reintentar.
+
+    Regla de negocio:
+    `costo_total = precio_unitario × cantidad × (1 − descuento_pct/100) + flete`,
+    redondeado a 2 decimales. El descuento aplica solo si
+    `cantidad ≥ cantidad_minima_descuento` de la oferta. Se excluyen las ofertas
+    con `stock_disponible < cantidad`.
+
+    ## Unidades y monedas
+
+    Estaban implícitas hasta ahora y se declaran acá sin cambiar nada del
+    comportamiento (es documentación, no una versión nueva del contrato):
+
+    - **Moneda: ARS (peso argentino)** para `precio_unitario`, `flete` y
+      `costo_total`. El contrato no lleva campo de moneda: **todos** los
+      importes de esta capacidad son ARS. Si algún día hubiera más de una
+      moneda, haría falta una versión nueva.
+    - **Importes: número decimal con 2 decimales**, no centavos enteros. En la
+      base son `NUMERIC(14,2)` (exactos); en el JSON viajan como número, así
+      que un consumidor que necesite aritmética exacta debería leerlos como
+      decimal y no como `float` binario. Que no sean centavos enteros está
+      anotado como deuda técnica en `docs/ARCHITECTURE.md`.
+    - **`cantidad` y `stock_disponible`: unidades enteras** del producto, en la
+      unidad que declara el catálogo (`unidad`, `metro`, `par` o `kit` según el
+      SKU). Para los paneles la unidad es siempre `unidad`.
+    - **`descuento_pct`: porcentaje** (0 a 100), no fracción.
+
+    ## Qué NO hace esta operación
+
+    Es un `GET` de solo lectura: **no compra, no reserva y no descuenta
+    inventario**. Consultar el mismo SKU mil veces no cambia ningún stock. La
+    reserva es otra operación, de `stock-service`, y no es parte de esta
+    capacidad.
+
+    ## Frescura de los datos y vigencia
+
+    La respuesta es una **foto del momento**, sin precio congelado:
+
+    - Las ofertas se cachean **60 segundos** (Redis). Un cambio de precio puede
+      tardar hasta ese tiempo en verse.
+    - Las ofertas del proveedor externo (catálogo de ropa) se re-importan cada
+      **5 minutos**.
+    - El precio puede cambiar entre dos llamadas sin aviso. No hay reserva de
+      precio ni identificador de cotización persistido: **si hace falta
+      correlacionar una respuesta con un log nuestro, se usa el header
+      `X-Request-Id`**, que viaja en toda respuesta (y como `request_id` en los
+      errores).
+  license:
+    name: Uso académico (Arquitectura de Software 2026, UCC)
+servers:
+  - url: http://20.226.84.78
+    description: >-
+      Desplegado (11/11/2026). VM en Azure, `brazilsouth`. Es **http**, no https:
+      no tenemos dominio, así que no hay certificado. Ver `docs/NUBE.md`.
+  - url: http://localhost:8080
+    description: Local, con `docker compose up` (puerto `PUERTO_GATEWAY`, por defecto 8080)
+tags:
+  - name: Capacidad
+    description: La operación que consume el otro grupo.
+  - name: Operación
+    description: Chequeos de salud del gateway. No forman parte de la capacidad.
+security:
+  - ApiKeyAuth: []
+paths:
+  /api/v1/proveedores/recomendados:
+    get:
+      tags: [Capacidad]
+      operationId: recomendarProveedores
+      summary: Proveedores recomendados para un producto y una cantidad
+      description: |
+        Evalúa las ofertas de todos los proveedores para el SKU pedido, descarta
+        las que no tienen stock suficiente para `cantidad`, calcula el costo
+        total de cada una y devuelve las `limite` más baratas.
+
+        **Orden:** `costo_total` ascendente; si empatan, `proveedor_nombre`
+        ascendente y después `proveedor_id`. El orden es determinista.
+
+        **Sin ofertas válidas:** si el producto existe pero ningún proveedor
+        tiene stock suficiente (o nadie lo ofrece), la respuesta es `200` con
+        `[]`. Solo un SKU que **no existe** devuelve `404`.
+
+        **Idempotente y seguro:** es un `GET` sin efectos. Reintentar ante un
+        `502`, `503` o `504` es seguro.
+
+        Cualquier otro método sobre esta ruta (por ejemplo `POST`) devuelve
+        `404 RUTA_NO_ENCONTRADA`, no `405`: el gateway solo expone el `GET`.
+      parameters:
+        - $ref: '#/components/parameters/Producto'
+        - $ref: '#/components/parameters/Cantidad'
+        - $ref: '#/components/parameters/Limite'
+        - $ref: '#/components/parameters/XRequestIdEntrada'
+      responses:
+        '200':
+          description: |
+            Ofertas ordenadas por `costo_total` ascendente. Lista vacía si no
+            hay ninguna con stock suficiente.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 50
+                items:
+                  $ref: '#/components/schemas/Recomendacion'
+              examples:
+                dos-ofertas:
+                  summary: Diez paneles, las dos más baratas
+                  description: >
+                    `GET /api/v1/proveedores/recomendados?producto=PAN-550W-MONO&cantidad=10&limite=2`
+                  value:
+                    - proveedor_id: 3
+                      proveedor_nombre: Cordoba Energia SA
+                      precio_unitario: 189573.99
+                      descuento_pct: 15
+                      descuento_aplicado: true
+                      flete: 43000
+                      stock_disponible: 394
+                      costo_total: 1654378.92
+                    - proveedor_id: 6
+                      proveedor_nombre: Fotovoltaica Pampeana SRL
+                      precio_unitario: 199645.5
+                      descuento_pct: 3
+                      descuento_aplicado: true
+                      flete: 64500
+                      stock_disponible: 62
+                      costo_total: 2001061.35
+                sin-ofertas:
+                  summary: El producto existe pero nadie ofrece stock suficiente
+                  description: >
+                    `GET /api/v1/proveedores/recomendados?producto=MON-WIFI`
+                  value: []
+        '400':
+          $ref: '#/components/responses/ParametroInvalido'
+        '401':
+          $ref: '#/components/responses/NoAutorizado'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '429':
+          $ref: '#/components/responses/LimiteExcedido'
+        '502':
+          $ref: '#/components/responses/SinReplicas'
+        '503':
+          $ref: '#/components/responses/BaseNoDisponible'
+        '504':
+          $ref: '#/components/responses/TiempoAgotado'
+  /healthz:
+    get:
+      tags: [Operación]
+      operationId: gatewayVivo
+      summary: El proceso del gateway está vivo
+      description: >
+        Responde `200` siempre que el proceso atienda. No mira a
+        `proveedores-service`. Sin autenticación.
+      security: []
+      responses:
+        '200':
+          description: Vivo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Estado'
+              example:
+                status: ok
+  /readyz:
+    get:
+      tags: [Operación]
+      operationId: gatewayListo
+      summary: El gateway puede atender la capacidad
+      description: >
+        `200` si queda al menos una réplica sana de `proveedores-service`; `503`
+        si ninguna responde. Sin autenticación.
+      security: []
+      responses:
+        '200':
+          description: Listo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Estado'
+              example:
+                status: ready
+        '503':
+          description: Ninguna réplica de `proveedores-service` responde.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#NO_DISPONIBLE
+                title: Servicio no disponible
+                status: 503
+                detail: ninguna réplica de proveedores-service responde
+                code: NO_DISPONIBLE
+                instance: /readyz
+                request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: >
+        Clave que entrega el grupo proveedor. El gateway la valida y el servicio
+        la vuelve a validar (el header se reenvía tal cual). Para el grupo de
+        paneles solares se emite una clave propia.
+  parameters:
+    Producto:
+      name: producto
+      in: query
+      required: true
+      description: SKU del producto, tal como figura en el catálogo (por ejemplo `PAN-550W-MONO`). Distingue mayúsculas y minúsculas.
+      schema:
+        type: string
+        minLength: 1
+        example: PAN-550W-MONO
+    Cantidad:
+      name: cantidad
+      in: query
+      required: false
+      description: Unidades que se quieren comprar. Determina el stock exigido y si aplica el descuento por volumen.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 10
+    Limite:
+      name: limite
+      in: query
+      required: false
+      description: Máximo de recomendaciones a devolver.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 5
+        example: 3
+    XRequestIdEntrada:
+      name: X-Request-ID
+      in: header
+      required: false
+      description: >
+        Identificador de correlación opcional (ASCII imprimible sin espacios,
+        hasta 128 caracteres). Si es válido se respeta; si falta o no es válido
+        el gateway genera uno de 32 hexadecimales. Siempre vuelve en la
+        respuesta, y sirve para que nos pasen el caso cuando algo falle.
+      schema:
+        type: string
+        maxLength: 128
+        pattern: '^[\x21-\x7e]+$'
+        example: pedido-paneles-0042
+  headers:
+    XRequestId:
+      description: Identificador de correlación de la request. Está en todas las respuestas, también en los errores.
+      schema:
+        type: string
+        example: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+  schemas:
+    Recomendacion:
+      type: object
+      description: Una oferta de un proveedor evaluada para la cantidad pedida.
+      required:
+        - proveedor_id
+        - proveedor_nombre
+        - precio_unitario
+        - descuento_pct
+        - descuento_aplicado
+        - flete
+        - stock_disponible
+        - costo_total
+      properties:
+        proveedor_id:
+          type: integer
+          format: int64
+          description: Identificador estable del proveedor.
+          example: 3
+        proveedor_nombre:
+          type: string
+          example: Cordoba Energia SA
+        precio_unitario:
+          type: number
+          format: double
+          description: Precio por unidad, sin descuento ni flete.
+          example: 189573.99
+        descuento_pct:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          description: Descuento por volumen que ofrece el proveedor, en porcentaje. Puede ser mayor que 0 aunque no se haya aplicado; ver `descuento_aplicado`.
+          example: 15
+        descuento_aplicado:
+          type: boolean
+          description: "`true` si para esta `cantidad` se alcanzó el mínimo del descuento y el descuento está incluido en `costo_total`."
+          example: true
+        flete:
+          type: number
+          format: double
+          minimum: 0
+          description: Costo de envío, fijo por pedido (no depende de la cantidad).
+          example: 43000
+        stock_disponible:
+          type: integer
+          minimum: 0
+          description: Unidades que el proveedor tiene. Siempre es mayor o igual que la `cantidad` pedida.
+          example: 394
+        costo_total:
+          type: number
+          format: double
+          description: "`precio_unitario × cantidad × (1 − descuento_pct/100) + flete`, redondeado a 2 decimales. El descuento solo se resta si `descuento_aplicado` es `true`."
+          example: 1654378.92
+    Problem:
+      type: object
+      description: Error según RFC 9457, con la extensión `code`, que es lo que hay que usar para decidir qué hacer.
+      required: [type, title, status, detail, code]
+      properties:
+        type:
+          type: string
+          format: uri
+          description: Apunta a la explicación del `code` en `docs/contracts/README.md`.
+        title:
+          type: string
+          description: Título corto, estable para cada `code`.
+        status:
+          type: integer
+          description: Mismo valor que el status HTTP.
+        detail:
+          type: string
+          description: "Explicación para una persona. **No** parsearlo: la redacción puede cambiar sin cambiar de versión."
+        code:
+          type: string
+          enum:
+            - PARAMETRO_INVALIDO
+            - NO_AUTORIZADO
+            - PRODUCTO_NO_ENCONTRADO
+            - RUTA_NO_ENCONTRADA
+            - NO_DISPONIBLE
+          description: Código de error estable y procesable.
+        instance:
+          type: string
+          description: Ruta de la request que falló.
+        request_id:
+          type: string
+          description: El mismo valor del header `X-Request-ID`.
+    Estado:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok, ready]
+  responses:
+    ParametroInvalido:
+      description: |
+        `PARAMETRO_INVALIDO`. Falta `producto`, o `cantidad` / `limite` no son
+        enteros mayores a 0, o `limite` supera 50. No reintentar sin corregir la
+        request.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#PARAMETRO_INVALIDO
+            title: Parámetro inválido
+            status: 400
+            detail: "'limite' no puede ser mayor a 50"
+            code: PARAMETRO_INVALIDO
+            instance: /api/v1/proveedores/recomendados
+            request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+    NoAutorizado:
+      description: |
+        `NO_AUTORIZADO`. Falta `X-API-Key` o no es válida. Lo puede devolver el
+        gateway o el servicio, con el mismo cuerpo. No reintentar sin corregir la clave.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#NO_AUTORIZADO
+            title: No autorizado
+            status: 401
+            detail: falta el header X-API-Key o no es válido
+            code: NO_AUTORIZADO
+            instance: /api/v1/proveedores/recomendados
+            request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+    NoEncontrado:
+      description: |
+        Hay dos causas, y se distinguen por `code`:
+
+        - `PRODUCTO_NO_ENCONTRADO`: el SKU no existe en el catálogo. Un SKU que
+          existe pero no tiene ofertas válidas **no** es 404: devuelve `200 []`.
+        - `RUTA_NO_ENCONTRADA`: la ruta o el método no los expone el gateway
+          (incluye un `POST` a la ruta de la capacidad). Lo devuelve solo el gateway.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            producto:
+              summary: SKU inexistente
+              value:
+                type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#PRODUCTO_NO_ENCONTRADO
+                title: Producto no encontrado
+                status: 404
+                detail: "no existe un producto con SKU 'NOPE'"
+                code: PRODUCTO_NO_ENCONTRADO
+                instance: /api/v1/proveedores/recomendados
+                request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+            ruta:
+              summary: Ruta que el gateway no expone
+              value:
+                type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#RUTA_NO_ENCONTRADA
+                title: Ruta no encontrada
+                status: 404
+                detail: el gateway no expone esta ruta
+                code: RUTA_NO_ENCONTRADA
+                instance: /api/v1/otra-cosa
+                request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+    LimiteExcedido:
+      description: |
+        `LIMITE_EXCEDIDO`. La clave superó el límite de requests por segundo
+        (token bucket en el gateway, desde 1.1.0). Lo devuelve solo el gateway,
+        sin llamar al servicio. Esperar los segundos de `Retry-After` y
+        reintentar.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestId'
+        Retry-After:
+          description: Segundos a esperar antes de reintentar (entero, al menos 1).
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#LIMITE_EXCEDIDO
+            title: Límite de tráfico excedido
+            status: 429
+            detail: se superó el límite de requests por segundo; reintentar después de Retry-After
+            code: LIMITE_EXCEDIDO
+            instance: /api/v1/proveedores/recomendados
+            request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+    BaseNoDisponible:
+      description: |
+        `NO_DISPONIBLE`. El servicio no pudo consultar su base (timeout de 2 s).
+        Es transitorio: reintentar con espera creciente.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#NO_DISPONIBLE
+            title: Servicio no disponible
+            status: 503
+            detail: el almacenamiento de ofertas no está disponible; reintentar más tarde
+            code: NO_DISPONIBLE
+            instance: /api/v1/proveedores/recomendados
+            request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+    SinReplicas:
+      description: |
+        `NO_DISPONIBLE`. El gateway no pudo contactar a ninguna réplica de
+        `proveedores-service`. Transitorio: reintentar con espera creciente.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#NO_DISPONIBLE
+            title: Servicio no disponible
+            status: 502
+            detail: ninguna réplica de proveedores-service responde; reintentar más tarde
+            code: NO_DISPONIBLE
+            instance: /api/v1/proveedores/recomendados
+            request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21
+    TiempoAgotado:
+      description: |
+        `NO_DISPONIBLE`. La réplica no contestó dentro del tiempo límite del
+        gateway (3 s por defecto). Es transitorio: reintentar. Conviene que el
+        consumidor use un timeout propio **mayor a 3 s**, para recibir este error
+        en lugar de cortar antes.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://github.com/matiasdemetriorufeil/arq-soft-proveedores/blob/main/docs/contracts/README.md#NO_DISPONIBLE
+            title: Servicio no disponible
+            status: 504
+            detail: proveedores-service no respondió dentro del tiempo límite; reintentar más tarde
+            code: NO_DISPONIBLE
+            instance: /api/v1/proveedores/recomendados
+            request_id: 5b1e0f6c8f3a4d2e9a7c1d4b6e8f0a21

@@ -1,2 +1,4 @@
-// Acceso exclusivo a la base propia. Adaptadores SQL pendientes.
+/**
+ * La persistencia SQL propia está implementada en internal/identity.Store; aquí no se duplica ese repositorio.
+ */
 package repository

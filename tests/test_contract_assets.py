@@ -16,7 +16,7 @@ class ContractAssets(unittest.TestCase):
          * Comprueba que ampliar la web no modifica el contrato compartido con Clínica.
          *
          * @method test_shared_v101_is_byte_frozen
-         * @returns {None} Falla ante cualquier cambio del OpenAPI1.0.1 salvo finales de línea.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         raw=(ROOT/'v1/openapi.json').read_bytes().replace(b'\r\n',b'\n')
@@ -27,7 +27,7 @@ class ContractAssets(unittest.TestCase):
          * Resuelve JSON Pointer y archivos relativos de todos los contratos procesables.
          *
          * @method test_all_contract_references_resolve
-         * @returns {None} Falla si una referencia apunta a un esquema o archivo inexistente.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for path in ROOT.rglob('*.json'):

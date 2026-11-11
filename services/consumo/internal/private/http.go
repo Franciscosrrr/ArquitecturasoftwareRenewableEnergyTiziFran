@@ -15,16 +15,36 @@ import (
 	"strings"
 )
 
+/**
+ * Congela entrada validada, fichas utilizadas y resultado para reproducir una evaluación.
+ *
+ * @method Snapshot
+ * @returns {Snapshot} Representación tipada usada por este componente.
+ */
 type Snapshot struct {
 	Consumption application.Result  `json:"consumo"`
 	Fichas      []application.Ficha `json:"fichas"`
 	Input       json.RawMessage     `json:"entrada"`
 	Place       Place               `json:"lugar"`
 }
+
+/**
+ * Conecta persistencia propia y resolución de catálogo para confirmar evaluaciones HTTP.
+ *
+ * @method Service
+ * @returns {Service} Representación tipada usada por este componente.
+ */
 type Service struct {
 	Store   *Store
 	Catalog application.Resolver
 }
+
+/**
+ * Registra las fichas efectivamente resueltas mientras calcula el snapshot.
+ *
+ * @method captureResolver
+ * @returns {captureResolver} Representación tipada usada por este componente.
+ */
 type captureResolver struct {
 	Source application.Resolver
 	Items  []application.Ficha
@@ -35,8 +55,8 @@ type captureResolver struct {
  *
  * @method Resolve
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {[]string} ids - Valor de ids requerido por la operación.
- * @returns {[]application.Ficha, error} Resultado de la operación; error si no puede completarse.
+ * @param {[]string} ids - Identificadores únicos de las fichas a recuperar en lote.
+ * @returns {[]application.Ficha, error} Fichas activas solicitadas o error de validación, ausencia o dependencia.
  */
 func (r *captureResolver) Resolve(ctx context.Context, ids []string) ([]application.Ficha, error) {
 	items, err := r.Source.Resolve(ctx, ids)
@@ -48,8 +68,8 @@ func (r *captureResolver) Resolve(ctx context.Context, ids []string) ([]applicat
  * Valida rangos y precisión decimal de los supuestos solares antes de persistir.
  *
  * @method validOptions
- * @param {SolarOptions} o - Valor de o requerido por la operación.
- * @returns {bool} Resultado de la operación; error si no puede completarse.
+ * @param {SolarOptions} o - HSP, rendimiento, cobertura y superficie del dimensionamiento.
+ * @returns {bool} true si los supuestos solares cumplen límites y precisión; false de otro modo.
  */
 func validOptions(o SolarOptions) bool {
 	for _, v := range []float64{o.Sun, o.Yield, o.Coverage} {
@@ -71,7 +91,7 @@ func validOptions(o SolarOptions) bool {
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {SolarOptions} options - Supuestos solares explícitos.
  * @param {json.RawMessage} snapshot - Datos congelados para reproducir el resultado.
- * @returns {Event} Resultado de la operación; error si no puede completarse.
+ * @returns {Event} Evento con snapshot y correlación definidos por el servidor.
  */
 func newEvent(c *gin.Context, owner string, options SolarOptions, snapshot json.RawMessage) Event {
 	carrier := propagation.MapCarrier{}
@@ -84,7 +104,7 @@ func newEvent(c *gin.Context, owner string, options SolarOptions, snapshot json.
  *
  * @method fail
  * @param {*gin.Context} c - Solicitud HTTP en curso.
- * @param {error} err - Valor de err requerido por la operación.
+ * @param {error} err - Error de dominio o infraestructura que debe traducirse a una respuesta pública.
  * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
  */
 func fail(c *gin.Context, err error) {

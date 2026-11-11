@@ -27,7 +27,7 @@ import (
  * @method fullHandler
  * @param {string} token - Credencial técnica del servicio.
  * @param {Config} cfg - Configuración de infraestructura del adaptador.
- * @returns {http.Handler} Resultado de la operación; error si no puede completarse.
+ * @returns {http.Handler} Adaptador HTTP con las rutas, controles y dependencias configurados.
  */
 func fullHandler(token string, cfg Config) http.Handler {
 	r := platform.Router()

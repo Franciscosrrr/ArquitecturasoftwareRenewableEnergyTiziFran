@@ -27,11 +27,11 @@ def call(path, body=None, headers=None, raw=None):
      * Ejecuta HTTP real y devuelve estado, JSON y cabeceras sin ocultar errores.
      *
      * @method call
-     * @param {Any} path - Parámetro path de la operación.
-     * @param {Any} body - Parámetro body de la operación.
-     * @param {Any} headers - Parámetro headers de la operación.
-     * @param {Any} raw - Parámetro raw de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {str} path - Ruta HTTP o JSON que identifica el recurso o campo de la operación.
+     * @param {dict|None} body - Cuerpo JSON opcional de la solicitud.
+     * @param {dict|None} headers - Cabeceras adicionales de la solicitud HTTP.
+     * @param {bytes|None} raw - Cuerpo HTTP original para ensayar también JSON o framing inválidos.
+     * @returns {tuple} Estado HTTP, cuerpo decodificado y cabeceras de respuesta.
      */
     """
     headers = {'Content-Type': 'application/json', **(headers or {})}
@@ -53,7 +53,7 @@ class RealServices(unittest.TestCase):
      * Agrupa verificaciones del flujo RealServices.
      *
      * @method RealServices
-     * @returns {RealServices} Resultado verificado de la operación.
+     * @returns {RealServices} Tipo que agrupa el estado y las verificaciones descritas.
      */
     """
     def setUp(self):
@@ -62,7 +62,7 @@ class RealServices(unittest.TestCase):
          * Espera la reposición de cuota antes de una prueba independiente.
          *
          * @method setUp
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         time.sleep(1.1)
@@ -72,7 +72,7 @@ class RealServices(unittest.TestCase):
          * Comprueba m2m matches contract.
          *
          * @method test_m2m_matches_contract
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         status, result, headers = call('/api/v1/estimaciones-consumo', EXAMPLE, {'X-API-Key': os.environ['M2M_API_KEY'], 'X-Request-Id': 'entrega2-m2m'})
@@ -88,7 +88,7 @@ class RealServices(unittest.TestCase):
          * Comprueba catalog flow uses mysql.
          *
          * @method test_catalog_flow_uses_mysql
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         status, result, _ = call('/api/v1/publico/consumo-catalogo', CATALOG_REQUEST, {'X-Request-Id': 'entrega2-catalogo'})
@@ -101,7 +101,7 @@ class RealServices(unittest.TestCase):
          * Comprueba guest requires no account.
          *
          * @method test_guest_requires_no_account
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         status, result, _ = call('/api/v1/publico/consumo', EXAMPLE)
@@ -114,7 +114,7 @@ class RealServices(unittest.TestCase):
          * Comprueba authentication.
          *
          * @method test_authentication
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         for headers, expected in [({}, 401), ({'X-API-Key': 'incorrecta'}, 401), ({'X-API-Key': os.environ['M2M_DENIED_KEY']}, 403)]:
@@ -127,7 +127,7 @@ class RealServices(unittest.TestCase):
          * Comprueba catalog read search pagination.
          *
          * @method test_catalog_read_search_pagination
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         status, result, _ = call('/api/v1/publico/electrodomesticos?tamano=2&pagina=1&orden=nombre')
@@ -144,7 +144,7 @@ class RealServices(unittest.TestCase):
          * Comprueba invalid days and client power.
          *
          * @method test_invalid_days_and_client_power
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         body = json.loads(json.dumps(EXAMPLE))
@@ -161,7 +161,7 @@ class RealServices(unittest.TestCase):
          * Comprueba json and size limits.
          *
          * @method test_json_and_size_limits
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.assertEqual(call('/api/v1/publico/consumo', raw=b'{')[0], 400)
@@ -173,7 +173,7 @@ class RealServices(unittest.TestCase):
          * Comprueba private routes and health.
          *
          * @method test_private_routes_and_health
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.assertEqual(call('/api/v1/configuraciones')[0], 401)
@@ -187,7 +187,7 @@ class RealServices(unittest.TestCase):
          * Comprueba web and published contract.
          *
          * @method test_web_and_published_contract
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         status, result, _ = call('/')

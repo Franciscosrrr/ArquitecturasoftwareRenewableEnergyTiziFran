@@ -16,6 +16,12 @@ import (
 var ErrConflict = errors.New("conflicto de versión")
 var ErrBusy = errors.New("estudio en procesamiento")
 
+/**
+ * Conserva el estudio de un propietario, el snapshot y el resultado con su origen comercial.
+ *
+ * @method Study
+ * @returns {Study} Representación tipada usada por este componente.
+ */
 type Study struct {
 	ID           string                 `json:"id" bson:"_id"`
 	EventID      string                 `json:"eventId"`
@@ -30,6 +36,13 @@ type Study struct {
 	TraceID      string                 `json:"traceId"`
 	Error        string                 `json:"error,omitempty"`
 }
+
+/**
+ * Encapsula MongoDB de Solar con escritura journaled e índices de deduplicación.
+ *
+ * @method Store
+ * @returns {Store} Representación tipada usada por este componente.
+ */
 type Store struct {
 	Client *mongo.Client
 	DB     *mongo.Database
@@ -40,7 +53,7 @@ type Store struct {
  *
  * @method Open
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {*Store, error} Resultado de la operación; error si no puede completarse.
+ * @returns {*Store, error} Repositorio con conexiones e índices preparados o error de inicialización.
  */
 func Open(ctx context.Context) (*Store, error) {
 	client, err := mongo.Connect(options.Client().ApplyURI(platform.Env("MONGO_URI", "")).SetTimeout(3 * time.Second).SetWriteConcern(writeconcern.Journaled()).SetBSONOptions(&options.BSONOptions{UseJSONStructTags: true}))
@@ -69,7 +82,7 @@ func Open(ctx context.Context) (*Store, error) {
  *
  * @method Ready
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil cuando la dependencia necesaria responde; error si no está disponible.
  */
 func (s *Store) Ready(ctx context.Context) error { return s.Client.Ping(ctx, nil) }
 
@@ -78,8 +91,8 @@ func (s *Store) Ready(ctx context.Context) error { return s.Client.Ping(ctx, nil
  *
  * @method Panels
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {bool} all - Valor de all requerido por la operación.
- * @returns {[]domain.Panel, error} Resultado de la operación; error si no puede completarse.
+ * @param {bool} all - Incluye fichas inactivas cuando es verdadero.
+ * @returns {[]domain.Panel, error} Fichas técnicas canónicas que cumplen el filtro de actividad o error de MongoDB.
  */
 func (s *Store) Panels(ctx context.Context, all bool) ([]domain.Panel, error) {
 	filter := bson.M{}
@@ -102,8 +115,8 @@ func (s *Store) Panels(ctx context.Context, all bool) ([]domain.Panel, error) {
  * @method SavePanel
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {domain.Panel} p - Lugar o panel a persistir con su versión.
- * @param {bool} create - Valor de create requerido por la operación.
- * @returns {domain.Panel, error} Resultado de la operación; error si no puede completarse.
+ * @param {bool} create - Crea una ficha nueva cuando es verdadero; de otro modo actualiza su versión.
+ * @returns {domain.Panel, error} Ficha con la versión persistida o error de conflicto o almacenamiento.
  */
 func (s *Store) SavePanel(ctx context.Context, p domain.Panel, create bool) (domain.Panel, error) {
 	document := bson.M{"_id": p.ID, "nombre": p.Name, "fuente": p.Source, "potenciaW": p.Watts, "superficieEfectivaMilliM2": p.AreaMilli, "precioCentavos": p.UnitCents, "moneda": p.Currency, "activo": p.Active, "busquedaPendiente": true}
@@ -137,7 +150,7 @@ func (s *Store) SavePanel(ctx context.Context, p domain.Panel, create bool) (dom
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {string} id - Identificador del recurso solicitado.
- * @returns {Study, error} Resultado de la operación; error si no puede completarse.
+ * @returns {Study, error} Estudio del propietario indicado o error de ausencia/persistencia.
  */
 func (s *Store) Get(ctx context.Context, owner, id string) (Study, error) {
 	var study Study
@@ -151,8 +164,8 @@ func (s *Store) Get(ctx context.Context, owner, id string) (Study, error) {
  * @method List
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
- * @param {string} evaluation - Valor de evaluation requerido por la operación.
- * @returns {[]Study, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} evaluation - Identificador de evaluación por el que se filtran los estudios propios.
+ * @returns {[]Study, error} Estudios propios que cumplen el filtro o error de MongoDB.
  */
 func (s *Store) List(ctx context.Context, owner, evaluation string) ([]Study, error) {
 	filter := bson.M{"owner": owner}
@@ -174,8 +187,8 @@ func (s *Store) List(ctx context.Context, owner, evaluation string) ([]Study, er
  *
  * @method Claim
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {Study} study - Valor de study requerido por la operación.
- * @returns {bool, error} Resultado de la operación; error si no puede completarse.
+ * @param {Study} study - Identidad del estudio, evento, propietario y snapshot que se reclaman para procesar.
+ * @returns {bool, error} true si se adquiere el procesamiento; false para un resultado ya completado, o error de lease/conflicto.
  */
 func (s *Store) Claim(ctx context.Context, study Study) (bool, error) {
 	study.Status = "PENDIENTE"
@@ -210,9 +223,9 @@ func (s *Store) Claim(ctx context.Context, study Study) (bool, error) {
  * @method Complete
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} id - Identificador del recurso solicitado.
- * @param {domain.Recommendation} result - Valor de result requerido por la operación.
- * @param {string} traceID - Valor de traceID requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {domain.Recommendation} result - Recomendación completa, incluida la procedencia de su oferta, que se persiste.
+ * @param {string} traceID - Identificador de la traza asociada al resultado o al estudio.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Complete(ctx context.Context, id string, result domain.Recommendation, traceID string) error {
 	_, err := s.DB.Collection("estudios").UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"estado": result.Status, "resultado": result, "traceId": traceID, "actualizado": time.Now().UTC(), "error": ""}, "$unset": bson.M{"lease": ""}})
@@ -225,7 +238,7 @@ func (s *Store) Complete(ctx context.Context, id string, result domain.Recommend
  * @method Failed
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} id - Identificador del recurso solicitado.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Failed(ctx context.Context, id string) error {
 	_, err := s.DB.Collection("estudios").UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"estado": "ERROR", "error": "Dependencia no disponible; se reintentará o requerirá reproceso.", "actualizado": time.Now().UTC()}, "$unset": bson.M{"lease": ""}})

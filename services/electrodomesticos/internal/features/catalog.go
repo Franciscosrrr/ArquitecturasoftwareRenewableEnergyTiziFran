@@ -19,10 +19,23 @@ import (
 	"time"
 )
 
+/**
+ * Añade el estado de actividad a una ficha canónica destinada al índice derivado.
+ *
+ * @method Document
+ * @returns {Document} Representación tipada usada por este componente.
+ */
 type Document struct {
 	repository.Item
 	Active bool `json:"activo"`
 }
+
+/**
+ * Coordina índice Meilisearch, caché Valkey y outbox del catálogo SQL.
+ *
+ * @method Runtime
+ * @returns {Runtime} Representación tipada usada por este componente.
+ */
 type Runtime struct {
 	indexMu  sync.Mutex
 	Store    *repository.Store
@@ -38,8 +51,8 @@ var ErrConflict = errors.New("conflicto de catálogo")
  * Configura caché y buscador con presupuestos explícitos y sin retries ocultos.
  *
  * @method New
- * @param {*repository.Store} store - Valor de store requerido por la operación.
- * @returns {*Runtime} Resultado de la operación; error si no puede completarse.
+ * @param {*repository.Store} store - Repositorio canónico del componente, que conserva la propiedad de sus datos.
+ * @returns {*Runtime} Instancia configurada del componente con sus dependencias y estado inicial.
  */
 func New(store *repository.Store) *Runtime {
 	return &Runtime{Store: store, Redis: redis.NewClient(&redis.Options{Addr: platform.Env("VALKEY_ADDR", "valkey:6379"), Password: platform.Secret("VALKEY_PASSWORD"), DialTimeout: 200 * time.Millisecond, ReadTimeout: 200 * time.Millisecond, WriteTimeout: 200 * time.Millisecond, PoolTimeout: 200 * time.Millisecond, ContextTimeoutEnabled: true, MaxRetries: -1, DialerRetries: 1, PoolSize: 10}), HTTP: platform.Client(2 * time.Second), URL: platform.Env("SEARCH_URL", "http://meilisearch:7700"), Key: platform.Secret("SEARCH_API_KEY")}
@@ -50,7 +63,7 @@ func New(store *repository.Store) *Runtime {
  *
  * @method Init
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (r *Runtime) Init(ctx context.Context) error {
 	_, err := r.Store.DB.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS catalogo_outbox(id CHAR(36) PRIMARY KEY,entity_id VARCHAR(64) NOT NULL,version BIGINT NOT NULL,created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,sent_at TIMESTAMP NULL,INDEX(sent_at))`)
@@ -62,7 +75,7 @@ func (r *Runtime) Init(ctx context.Context) error {
  *
  * @method All
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {[]Document, error} Resultado de la operación; error si no puede completarse.
+ * @returns {[]Document, error} Todas las fichas canónicas necesarias para reconstruir el índice, o error SQL.
  */
 func (r *Runtime) All(ctx context.Context) ([]Document, error) {
 	rows, err := r.Store.DB.QueryContext(ctx, "SELECT id,nombre,categoria,modo,potencia_w,energia_ciclo,factor,fuente,version,activo FROM electrodomesticos ORDER BY id")
@@ -90,10 +103,10 @@ func (r *Runtime) All(ctx context.Context) ([]Document, error) {
  *
  * @method request
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} method - Valor de method requerido por la operación.
- * @param {string} path - Valor de path requerido por la operación.
- * @param {any} value - Valor de value requerido por la operación.
- * @returns {[]byte, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} method - Método HTTP de la operación contra el motor.
+ * @param {string} path - Ruta del campo JSON o de la operación HTTP indicada por este adaptador.
+ * @param {any} value - Cuerpo JSON opcional que se envía al motor de búsqueda.
+ * @returns {[]byte, error} Cuerpo HTTP acotado o error de transporte, lectura o estado no satisfactorio.
  */
 func (r *Runtime) request(ctx context.Context, method, path string, value any) ([]byte, error) {
 	var raw []byte
@@ -126,10 +139,10 @@ func (r *Runtime) request(ctx context.Context, method, path string, value any) (
  *
  * @method task
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} method - Valor de method requerido por la operación.
- * @param {string} path - Valor de path requerido por la operación.
- * @param {any} value - Valor de value requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {string} method - Método HTTP de la operación contra el motor.
+ * @param {string} path - Ruta del campo JSON o de la operación HTTP indicada por este adaptador.
+ * @param {any} value - Cuerpo JSON opcional que se envía al motor de búsqueda.
+ * @returns {error} nil cuando Meilisearch confirma éxito; error o cancelación si la tarea no se completa.
  */
 func (r *Runtime) task(ctx context.Context, method, path string, value any) error {
 	body, err := r.request(ctx, method, path, value)
@@ -172,8 +185,8 @@ func (r *Runtime) task(ctx context.Context, method, path string, value any) erro
  *
  * @method setup
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {string} index - Valor de index requerido por la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @param {string} index - Nombre del índice derivado que se configura.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (r *Runtime) setup(ctx context.Context, index string) error {
 	if _, err := r.request(ctx, "GET", "/indexes/"+index, nil); err != nil {
@@ -189,7 +202,7 @@ func (r *Runtime) setup(ctx context.Context, index string) error {
  *
  * @method Rebuild
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (r *Runtime) Rebuild(ctx context.Context) error {
 	r.indexMu.Lock()
@@ -224,7 +237,7 @@ func (r *Runtime) Rebuild(ctx context.Context) error {
  * @method Search
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {repository.Query} q - Filtros, orden y límites de la consulta.
- * @returns {repository.Page, error} Resultado de la operación; error si no puede completarse.
+ * @returns {repository.Page, error} Página obtenida del índice o error de la búsqueda.
  */
 func (r *Runtime) Search(ctx context.Context, q repository.Query) (repository.Page, error) {
 	filter := []string{"activo = true"}
@@ -272,8 +285,8 @@ func (r *Runtime) Search(ctx context.Context, q repository.Query) (repository.Pa
  * @method List
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {repository.Query} q - Filtros, orden y límites de la consulta.
- * @param {bool} bypass - Valor de bypass requerido por la operación.
- * @returns {repository.Page, string, error} Resultado de la operación; error si no puede completarse.
+ * @param {bool} bypass - Omite la caché para comparar o verificar la lectura canónica.
+ * @returns {repository.Page, string, error} Página, origen efectivo de la lectura y error si fallan índice y respaldo.
  */
 func (r *Runtime) List(ctx context.Context, q repository.Query, bypass bool) (repository.Page, string, error) {
 	cacheCtx, cancelCache := context.WithTimeout(ctx, 300*time.Millisecond)
@@ -332,10 +345,10 @@ func (r *Runtime) List(ctx context.Context, q repository.Query, bypass bool) (re
  *
  * @method Save
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {repository.Item} item - Valor de item requerido por la operación.
- * @param {bool} active - Valor de active requerido por la operación.
- * @param {bool} create - Valor de create requerido por la operación.
- * @returns {repository.Item, error} Resultado de la operación; error si no puede completarse.
+ * @param {repository.Item} item - Ficha canónica de equipo que debe guardarse junto con su versión.
+ * @param {bool} active - Estado de actividad que debe conservar la ficha.
+ * @param {bool} create - Crea una ficha nueva cuando es verdadero; de otro modo actualiza su versión.
+ * @returns {repository.Item, error} Ficha creada o actualizada junto con su outbox, o error de versión/persistencia.
  */
 func (r *Runtime) Save(ctx context.Context, item repository.Item, active bool, create bool) (repository.Item, error) {
 	tx, err := r.Store.DB.BeginTx(ctx, nil)
@@ -371,7 +384,7 @@ func (r *Runtime) Save(ctx context.Context, item repository.Item, active bool, c
  *
  * @method Relay
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (r *Runtime) Relay(ctx context.Context) error {
 	b, err := platform.OpenBus()
@@ -430,7 +443,7 @@ func (r *Runtime) Relay(ctx context.Context) error {
  * @method IndexEvent
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {[]byte} raw - Cuerpo original recibido para validar.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (r *Runtime) IndexEvent(ctx context.Context, raw []byte) error {
 	r.indexMu.Lock()

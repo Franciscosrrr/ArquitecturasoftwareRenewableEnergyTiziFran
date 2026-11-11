@@ -17,7 +17,7 @@ import (
  * Registra operaciones HTTP y aplica autorización en el adaptador del servicio.
  *
  * @method Register
- * @param {*gin.Engine} router - Valor de router requerido por la operación.
+ * @param {*gin.Engine} router - Router del servicio donde se registran las rutas y sus controles.
  * @param {string} token - Credencial técnica del servicio.
  * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
  */

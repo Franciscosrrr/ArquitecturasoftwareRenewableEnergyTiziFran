@@ -1,0 +1,19 @@
+{
+  "fecha": "2026-11-11",
+  "proveedor": "Comparador de Proveedores",
+  "contratoProveedor": "1.1.0",
+  "sha256OpenAPIProveedor": "ea3dce0265415426b282abd752147a5d9ecaac209c6d75c0b851937d35e07ee2",
+  "sha256OpenAPIClinica": "3876121082fa76cd7ca6b25defbc7edc45ea0a4a89b3ee851fcf681e446ffda3",
+  "credencialesFueraDeArchivosCompartibles": true,
+  "archivosRevisados": 83,
+  "HTTPReal": 21,
+  "navegadorReal": 14,
+  "HTTPRespaldo": 2,
+  "historialRespaldo": 3,
+  "navegadorRespaldo": 4,
+  "modoFinal": "externo",
+  "destinoRestaurado": true,
+  "conexionProveedor": "HTTP académico, excepción explícita para la IP acordada",
+  "alcanceTecnico": "450/550 W y superficies locales de referencia; precio y stock del proveedor real",
+  "publicacionGit": "Cambios locales, sin commit ni push automático"
+}

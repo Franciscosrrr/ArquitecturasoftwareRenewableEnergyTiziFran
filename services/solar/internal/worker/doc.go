@@ -1,2 +1,4 @@
-// Recuperación de pendientes, leases y reintentos, pendiente.
+/**
+ * consumer.go procesa evaluaciones con claim, deduplicación, persistencia y ACK posterior al resultado.
+ */
 package worker

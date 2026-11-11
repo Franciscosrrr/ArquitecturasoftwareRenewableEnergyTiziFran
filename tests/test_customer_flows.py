@@ -16,7 +16,7 @@ class CustomerFlows(unittest.TestCase):
          * Archiva sin versionar y elimina recursos propios conservando sus resultados previos.
          *
          * @method test_archive_delete_and_immutable_history
-         * @returns {None} Falla ante versiones artificiales, acceso ajeno o pérdida de historial.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         user,other=Client(),Client();user.account();other.account()
@@ -51,7 +51,7 @@ class CustomerFlows(unittest.TestCase):
          * Comprueba filtros solares, sincronización tras cambios y exclusión de fichas inactivas.
          *
          * @method test_solar_search_filters_and_latest_version
-         * @returns {None} Falla si Meilisearch no refleja la ficha canónica más reciente.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         admin=Client();status,session,_=admin.call('/auth/login',{'email':'admin@renewable.local','password':os.environ['ADMIN_PASSWORD']});self.assertEqual(status,200);admin.token=session['accessToken']
@@ -63,7 +63,7 @@ class CustomerFlows(unittest.TestCase):
              * Desactiva únicamente la ficha creada por este caso incluso si una aserción falla.
              *
              * @method cleanup
-             * @returns {None} Evita que una ficha de ensayo altere recomendaciones posteriores.
+             * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
              */
             """
             status,items,_=admin.call('/admin/paneles')
@@ -71,7 +71,7 @@ class CustomerFlows(unittest.TestCase):
                 current=next((p for p in items if p['id']==identifier),None)
                 if current and current['activo']:admin.call('/admin/paneles/'+identifier,{**current,'activo':False},'PUT')
         self.addCleanup(cleanup)
-        query='/publico/paneles/busqueda?'+urlencode({'q':identifier,'moneda':'ARS','potenciaMin':500,'potenciaMax':550,'superficieMax':2,'precioMax':150,'orden':'precio','tamano':1})
+        query='/publico/paneles/busqueda?'+urlencode({'q':identifier,'moneda':'ARS','potenciaMin':500,'potenciaMax':550,'superficieMax':2,'orden':'potencia','tamano':1})
         started=time.monotonic();deadline=started+8
         while True:
             status,page,headers=admin.call(query);self.assertEqual(status,200,page)

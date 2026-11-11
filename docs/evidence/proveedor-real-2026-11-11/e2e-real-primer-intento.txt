@@ -1,0 +1,99 @@
+ Container renewable-energy-entrega2-verificar-e2e-run-37cd0fb83f68 Creating 
+ Container renewable-energy-entrega2-verificar-e2e-run-37cd0fb83f68 Created 
+
+> test
+> playwright test
+
+
+Running 14 tests using 1 worker
+
+[1/14] [escritorio] › calculadora.spec.js:4:1 › catálogo real, cálculo mixto y desglose
+[2/14] [escritorio] › calculadora.spec.js:17:1 › editar invalida el resultado y recargar pierde el borrador
+[3/14] [escritorio] › calculadora.spec.js:30:1 › validación del formulario, quitar equipo y acceso sin sesión
+[4/14] [escritorio] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+[5/14] [escritorio] › paneles.spec.js:35:1 › paneles solares: filtros y ficha técnica opcional
+[6/14] [escritorio] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles
+  1) [escritorio] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Calcular consumo', exact: true })
+
+
+      13 |   await page.goto('/');
+      14 |   await page.getByLabel('Agregar un equipo').selectOption('iluminacion');
+    > 15 |   await page.getByRole('button',{name:'Calcular consumo',exact:true}).click();
+         |                                                                       ^
+      16 |   const pending=page.waitForResponse(response=>response.url().endsWith('/api/v1/publico/solar/cotizaciones'));
+      17 |   await page.getByRole('button',{name:'Cotizar paneles',exact:true}).click();
+      18 |   const response=await pending;expect(response.status()).toBe(200);
+        at providerOriginFlow (/e2e/proveedor.spec.js:15:71)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-escritorio/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-escritorio/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-escritorio/trace.zip
+    Usage:
+
+        npx playwright show-trace ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-escritorio/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[7/14] [escritorio] › solar.spec.js:30:1 › cotización comercial y consumo conservado ante fallo
+[8/14] [movil] › calculadora.spec.js:4:1 › catálogo real, cálculo mixto y desglose
+[9/14] [movil] › calculadora.spec.js:17:1 › editar invalida el resultado y recargar pierde el borrador
+[10/14] [movil] › calculadora.spec.js:30:1 › validación del formulario, quitar equipo y acceso sin sesión
+[11/14] [movil] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+[12/14] [movil] › paneles.spec.js:35:1 › paneles solares: filtros y ficha técnica opcional
+[13/14] [movil] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles
+  2) [movil] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles ────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Calcular consumo', exact: true })
+
+
+      13 |   await page.goto('/');
+      14 |   await page.getByLabel('Agregar un equipo').selectOption('iluminacion');
+    > 15 |   await page.getByRole('button',{name:'Calcular consumo',exact:true}).click();
+         |                                                                       ^
+      16 |   const pending=page.waitForResponse(response=>response.url().endsWith('/api/v1/publico/solar/cotizaciones'));
+      17 |   await page.getByRole('button',{name:'Cotizar paneles',exact:true}).click();
+      18 |   const response=await pending;expect(response.status()).toBe(200);
+        at providerOriginFlow (/e2e/proveedor.spec.js:15:71)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-movil/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-movil/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-movil/trace.zip
+    Usage:
+
+        npx playwright show-trace ../results/artefactos/proveedor-procedencia-come-5cda6--respaldo-simulado-visibles-movil/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[14/14] [movil] › solar.spec.js:30:1 › cotización comercial y consumo conservado ante fallo
+  2 failed
+    [escritorio] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles 
+    [movil] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles ─────
+  12 passed (2.0m)
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+

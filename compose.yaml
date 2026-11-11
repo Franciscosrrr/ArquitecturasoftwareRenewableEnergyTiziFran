@@ -129,6 +129,9 @@ services:
       SEARCH_URL: http://meilisearch:7700
       SEARCH_API_KEY: ${SEARCH_API_KEY:?Ejecutar scripts/compose}
       PANEL_PROVIDER_MODE: ${PANEL_PROVIDER_MODE:-simulado}
+      PANEL_PROVIDER_ALLOW_HTTP: ${PANEL_PROVIDER_ALLOW_HTTP:-false}
+      PANEL_COMPARATOR_API_KEY: ${PANEL_COMPARATOR_API_KEY:-}
+      PANEL_SIMULATOR_URL: http://proveedor-paneles-sim:8080
       PANEL_PROVIDER_URL: ${PANEL_PROVIDER_URL:-http://proveedor-paneles-sim:8080}
       PANEL_PROVIDER_API_KEY: ${PANEL_PROVIDER_API_KEY:?Ejecutar scripts/compose}
     depends_on:
@@ -293,6 +296,9 @@ services:
       SEARCH_URL: http://meilisearch:7700
       SEARCH_API_KEY: ${SEARCH_API_KEY:?Ejecutar scripts/compose}
       PANEL_PROVIDER_MODE: ${PANEL_PROVIDER_MODE:-simulado}
+      PANEL_PROVIDER_ALLOW_HTTP: ${PANEL_PROVIDER_ALLOW_HTTP:-false}
+      PANEL_COMPARATOR_API_KEY: ${PANEL_COMPARATOR_API_KEY:-}
+      PANEL_SIMULATOR_URL: http://proveedor-paneles-sim:8080
       PANEL_PROVIDER_URL: ${PANEL_PROVIDER_URL:-http://proveedor-paneles-sim:8080}
       PANEL_PROVIDER_API_KEY: ${PANEL_PROVIDER_API_KEY:?Ejecutar scripts/compose}
     depends_on:

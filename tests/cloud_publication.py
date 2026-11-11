@@ -26,7 +26,7 @@ class NoRedirect(HTTPRedirectHandler):
          * @param {str} message - Texto del estado.
          * @param {object} headers - Cabeceras recibidas.
          * @param {str} new_url - Destino que no se seguirá.
-         * @returns {None} Devuelve el estado sin transmitir otra solicitud.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         return None

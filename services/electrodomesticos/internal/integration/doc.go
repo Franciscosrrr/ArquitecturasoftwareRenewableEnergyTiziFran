@@ -1,2 +1,4 @@
-// Clientes HTTP, outbox y mensajería pendientes.
+/**
+ * El adaptador internal/features integra Meilisearch, Valkey y AMQP; aquí no se repiten sus clientes.
+ */
 package integration

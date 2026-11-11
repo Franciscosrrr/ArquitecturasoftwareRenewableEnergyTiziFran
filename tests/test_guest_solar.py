@@ -18,7 +18,7 @@ class GuestSolar(unittest.TestCase):
          * Verifica fuente manual, falta de superficie y respuesta compatible sin id de estudio.
          *
          * @method test_comparison_source_surface_zero_and_contract
-         * @returns {None} Falla si la comparación inventa cumplimiento o crea identidad de estudio.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         client=Client()

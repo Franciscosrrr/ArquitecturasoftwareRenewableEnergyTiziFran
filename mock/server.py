@@ -21,20 +21,20 @@ ERRORS = {400: 'FORMATO_INVALIDO', 401: 'NO_AUTENTICADO', 403: 'SIN_PERMISO', 41
 
 class ValidationError(ValueError):
     """/**
-     * Agrupa verificaciones del flujo ValidationError.
+     * Representa un rechazo del mock con ruta del campo y motivo público.
      *
      * @method ValidationError
-     * @returns {ValidationError} Resultado verificado de la operación.
+     * @returns {ValidationError} Tipo que agrupa el estado y las verificaciones descritas.
      */
     """
     def __init__(self, field, reason):
         """/**
-         * Inicializa el cliente de prueba con cookies y credencial aisladas.
+         * Conserva el campo y la causa de la infracción de validación.
          *
          * @method __init__
-         * @param {Any} field - Parámetro field de la operación.
-         * @param {Any} reason - Parámetro reason de la operación.
-         * @returns {Any} Resultado verificado de la operación.
+         * @param {str} field - Ruta del campo que incumple la validación.
+         * @param {str} reason - Motivo público de rechazo del campo.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.field = field[2:] if field.startswith('$.') else field
@@ -47,11 +47,11 @@ def validate(value, schema, doc, path='$'):
      * Valida un documento contra el contrato procesable y sus reglas.
      *
      * @method validate
-     * @param {Any} value - Parámetro value de la operación.
-     * @param {Any} schema - Parámetro schema de la operación.
-     * @param {Any} doc - Parámetro doc de la operación.
-     * @param {Any} path - Parámetro path de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Any} value - Valor recibido que se valida o redondea según la operación.
+     * @param {dict} schema - Esquema de la operación o variante que debe cumplir el documento.
+     * @param {dict} doc - Contrato completo utilizado para resolver sus referencias internas.
+     * @param {str} path - Ruta HTTP o JSON que identifica el recurso o campo de la operación.
+     * @returns {None} No devuelve un valor; lanza ValidationError cuando el documento no cumple el contrato.
      */
     """
     if '$ref' in schema:
@@ -107,9 +107,9 @@ def precision(value, path='$'):
      * Valida y ejecuta precision según el contrato de prueba.
      *
      * @method precision
-     * @param {Any} value - Parámetro value de la operación.
-     * @param {Any} path - Parámetro path de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Any} value - Valor recibido que se valida o redondea según la operación.
+     * @param {str} path - Ruta HTTP o JSON que identifica el recurso o campo de la operación.
+     * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
      */
     """
     if isinstance(value, Decimal) and value != value.quantize(Decimal('0.000001')):
@@ -125,8 +125,8 @@ def rounded(value):
      * Valida y ejecuta rounded según el contrato de prueba.
      *
      * @method rounded
-     * @param {Any} value - Parámetro value de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Any} value - Valor recibido que se valida o redondea según la operación.
+     * @returns {float} Salida numérica del mock redondeada a seis decimales, mitad hacia arriba.
      */
     """
     return float(Decimal(value).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP))
@@ -134,12 +134,12 @@ def rounded(value):
 
 def consumo(data, trace):
     """/**
-     * Valida y ejecuta consumo según el contrato de prueba.
+     * Calcula el consumo ilustrativo por potencia o ciclos y redondea al construir la respuesta.
      *
      * @method consumo
-     * @param {Any} data - Parámetro data de la operación.
-     * @param {Any} trace - Parámetro trace de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Any} data - Datos estructurados que se validan o registran sin credenciales.
+     * @param {str} trace - Identificador de correlación que acompaña el error o la respuesta.
+     * @returns {dict} Respuesta del mock con desglose, total y promedio diario calculados con Decimal.
      */
     """
     seen, rows, total = set(), [], Decimal(0)
@@ -158,12 +158,12 @@ def consumo(data, trace):
 
 def solar(data, trace):
     """/**
-     * Valida y ejecuta solar según el contrato de prueba.
+     * Dimensiona la alternativa ilustrativa del mock con supuestos manuales, sin contactar un proveedor real.
      *
      * @method solar
-     * @param {Any} data - Parámetro data de la operación.
-     * @param {Any} trace - Parámetro trace de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {Any} data - Datos estructurados que se validan o registran sin credenciales.
+     * @param {str} trace - Identificador de correlación que acompaña el error o la respuesta.
+     * @returns {dict|None} Comparación solar ilustrativa o None cuando no hay fuente por ubicación disponible.
      */
     """
     recurso = data['recursoSolar']
@@ -181,31 +181,31 @@ def solar(data, trace):
 
 class Limiter:
     """/**
-     * Agrupa verificaciones del flujo Limiter.
+     * Mantiene token buckets por identidad y sincroniza su acceso concurrente en el mock.
      *
      * @method Limiter
-     * @returns {Limiter} Resultado verificado de la operación.
+     * @returns {Limiter} Tipo que agrupa el estado y las verificaciones descritas.
      */
     """
     def __init__(self):
         """/**
-         * Inicializa el cliente de prueba con cookies y credencial aisladas.
+         * Inicializa reposición, capacidad de ráfaga, buckets y bloqueo del limitador.
          *
          * @method __init__
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.entries, self.lock = {}, threading.Lock()
 
     def allow(self, key, capacity, rate):
         """/**
-         * Valida y ejecuta allow según el contrato de prueba.
+         * Repone tokens de la identidad y consume uno si la solicitud cumple la cuota.
          *
          * @method allow
-         * @param {Any} key - Parámetro key de la operación.
-         * @param {Any} capacity - Parámetro capacity de la operación.
-         * @param {Any} rate - Parámetro rate de la operación.
-         * @returns {Any} Resultado verificado de la operación.
+         * @param {str|None} key - Identidad o credencial utilizada por esta operación de prueba.
+         * @param {int} capacity - Máximo de tokens que admite la ráfaga del limitador.
+         * @param {float} rate - Reposición de tokens por segundo y por identidad.
+         * @returns {bool} Indica si hay tokens disponibles para aceptar la solicitud.
          */
         """
         now = time.monotonic()
@@ -220,34 +220,34 @@ class Limiter:
 
 class Handler(BaseHTTPRequestHandler):
     """/**
-     * Agrupa verificaciones del flujo Handler.
+     * Atiende las rutas del mock histórico con validación, autenticación, cuotas y salud protegida.
      *
      * @method Handler
-     * @returns {Handler} Resultado verificado de la operación.
+     * @returns {Handler} Tipo que agrupa el estado y las verificaciones descritas.
      */
     """
     limiter = Limiter()
 
     def log_message(self, *_):
         """/**
-         * Valida y ejecuta log message según el contrato de prueba.
+         * Suprime el log HTTP predeterminado para mantener legible la salida de pruebas.
          *
          * @method log_message
-         * @param {Any} _ - Parámetro de la operación.
-         * @returns {Any} Resultado verificado de la operación.
+         * @param {Any} _ - Argumentos de logging del servidor que se ignoran deliberadamente.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         pass  # No cuerpos, IP, credenciales ni query strings.
 
     def send_json(self, code, body, trace=None):
         """/**
-         * Valida y ejecuta send json según el contrato de prueba.
+         * Escribe JSON y cabeceras del mock, respetando las respuestas sin cuerpo de HEAD.
          *
          * @method send_json
-         * @param {Any} code - Parámetro code de la operación.
-         * @param {Any} body - Parámetro body de la operación.
-         * @param {Any} trace - Parámetro trace de la operación.
-         * @returns {Any} Resultado verificado de la operación.
+         * @param {int} code - Estado HTTP que se envía o espera en la respuesta.
+         * @param {dict|None} body - Cuerpo de respuesta que se serializa como JSON.
+         * @param {str} trace - Identificador de correlación que acompaña el error o la respuesta.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         raw = json.dumps(body, ensure_ascii=False, allow_nan=False).encode('utf-8')
@@ -265,24 +265,24 @@ class Handler(BaseHTTPRequestHandler):
 
     def error(self, code, trace, message=None, details=None):
         """/**
-         * Valida y ejecuta error según el contrato de prueba.
+         * Escribe el error del contrato con código, mensaje, correlación y detalles opcionales.
          *
          * @method error
-         * @param {Any} code - Parámetro code de la operación.
-         * @param {Any} trace - Parámetro trace de la operación.
-         * @param {Any} message - Parámetro message de la operación.
-         * @param {Any} details - Parámetro details de la operación.
-         * @returns {Any} Resultado verificado de la operación.
+         * @param {int} code - Estado HTTP que se envía o espera en la respuesta.
+         * @param {str} trace - Identificador de correlación que acompaña el error o la respuesta.
+         * @param {str} message - Descripción pública del error o del registro de prueba.
+         * @param {list|None} details - Detalle opcional de campos rechazados en el error público.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.send_json(code, dict(codigo=ERRORS[code], mensaje=message or ERRORS[code], traceId=trace, detalles=details or []), trace)
 
     def do_GET(self):
         """/**
-         * Valida y ejecuta do GET según el contrato de prueba.
+         * Responde la salud protegida y rechaza rutas GET ajenas al mock.
          *
          * @method do_GET
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} Escribe la respuesta HTTP de salud o ruta desconocida.
          */
         """
         if self.path.startswith('/health/'):
@@ -297,20 +297,20 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_HEAD(self):
         """/**
-         * Valida y ejecuta do HEAD según el contrato de prueba.
+         * Reutiliza la respuesta de salud sin enviar un cuerpo HTTP.
          *
          * @method do_HEAD
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.do_GET()
 
     def do_POST(self):
         """/**
-         * Valida y ejecuta do POST según el contrato de prueba.
+         * Valida framing, credenciales, cuota y esquema antes de ejecutar consumo o comparación ilustrativa.
          *
          * @method do_POST
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} Valida la solicitud y escribe un resultado o error del contrato del mock.
          */
         """
         trace = self.headers.get('X-Request-Id') or str(uuid.uuid4())
@@ -359,13 +359,13 @@ class Handler(BaseHTTPRequestHandler):
 
 def create_server(host='127.0.0.1', port=8080, healthcheck_token=None):
     """/**
-     * Valida y ejecuta create server según el contrato de prueba.
+     * Configura el servidor HTTP del mock y exige una credencial operativa válida antes de escuchar.
      *
      * @method create_server
-     * @param {Any} host - Parámetro host de la operación.
-     * @param {Any} port - Parámetro port de la operación.
-     * @param {Any} healthcheck_token - Parámetro healthcheck_token de la operación.
-     * @returns {Any} Resultado verificado de la operación.
+     * @param {str} host - Dirección de escucha del servidor de prueba.
+     * @param {int} port - Puerto de escucha del servidor de prueba.
+     * @param {str} healthcheck_token - Credencial operativa de prueba que protege la consulta de salud.
+     * @returns {ThreadingHTTPServer} Servidor de prueba configurado con credencial operativa y limitadores.
      */
     """
     token = os.getenv('HEALTHCHECK_TOKEN', '') if healthcheck_token is None else healthcheck_token

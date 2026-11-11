@@ -15,6 +15,12 @@ import (
 
 var ErrUnavailable = errors.New("catálogo no disponible")
 
+/**
+ * Resuelve lotes del catálogo por HTTP con credencial interna, timeout y circuito.
+ *
+ * @method Catalog
+ * @returns {Catalog} Representación tipada usada por este componente.
+ */
 type Catalog struct {
 	URL, Token string
 	Client     *http.Client
@@ -28,9 +34,9 @@ type Catalog struct {
  * Construye el resolver HTTP autenticado con timeout y circuito de catálogo.
  *
  * @method NewCatalog
- * @param {string} url - Valor de url requerido por la operación.
+ * @param {string} url - URL interna del servicio de catálogo.
  * @param {string} token - Credencial técnica del servicio.
- * @returns {*Catalog} Resultado de la operación; error si no puede completarse.
+ * @returns {*Catalog} Cliente de catálogo con timeout, circuito y credencial interna.
  */
 func NewCatalog(url, token string) *Catalog {
 	return &Catalog{URL: url, Token: token, Client: platform.Client(2 * time.Second)}
@@ -42,8 +48,8 @@ func NewCatalog(url, token string) *Catalog {
  *
  * @method Resolve
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {[]string} ids - Valor de ids requerido por la operación.
- * @returns {[]application.Ficha, error} Resultado de la operación; error si no puede completarse.
+ * @param {[]string} ids - Identificadores únicos de las fichas a recuperar en lote.
+ * @returns {[]application.Ficha, error} Fichas activas solicitadas o error de validación, ausencia o dependencia.
  */
 func (c *Catalog) Resolve(ctx context.Context, ids []string) ([]application.Ficha, error) {
 	c.mu.Lock()

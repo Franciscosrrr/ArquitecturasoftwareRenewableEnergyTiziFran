@@ -93,14 +93,24 @@ type Consumption struct {
  * Representa una cotización comercial; no reserva ni compra paneles.
  */
 type Quote struct {
-	ID         string `json:"cotizacionId"`
-	SKU        string `json:"sku"`
-	PanelWatts int64  `json:"potenciaPanelW"`
-	Quantity   int64  `json:"cantidad"`
-	Stock      int64  `json:"stockDisponible"`
-	UnitCents  int64  `json:"precioUnitarioCentavos"`
-	TotalCents int64  `json:"totalCentavos"`
-	Currency   string `json:"moneda"`
+	ID              string        `json:"cotizacionId"`
+	SKU             string        `json:"sku"`
+	PanelWatts      int64         `json:"potenciaPanelW"`
+	Quantity        int64         `json:"cantidad"`
+	Stock           int64         `json:"stockDisponible"`
+	UnitCents       int64         `json:"precioUnitarioCentavos"`
+	TotalCents      int64         `json:"totalCentavos"`
+	Currency        string        `json:"moneda"`
+	Source          string        `json:"origen,omitempty"`
+	FallbackReason  string        `json:"motivoSimulacion,omitempty"`
+	ProviderSKU     string        `json:"skuProveedor,omitempty"`
+	ProviderID      int64         `json:"proveedorId,omitempty"`
+	ProviderName    string        `json:"proveedorNombre,omitempty"`
+	RequestID       string        `json:"referenciaProveedor,omitempty"`
+	FreightCents    int64         `json:"fleteCentavos,omitempty"`
+	Discount        DecimalNumber `json:"descuentoPorcentaje,omitempty"`
+	DiscountApplied bool          `json:"descuentoAplicado,omitempty"`
+	ConsultedAt     string        `json:"consultadoEn,omitempty"`
 }
 
 /**
@@ -139,6 +149,9 @@ func TargetWatts(daily, sun, yield json.Number) (int64, error) {
  * @returns {error} Incompatibilidad, falta de stock o nil.
  */
 func (q Quote) Validate(target int64) error {
+	if q.Source == "externo" {
+		return q.validateCommercial(target)
+	}
 	if q.ID == "" || len(q.ID) > 64 || q.SKU == "" || len(q.SKU) > 64 || q.PanelWatts < 1 || q.PanelWatts > 2000 || q.Quantity < 1 || q.Quantity > 1000 || q.Stock < 0 || q.Stock > 1000000 || q.UnitCents < 1 || q.UnitCents > 1000000000 || q.TotalCents != q.UnitCents*q.Quantity || q.Currency != "ARS" || q.Quantity != (target+q.PanelWatts-1)/q.PanelWatts {
 		return ErrContract
 	}

@@ -99,6 +99,12 @@ func Init(service string) func() {
  */
 func TraceID(ctx context.Context) string { return trace.SpanContextFromContext(ctx).TraceID().String() }
 
+/**
+ * Distingue la correlación HTTP dentro del contexto sin colisiones con otras claves.
+ *
+ * @method requestIDKey
+ * @returns {requestIDKey} Representación tipada usada por este componente.
+ */
 type requestIDKey struct{}
 
 /**
@@ -268,6 +274,12 @@ func Client(timeout time.Duration) *http.Client {
 
 var sharedTransport = otelhttp.NewTransport(&http.Transport{Proxy: http.ProxyFromEnvironment, DialContext: (&net.Dialer{Timeout: 500 * time.Millisecond, KeepAlive: 30 * time.Second}).DialContext, MaxIdleConns: 100, MaxIdleConnsPerHost: 10, IdleConnTimeout: 60 * time.Second, ResponseHeaderTimeout: 2 * time.Second})
 
+/**
+ * Conserva tokens y última reposición de una identidad del limitador en memoria.
+ *
+ * @method bucket
+ * @returns {bucket} Representación tipada usada por este componente.
+ */
 type bucket struct {
 	tokens float64
 	last   time.Time
@@ -350,9 +362,9 @@ func JSON(w http.ResponseWriter, status int, v any) {
  * Construye una cuota local con reposición por segundo y ráfaga explícitas.
  *
  * @method NewRateLimiter
- * @param {float64} rate - Valor de rate requerido por la operación.
- * @param {int} burst - Valor de burst requerido por la operación.
- * @returns {*Limiter} Resultado de la operación; error si no puede completarse.
+ * @param {float64} rate - Tokens repuestos por segundo para cada identidad.
+ * @param {int} burst - Capacidad máxima de tokens disponibles en una ráfaga.
+ * @returns {*Limiter} Limitador local por identidad con reposición y ráfaga configuradas.
  */
 func NewRateLimiter(rate float64, burst int) *Limiter {
 	if rate <= 0 || burst < 1 {

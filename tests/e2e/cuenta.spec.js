@@ -42,11 +42,11 @@ async function durableAccountFlow({page},testInfo){
  await expect(account.getByRole('combobox',{name:'Lugar',exact:true}).locator('option:checked')).toHaveText('Hospital demo');
  await location.locator('summary').first().click();
  await saved.getByRole('button',{name:'Calcular paneles',exact:true}).click();
- await expect(account.getByRole('status')).toContainText('Estamos calculando tus paneles');
+ await expect(account.locator('.notice')).toContainText('Estamos calculando tus paneles');
  const evaluation=account.locator('details').filter({has:page.locator('summary').filter({hasText:/configuración v1/})}).first();
  await evaluation.locator('summary').first().click();
  await expect(evaluation).toContainText('Listo',{timeout:25000});
- await expect(evaluation).toContainText('Oferta del vendedor simulado');
+ await expect(evaluation.locator('.commercial-offer')).toContainText(/Oferta del proveedor:|Oferta simulada:/);
  await saved.getByRole('button',{name:'Abrir para editar',exact:true}).click();
  await page.locator('.equipment').getByLabel('Cantidad',{exact:true}).fill('2');
  await account.getByRole('button',{name:'Guardar cambios',exact:true}).click();

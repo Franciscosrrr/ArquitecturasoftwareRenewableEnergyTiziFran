@@ -25,9 +25,11 @@ flowchart TB
  E --> V["Valkey<br/>Cache-aside · TTL 60 s"]
  S1 --> MD[("MongoDB solar_db<br/>Paneles / pendientes de índice<br/>Estudios / deduplicación")]
  S2 --> MD
- S1 -->|"HTTP directo · timeout 1 s"| P["Vendedor SIMULADO<br/>Stock y cotización por SKU"]
- S2 --> P
+ S1 -. "Respaldo explícito ante fallo" .-> F["Vendedor SIMULADO local<br/>Precio y stock de ejemplo"]
+ S2 -.-> F
  end
+ S1 -->|"GET SKU/cantidad · X-API-Key · timeout 1 s"| P["Comparador de Proveedores real<br/>HTTP académico · Azure<br/>Precio, stock, flete y descuento"]
+ S2 --> P
  OBS["Observabilidad en red backend:<br/>Prometheus :9090 · Grafana :3000<br/>Loki · Jaeger :16686<br/>Métricas protegidas / logs JSON / trazas W3C"]
  G -. "Servicios emiten telemetría" .-> OBS
  NOTE["Puertos de host solo en 127.0.0.1.<br/>Cada servicio usa únicamente su base.<br/>Cotizar no reserva ni compra.<br/>HTTPS público usa un despliegue aislado."]

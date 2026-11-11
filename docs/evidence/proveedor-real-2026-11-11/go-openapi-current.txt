@@ -1,0 +1,3 @@
+ Container renewable-energy-entrega2-verificar-go-run-c6bc3ac182fa Creating 
+ Container renewable-energy-entrega2-verificar-go-run-c6bc3ac182fa Created 
+ok  	renewable.local/solar/internal/adapters/external	0.008s

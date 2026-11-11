@@ -14,6 +14,12 @@ var ErrConflict = errors.New("conflicto de versión o idempotencia")
 var ErrNotFound = errors.New("recurso inexistente")
 var ErrPlaceInUse = errors.New("el lugar tiene consumos guardados")
 
+/**
+ * Representa un lugar propio, su superficie opcional y su versión de contenido.
+ *
+ * @method Place
+ * @returns {Place} Representación tipada usada por este componente.
+ */
 type Place struct {
 	ID       string   `json:"id"`
 	Name     string   `json:"nombre"`
@@ -22,6 +28,13 @@ type Place struct {
 	Version  int64    `json:"version"`
 	Archived bool     `json:"archivado"`
 }
+
+/**
+ * Conserva un consumo propio con entrada, snapshot, lugar, archivo y versión de contenido.
+ *
+ * @method Config
+ * @returns {Config} Representación tipada usada por este componente.
+ */
 type Config struct {
 	ID       string          `json:"id"`
 	PlaceID  string          `json:"lugarId"`
@@ -31,6 +44,13 @@ type Config struct {
 	Snapshot json.RawMessage `json:"snapshot"`
 	Archived bool            `json:"archivada"`
 }
+
+/**
+ * Conserva una evaluación inmutable y las referencias a sus estudios y publicación.
+ *
+ * @method Evaluation
+ * @returns {Evaluation} Representación tipada usada por este componente.
+ */
 type Evaluation struct {
 	ID           string          `json:"id"`
 	ConfigID     string          `json:"configuracionId"`
@@ -40,12 +60,26 @@ type Evaluation struct {
 	Studies      []string        `json:"estudioIds"`
 	Publication  string          `json:"publicacion"`
 }
+
+/**
+ * Expresa HSP manuales, rendimiento, cobertura y superficie con precisión decimal.
+ *
+ * @method SolarOptions
+ * @returns {SolarOptions} Representación tipada usada por este componente.
+ */
 type SolarOptions struct {
 	Sun      float64  `json:"horasSolPico"`
 	Yield    float64  `json:"factorRendimiento"`
 	Coverage float64  `json:"coberturaObjetivo"`
 	Area     *float64 `json:"superficieM2"`
 }
+
+/**
+ * Transporta el evento de evaluación con propietario, snapshot, supuestos y correlación.
+ *
+ * @method Event
+ * @returns {Event} Representación tipada usada por este componente.
+ */
 type Event struct {
 	ID           string          `json:"eventId"`
 	Type         string          `json:"tipo"`
@@ -57,6 +91,13 @@ type Event struct {
 	Traceparent  string          `json:"traceparent"`
 	RequestID    string          `json:"requestId"`
 }
+
+/**
+ * Administra SQL privado de lugares, consumos, evaluaciones, idempotencia y outbox.
+ *
+ * @method Store
+ * @returns {Store} Representación tipada usada por este componente.
+ */
 type Store struct{ DB *sql.DB }
 
 /**
@@ -64,7 +105,7 @@ type Store struct{ DB *sql.DB }
  *
  * @method Migrate
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Migrate(ctx context.Context) error {
 	for _, q := range []string{
@@ -119,7 +160,7 @@ func (s *Store) Migrate(ctx context.Context) error {
  * @method Places
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
- * @returns {[]Place, error} Resultado de la operación; error si no puede completarse.
+ * @returns {[]Place, error} Lugares no eliminados del propietario o error de lectura SQL.
  */
 func (s *Store) Places(ctx context.Context, owner string) ([]Place, error) {
 	rows, err := s.DB.QueryContext(ctx, "SELECT id,nombre,ubicacion,superficie,version,archivado FROM lugares WHERE owner_id=? AND eliminado_at IS NULL ORDER BY nombre,id", owner)
@@ -145,7 +186,7 @@ func (s *Store) Places(ctx context.Context, owner string) ([]Place, error) {
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {string} id - Identificador del recurso solicitado.
- * @returns {Place, error} Resultado de la operación; error si no puede completarse.
+ * @returns {Place, error} Lugar propio o error cuando no existe o falla la consulta.
  */
 func (s *Store) Place(ctx context.Context, owner, id string) (Place, error) {
 	var p Place
@@ -163,7 +204,7 @@ func (s *Store) Place(ctx context.Context, owner, id string) (Place, error) {
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {Place} p - Lugar o panel a persistir con su versión.
- * @returns {Place, error} Resultado de la operación; error si no puede completarse.
+ * @returns {Place, error} Lugar persistido con su nueva versión o error de validación/conflicto/SQL.
  */
 func (s *Store) SavePlace(ctx context.Context, owner string, p Place) (Place, error) {
 	if p.ID == "" {
@@ -191,7 +232,7 @@ func (s *Store) SavePlace(ctx context.Context, owner string, p Place) (Place, er
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {string} id - Identificador del recurso solicitado.
- * @returns {Config, error} Resultado de la operación; error si no puede completarse.
+ * @returns {Config, error} Consumo propio con su entrada y snapshot, o error de ausencia o consulta SQL.
  */
 func (s *Store) Config(ctx context.Context, owner, id string) (Config, error) {
 	var c Config
@@ -208,7 +249,7 @@ func (s *Store) Config(ctx context.Context, owner, id string) (Config, error) {
  * @method Configs
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
- * @returns {[]Config, error} Resultado de la operación; error si no puede completarse.
+ * @returns {[]Config, error} Consumos no eliminados del propietario o error de lectura SQL.
  */
 func (s *Store) Configs(ctx context.Context, owner string) ([]Config, error) {
 	rows, err := s.DB.QueryContext(ctx, "SELECT id,lugar_id,nombre,version,entrada,snapshot,archivada FROM configuraciones WHERE owner_id=? AND eliminado_at IS NULL ORDER BY nombre,id", owner)
@@ -233,8 +274,8 @@ func (s *Store) Configs(ctx context.Context, owner string) ([]Config, error) {
  * @method SaveConfig
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
- * @param {Config} c - Solicitud HTTP en curso.
- * @returns {Config, error} Resultado de la operación; error si no puede completarse.
+ * @param {Config} c - Configuración propia cuya versión se confirma junto con la evaluación.
+ * @returns {Config, error} Consumo guardado con su versión y snapshot o error de validación, conflicto o SQL.
  */
 func (s *Store) SaveConfig(ctx context.Context, owner string, c Config) (Config, error) {
 	tx, err := s.DB.BeginTx(ctx, nil)
@@ -274,7 +315,7 @@ func (s *Store) SaveConfig(ctx context.Context, owner string, c Config) (Config,
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {string} id - Identificador del recurso solicitado.
- * @returns {Evaluation, error} Resultado de la operación; error si no puede completarse.
+ * @returns {Evaluation, error} Evaluación inmutable y referencias de estudio, o error de propiedad/lectura.
  */
 func (s *Store) Evaluation(ctx context.Context, owner, id string) (Evaluation, error) {
 	var e Evaluation
@@ -316,8 +357,8 @@ func (s *Store) Evaluation(ctx context.Context, owner, id string) (Evaluation, e
  * @method History
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
  * @param {string} owner - Identificador del propietario autenticado.
- * @param {string} config - Valor de config requerido por la operación.
- * @returns {[]Evaluation, error} Resultado de la operación; error si no puede completarse.
+ * @param {string} config - Configuración propia ya validada que se usa para construir el snapshot o el efecto.
+ * @returns {[]Evaluation, error} Evaluaciones propias con versiones históricas y estudios asociados, o error SQL.
  */
 func (s *Store) History(ctx context.Context, owner, config string) ([]Evaluation, error) {
 	query := "SELECT id FROM evaluaciones WHERE owner_id=?"
@@ -359,7 +400,7 @@ func (s *Store) History(ctx context.Context, owner, config string) ([]Evaluation
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {string} key - Clave de idempotencia o identidad técnica.
  * @param {string} hash - Huella de la entrada canónica.
- * @returns {string, error} Resultado de la operación; error si no puede completarse.
+ * @returns {string, error} Identidad del efecto ya confirmado o error si la misma clave tiene otro contenido.
  */
 func (s *Store) Existing(ctx context.Context, owner, key, hash string) (string, error) {
 	var previous, id string
@@ -384,10 +425,10 @@ func (s *Store) Existing(ctx context.Context, owner, key, hash string) (string, 
  * @param {string} owner - Identificador del propietario autenticado.
  * @param {string} key - Clave de idempotencia o identidad técnica.
  * @param {string} hash - Huella de la entrada canónica.
- * @param {Config} c - Solicitud HTTP en curso.
- * @param {int64} placeVersion - Valor de placeVersion requerido por la operación.
+ * @param {Config} c - Configuración propia cuya versión se confirma junto con la evaluación.
+ * @param {int64} placeVersion - Versión esperada del lugar que debe coincidir al confirmar.
  * @param {Event} event - Evento de negocio que debe procesarse.
- * @returns {string, error} Resultado de la operación; error si no puede completarse.
+ * @returns {string, error} Identificador de evaluación confirmada atómicamente o error de versión, idempotencia o SQL.
  */
 func (s *Store) Confirm(ctx context.Context, owner, key, hash string, c Config, placeVersion int64, event Event) (string, error) {
 	tx, err := s.DB.BeginTx(ctx, nil)
@@ -473,7 +514,7 @@ func (s *Store) Confirm(ctx context.Context, owner, key, hash string, c Config, 
  * @param {string} id - Identificador del recurso solicitado.
  * @param {string} key - Clave de idempotencia o identidad técnica.
  * @param {Event} event - Evento de negocio que debe procesarse.
- * @returns {string, error} Resultado de la operación; error si no puede completarse.
+ * @returns {string, error} Identificador del estudio nuevo o existente para esa clave; error de idempotencia o SQL.
  */
 func (s *Store) AddStudy(ctx context.Context, owner, id, key string, event Event) (string, error) {
 	e, err := s.Evaluation(ctx, owner, id)
@@ -517,7 +558,7 @@ func (s *Store) AddStudy(ctx context.Context, owner, id, key string, event Event
  *
  * @method Relay
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @returns {error} Resultado de la operación; error si no puede completarse.
+ * @returns {error} nil al completar la operación; error propagado al llamador si no se completa.
  */
 func (s *Store) Relay(ctx context.Context) error {
 	b, err := platform.OpenBus()

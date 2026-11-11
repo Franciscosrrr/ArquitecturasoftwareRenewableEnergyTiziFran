@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import CommercialOffer from './CommercialOffer';
 
 /**
  * Cotiza paneles para el escenario calculado y conserva el consumo ante errores.
@@ -62,11 +63,9 @@ export default function SolarQuote({consumo}) {
     </form>
     {error && <p className="error" role="alert">{error}</p>}
     {quote && <div aria-live="polite">
-      {quote.modoProveedor === 'simulado' && <p><strong>Oferta simulada: stock y precios didácticos.</strong></p>}
-      <p>{quote.cotizacion.cantidad} {quote.cotizacion.cantidad === 1 ? 'panel' : 'paneles'} de {quote.cotizacion.potenciaPanelW} W · Stock informado: {quote.cotizacion.stockDisponible}</p>
-      <p>Importe de paneles: {new Intl.NumberFormat('es-AR', {style:'currency', currency:quote.cotizacion.moneda}).format(quote.cotizacion.totalCentavos / 100)}</p>
+      <CommercialOffer quote={quote.cotizacion}/>
       <p>Potencia objetivo: {quote.potenciaObjetivoW} W. No incluye instalación, inversor ni baterías; no reemplaza un estudio técnico.</p>
-      <details><summary>Ver ficha de la cotización</summary><p className="trace">Cotización: {quote.cotizacion.cotizacionId} · Referencia de consulta: {quote.traceId}</p></details>
+      <details><summary>Ver referencia del cálculo</summary><p className="trace">Referencia de consulta: {quote.traceId}</p></details>
     </div>}
   </section>;
 }

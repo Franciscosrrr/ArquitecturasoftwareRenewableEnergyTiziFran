@@ -11,11 +11,24 @@ import (
 	"unicode/utf8"
 )
 
+/**
+ * Expresa texto y límites de potencia, área y precio para buscar paneles.
+ *
+ * @method Query
+ * @returns {Query} Representación tipada usada por este componente.
+ */
 type Query struct {
 	Text, Currency, Order                      string
 	Page, Size                                 int
 	MinWatts, MaxWatts, MaxAreaMilli, MaxCents *int64
 }
+
+/**
+ * Devuelve las fichas solares visibles y el total de coincidencias de la consulta.
+ *
+ * @method Page
+ * @returns {Page} Representación tipada usada por este componente.
+ */
 type Page struct {
 	Items []domain.Panel `json:"items"`
 	Total int            `json:"total"`

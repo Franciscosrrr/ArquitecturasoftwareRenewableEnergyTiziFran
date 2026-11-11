@@ -17,6 +17,12 @@ import (
 	"time"
 )
 
+/**
+ * Sincroniza y consulta el índice solar derivado, con respaldo en MongoDB.
+ *
+ * @method Runtime
+ * @returns {Runtime} Representación tipada usada por este componente.
+ */
 type Runtime struct {
 	Store    *persistence.Store
 	HTTP     *http.Client

@@ -14,6 +14,7 @@ import (
 	"renewable.local/platform"
 	"renewable.local/solar/internal/adapters/persistence"
 	"renewable.local/solar/internal/adapters/search"
+	"renewable.local/solar/internal/application"
 	"renewable.local/solar/internal/domain"
 	"renewable.local/solar/internal/worker"
 	"strings"
@@ -25,11 +26,12 @@ import (
  *
  * @method registerPrivate
  * @param {*gin.Engine} r - Router o receptor de operaciones HTTP.
- * @param {*persistence.Store} store - Valor de store requerido por la operación.
+ * @param {*persistence.Store} store - Repositorio canónico del componente, que conserva la propiedad de sus datos.
  * @param {string} token - Credencial técnica del servicio.
+ * @param {...application.ModelSupplier} suppliers - Fuentes comerciales del recorrido público.
  * @returns {void} Completa la operación o señala el fallo por el mecanismo del adaptador.
  */
-func registerPrivate(r *gin.Engine, store *persistence.Store, token string) {
+func registerPrivate(r *gin.Engine, store *persistence.Store, token string, suppliers ...application.ModelSupplier) {
 	panelSearch := search.New(store)
 	go panelSearch.Run(context.Background())
 	r.GET("/api/v1/publico/paneles/busqueda", func(c *gin.Context) {
@@ -38,7 +40,9 @@ func registerPrivate(r *gin.Engine, store *persistence.Store, token string) {
 			platform.Error(c, 422, "VALIDACION", err.Error(), nil)
 			return
 		}
-		page, source, err := panelSearch.List(c.Request.Context(), query)
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+		defer cancel()
+		page, source, err := pricedCatalog(ctx, panelSearch, query, suppliers)
 		if err != nil {
 			platform.Error(c, 503, "SERVICIO_NO_DISPONIBLE", "No pudimos consultar los paneles. Volvé a intentar.", nil)
 			return
@@ -48,6 +52,11 @@ func registerPrivate(r *gin.Engine, store *persistence.Store, token string) {
 	})
 	r.GET("/api/v1/publico/paneles", func(c *gin.Context) {
 		items, err := store.Panels(c.Request.Context(), false)
+		if err == nil && len(suppliers) > 0 {
+			if pricer, ok := suppliers[0].(panelPricer); ok {
+				items, err = pricer.PricePanels(c.Request.Context(), items)
+			}
+		}
 		if err != nil {
 			platform.Error(c, 503, "SERVICIO_NO_DISPONIBLE", "Paneles no disponibles.", nil)
 			return
@@ -253,7 +262,16 @@ func registerPrivate(r *gin.Engine, store *persistence.Store, token string) {
 			return
 		}
 		result, err := domain.Recommend(json.Number(input.Daily), domain.StudyOptions{Sun: input.Resource.HSP, Yield: input.Yield, Coverage: input.Coverage, Area: input.Area}, panels)
+		if len(suppliers) > 0 {
+			ctx, cancel := context.WithTimeout(c.Request.Context(), 4*time.Second)
+			defer cancel()
+			result, err = application.RunStudy(ctx, json.Number(input.Daily), domain.StudyOptions{Sun: input.Resource.HSP, Yield: input.Yield, Coverage: input.Coverage, Area: input.Area}, panels, suppliers[0])
+		}
 		if err != nil {
+			if !errors.Is(err, domain.ErrValidation) {
+				platform.Error(c, 503, "SERVICIO_NO_DISPONIBLE", "No pudimos consultar las ofertas ni su respaldo simulado.", nil)
+				return
+			}
 			platform.Error(c, 422, "VALIDACION", "Supuestos o dimensionamiento fuera de rango.", nil)
 			return
 		}
@@ -265,6 +283,10 @@ func registerPrivate(r *gin.Engine, store *persistence.Store, token string) {
 		for _, a := range result.Candidates {
 			items = append(items, gin.H{"panelId": a.Panel.ID, "modelo": a.Panel.Name, "versionFicha": a.Panel.Version, "cantidad": a.Quantity, "generacionDiariaKWh": a.Generation, "coberturaAlcanzada": a.Coverage, "superficieRequeridaM2": a.Area, "cumpleObjetivo": a.Feasible})
 		}
-		c.JSON(200, gin.H{"estado": result.Status, "versionAlgoritmo": "solar-v1", "alternativas": items, "totalAlternativas": total, "alternativasTruncadas": total > 20, "criterioSeleccion": result.Criteria, "fuenteRecurso": "Manual: " + input.Resource.Source, "hsp": json.Number(input.Resource.HSP), "supuestos": []string{result.Note, "Precios de catálogo referenciales, sin incluir instalación ni baterías.", "Orientación e inclinación no verificadas; superficie efectiva incluye reserva didáctica de disposición."}, "traceId": platform.TraceID(c.Request.Context())})
+		payload := gin.H{"estado": result.Status, "versionAlgoritmo": "solar-v1", "alternativas": items, "totalAlternativas": total, "alternativasTruncadas": total > 20, "criterioSeleccion": result.Criteria, "fuenteRecurso": "Manual: " + input.Resource.Source, "hsp": json.Number(input.Resource.HSP), "supuestos": []string{result.Note, "Las ofertas no incluyen instalación, inversor ni baterías.", "Orientación e inclinación no verificadas; superficie efectiva incluye reserva didáctica de disposición."}, "traceId": platform.TraceID(c.Request.Context())}
+		if result.Quote != nil {
+			payload["cotizacion"] = result.Quote
+		}
+		c.JSON(200, payload)
 	})
 }

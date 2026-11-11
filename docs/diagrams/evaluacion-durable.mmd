@@ -10,7 +10,8 @@ sequenceDiagram
  participant B as RabbitMQ
  participant S as Solar worker
  participant M as MongoDB Solar
- participant P as Vendedor simulado
+ participant P as Comparador real
+ participant F as Simulador local
  Usuario->>G: Confirmar versiones + Idempotency-Key
  G->>I: Validar sesión y rol actual
  I-->>G: Propietario autenticado
@@ -26,12 +27,17 @@ sequenceDiagram
  end
  B->>S: Entrega con prefetch 1 y ACK manual
  S->>M: Deduplicar y adquirir lease
- S->>P: Consultar oferta del candidato factible
- P-->>S: Modelo / cantidad / stock / precio
- S->>M: Guardar resultado con journaling
+ S->>P: GET SKU y cantidad / X-API-Key
+ alt Respuesta válida
+ P-->>S: Ofertas con stock, flete y descuento / o lista vacía
+ else Fallo técnico o contrato incompatible
+ S->>F: Recalcular todas las alternativas con respaldo
+ F-->>S: Ofertas simuladas identificadas
+ end
+ S->>M: Guardar resultado y origen comercial con journaling
  S->>B: ACK
  Usuario->>G: Consultar estudio propio
  G->>S: Propietario validado
  S->>M: Filtrar por id y propietario
  M-->>Usuario: Estado y alternativas congeladas
- Note over B,S: Falla transitoria con retry 1/5/30 s. Incompatible o agotado a DLQ
+ Note over B,S: Fallas de infraestructura con retry 1/5/30 s. Evento incompatible o agotado a DLQ

@@ -1,6 +1,6 @@
 # Capacidad pública: estimación de consumo
 
-Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado vigente 2026-11-09: implementación real Go desplegada en Render Free, https://renewable-consumo-v1.onrender.com, con contrato congelado y credenciales propias; el túnel temporal de la PC sigue como alternativa. El mock histórico sigue disponible por separado.
+Proyecto: ArquitecturasoftwareRenewableEnergy. Proveedor: servicio Consumo, publicado a través del gateway. Contrato 1.0.1; ruta mayor /v1. Estado vigente 2026-11-09: implementación real Go desplegada en Render Free, https://renewable-consumo-v1.onrender.com, con contrato congelado y credenciales propias; el túnel M2M antiguo de la PC permanece detenido. El mock histórico sigue disponible por separado.
 
 ## Contrato formal
 
@@ -14,7 +14,7 @@ Otro grupo envía equipos y hábitos para utilizar el consumo calculado en una c
 
 POST /api/v1/estimaciones-consumo. Content-Type: application/json. Header X-API-Key: credencial M2M que el equipo proveedor entregará por un canal privado. X-Request-Id es opcional para correlación, con hasta 64 letras, números, guion o guion bajo; no es clave de idempotencia.
 
-Sistema real local: http://localhost:8080 después de ejecutar Compose. Mock histórico opcional: http://localhost:8081 con el perfil mock; no es una URL productiva. URL HTTPS actual desde la PC: https://emails-bingo-preference-packets.trycloudflare.com. URL cloud verificada: https://renewable-consumo-v1.onrender.com; usar las claves específicas de Render. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplica 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
+Sistema real local: http://localhost:8080 después de ejecutar Compose. Mock histórico opcional: http://localhost:8081 con el perfil mock; no es una URL productiva. El hostname histórico desde la PC ya no es el endpoint operativo para Clínica. URL cloud verificada: https://renewable-consumo-v1.onrender.com; usar las claves específicas de Render. No se incluyen claves reales. Un cliente sin clave válida recibe 401; autenticado sin permiso estimar-consumo recibe 403. El gateway aplica 60 solicitudes/minuto por cliente con ráfaga de hasta 10, ajustable mediante acuerdo documentado. Máximo cuerpo: 256 KiB; máximo 100 equipos.
 
 ## Entrada
 
@@ -98,9 +98,9 @@ Su flujo interactivo tiene un presupuesto efectivo de 1.2 s; el reestimador en s
 
 Tasa confirmada por implementación y test: token bucket de reposición 1 solicitud/s (60/min sostenidas), capacidad de ráfaga 10, 429 y Retry-After: 1. No equivale a una ventana móvil estricta de 60 solicitudes. La cuota es local por proceso; mantener una única instancia M2M hasta incorporar almacenamiento compartido de límites. Gateway limita por hash de X-API-Key; Consumo valida la credencial y aplica su límite conservador.
 
-Pendientes de coordinación real antes del miércoles 11 de noviembre de 2026: URL HTTPS pública y fecha de disponibilidad; clave M2M con estimar-consumo y clave sin permiso por canal privado; hosting elegido y comportamiento de primera activación; confirmación operativa hasta terminar la evaluación. No hay URL ni fecha publicadas, y no se afirma un plan Render contratado. No incluir claves en Git, ejemplos ni frontend.
+Estado de coordinación al 11/11/2026: URL Render publicada y verificada; claves dedicadas entregadas al usuario para compartir por privado. El usuario confirmó su entrega a Clínica y dejó la prueba desde su backend a ese grupo. Mantener el servicio hasta finalizar la evaluación y contemplar la reactivación de Render Free. No incluir claves en Git, ejemplos ni frontend.
 
-Claves locales: los scripts existentes generan M2M_API_KEY y M2M_DENIED_KEY en .env. Son credenciales del entorno local; no se entregaron al otro equipo desde esta tarea. La prueba TestClinicaV101 Compatibility congela el OpenAPI recibido y TestClinicaEquipmentProfiles comprueba equipos reales de prueba de Clínica. El test propio no sustituye la ejecución desde su despliegue contra nuestra futura URL.
+Claves locales: los scripts existentes generan M2M_API_KEY y M2M_DENIED_KEY en .env. Son credenciales del entorno local y no sustituyen las claves dedicadas de Render entregadas por separado. La prueba TestClinicaV101 Compatibility congela el OpenAPI recibido y TestClinicaEquipmentProfiles comprueba equipos reales de prueba de Clínica. El test propio no sustituye la ejecución desde su despliegue contra la URL HTTPS de Render.
 
 Ejemplo de cardiología de 30 minutos: 4 luminarias de 18 W, aire de 1100 W con factor 0.5, PC de 120 W y un ciclo de electrocardiógrafo de 0.01 kWh: 0.381 kWh. El costo se calcula en Clínica, con su tarifa.
 
@@ -111,7 +111,7 @@ La API web de [cotización solar](solar-v1/openapi.json) y el [vendedor simulado
 
 El contrato compartido M2M 1.0.1 y todos sus esquemas/errores/redondeo permanecen intactos. Las operaciones con efectos de la web se formalizan por separado en [API privada 1.1.0](private-v1/README.md) y [eventos1.0.0](events/v1/README.md). La extensión [vendedor simulado por SKU](paneles-sim-v2/openapi.json)0.2.0-simulated mantiene v1 disponible; no reemplaza ningún contrato real del grupo proveedor.
 
-La [publicación HTTPS actual](../PUBLICACION-CLINICA.md) usa un túnel desde la PC; el [proceso M2M en Render](../DESPLIEGUE-GRATUITO.md) está desplegado y verificado por separado, con nuevas claves. No se publican claves. Clínica mantiene costo/tarifa propios; no se agrega precio a su respuesta. Las decisiones de contrato no se cambian por ampliar la aplicación privada.
+La publicación operativa es el [proceso M2M en Render](../DESPLIEGUE-GRATUITO.md), con sus claves dedicadas; la [publicación local anterior](../PUBLICACION-CLINICA.md) está detenida. No se publican claves. Clínica mantiene costo/tarifa propios; no se agrega precio a su respuesta. Las decisiones de contrato no se cambian por ampliar la aplicación privada.
 
 ## Ampliación de la interfaz — 2026-11-09
 
@@ -124,3 +124,10 @@ Por indicación del usuario, Clínica realizará la prueba desde su propio backe
 
 
 La publicación cloud Render conserva el OpenAPI 1.0.1 byte a byte normalizando finales de línea; su base URL se configura externamente en el consumidor. No se modifica servers ni otro campo del contrato congelado para cambiar el hostname. La prueba desde Clínica es responsabilidad de su grupo; la sonda del proveedor no la sustituye.
+
+## Integración comercial vigente — 2026-11-11
+
+[Comparador de Proveedores 1.1.0](comparador-proveedores-v1.1.0/README.md) integrado con respaldo simulado explícito. Los contratos web relacionados se versionaron por separado; el archivo v1/openapi.json de Clínica conserva exactamente su contenido 1.0.1.
+
+
+El contenido de info/servers del OpenAPI congelado conserva texto histórico de la primera publicación. No se modifica para anunciar un hostname: configurar la base URL de Render desde el consumidor y utilizar esta documentación operativa vigente. El hash 1.0.1 permanece igual.

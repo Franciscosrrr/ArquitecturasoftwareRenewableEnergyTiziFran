@@ -15,10 +15,10 @@ OPTIONS = {'horasSolPico':4,'factorRendimiento':0.8,'coberturaObjetivo':1}
 
 class Client:
     """/**
-     * Agrupa verificaciones del flujo Client.
+     * Encapsula solicitudes de integración con cookies y access token propios de cada usuario de prueba.
      *
      * @method Client
-     * @returns {Client} Resultado verificado de la operación.
+     * @returns {Client} Tipo que agrupa el estado y las verificaciones descritas.
      */
     """
     def __init__(self):
@@ -26,7 +26,7 @@ class Client:
          * Inicializa el cliente de prueba con cookies y credencial aisladas.
          *
          * @method __init__
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         self.jar=http.cookiejar.CookieJar()
@@ -38,12 +38,12 @@ class Client:
          * Ejecuta HTTP real y devuelve estado, JSON y cabeceras sin ocultar errores.
          *
          * @method call
-         * @param {Any} path - Parámetro path de la operación.
-         * @param {Any} data - Parámetro data de la operación.
-         * @param {Any} method - Parámetro method de la operación.
-         * @param {Any} headers - Parámetro headers de la operación.
+         * @param {str} path - Ruta HTTP o JSON que identifica el recurso o campo de la operación.
+         * @param {Any} data - Datos estructurados que se validan o registran sin credenciales.
+         * @param {str} method - Método HTTP que se debe enviar.
+         * @param {dict|None} headers - Cabeceras adicionales de la solicitud HTTP.
          * @param {Any} pace - Aplica pacing de cuota antes de enviar.
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {tuple} Estado HTTP, cuerpo decodificado y cabeceras de respuesta.
          */
         """
         if pace:time.sleep(.25)
@@ -58,7 +58,7 @@ class Client:
          * Crea una identidad de prueba única e inicia su sesión.
          *
          * @method account
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {tuple} Credenciales de prueba generadas y sesión de la cuenta recién creada.
          */
         """
         email='prueba-'+uuid.uuid4().hex+'@example.test'
@@ -72,10 +72,10 @@ class Client:
 
 class DurableFlow(unittest.TestCase):
     """/**
-     * Agrupa verificaciones del flujo DurableFlow.
+     * Prueba propiedad, persistencia, idempotencia, versiones y sincronización en el entorno real.
      *
      * @method DurableFlow
-     * @returns {DurableFlow} Resultado verificado de la operación.
+     * @returns {DurableFlow} Tipo que agrupa el estado y las verificaciones descritas.
      */
     """
     def test_identity_ownership_immutable_snapshot_and_variants(self):
@@ -83,7 +83,7 @@ class DurableFlow(unittest.TestCase):
          * Comprueba identity ownership immutable snapshot and variants.
          *
          * @method test_identity_ownership_immutable_snapshot_and_variants
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         first,other=Client(),Client()
@@ -143,7 +143,7 @@ class DurableFlow(unittest.TestCase):
          * Comprueba concurrent confirmation has one effect and place version is frozen.
          *
          * @method test_concurrent_confirmation_has_one_effect_and_place_version_is_frozen
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         user=Client();user.account()
@@ -155,8 +155,8 @@ class DurableFlow(unittest.TestCase):
              * Confirma concurrentemente la misma entrada para detectar duplicación del efecto.
              *
              * @method submit
-             * @param {Any} _ - Parámetro _ de la operación.
-             * @returns {Any} Resultado verificado de la operación.
+             * @param {Any} _ - Argumento de compatibilidad que este callback no utiliza.
+             * @returns {tuple} Respuesta de confirmar la misma evaluación desde un cliente concurrente.
              */
             """
             client=Client();client.token=user.token
@@ -177,7 +177,7 @@ class DurableFlow(unittest.TestCase):
          * Comprueba admin index cache version and deactivation.
          *
          * @method test_admin_index_cache_version_and_deactivation
-         * @returns {Any} Resultado verificado de la operación.
+         * @returns {None} No devuelve un valor; comprueba o aplica los efectos descritos.
          */
         """
         admin=Client();status,session,_=admin.call('/auth/login',{'email':'admin@renewable.local','password':os.environ['ADMIN_PASSWORD']})

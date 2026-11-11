@@ -1,6 +1,11 @@
 # Arquitectura implementada
 
-Revisión 2026-11-09. El entorno completo es local, con cuatro microservicios de negocio, un gateway, dos instancias Solar y dependencias reales. [Contenedores](diagrams/contenedores-actuales.png), [contexto](diagrams/contexto.png), [flujo durable](diagrams/evaluacion-durable.png) y [unidad M2M cloud desplegada](diagrams/cloud-gratuito.png).
+## Estado vigente 2026-11-11 — proveedor real y respaldo
+
+Se integró Comparador de Proveedores 1.1.0 al flujo Solar: GET por SKU/cantidad, X-API-Key privada, importes decimales exactos con flete y descuento, selección por costo total y stock. Una falla técnica activa un estudio completo con paneles simulados identificados; una respuesta válida sin stock no activa simulación. Véase [integración comercial real](contracts/comparador-proveedores-v1.1.0/README.md). Las referencias a vendedor pendiente/simulado y a 503 sin respaldo de las revisiones anteriores se conservan como antecedentes. HSP y especificaciones técnicas locales continúan siendo didácticos; precio y stock pueden provenir del proveedor real. No cambia el contrato 1.0.1 de Clínica.
+
+
+Revisión 2026-11-11. El entorno completo es local, con cuatro microservicios de negocio, un gateway, dos instancias Solar y dependencias reales. [Contenedores](diagrams/contenedores-actuales.png), [contexto](diagrams/contexto.png), [flujo durable](diagrams/evaluacion-durable.png) y [unidad M2M cloud desplegada](diagrams/cloud-gratuito.png).
 
 ## Responsabilidades y datos
 
@@ -37,7 +42,7 @@ Archivar/restaurar lugares o configuraciones cambia solo estado con control de p
 
 Gateway distribuye round-robin Solar 1/2. Checks cada 5 s con timeout1 s retiran tras dos fallas y reintegran tras dos éxitos; no se reintenta automáticamente un POST en otra réplica. Ambas instancias comparten Mongo y cola, con deduplicación durable. No es HA integral: gateway, bases, broker y motor tienen una instancia local.
 
-HTTP: catálogo 2 s con circuito3 fallas/10 s/una prueba; cotización vendedor 1 s, aplicación pública Solar 4 s, gateway 8 s y M2M 4.5 s. Worker 12 s con reintentos durables1/5/30 s antes deDLQ; mensajes incompatibles van directo. Confirmar consumo no espera al broker. Al caer el vendedor se conserva el consumo y un estudio recuperable; no se inventa precio, stock ni irradiación. [Postmortem](POSTMORTEM.md).
+HTTP: catálogo 2 s con circuito3 fallas/10 s/una prueba; cotización vendedor 1 s, aplicación pública Solar 4 s, gateway 8 s y M2M 4.5 s. Worker 12 s con reintentos durables1/5/30 s antes deDLQ; mensajes incompatibles van directo. Confirmar consumo no espera al broker. Una falla técnica del vendedor activa una simulación de respaldo identificada en toda la selección y el historial. Un 200 sin ofertas no activa simulación: se informa ausencia de stock. Si también falla el respaldo, se conserva el consumo y el worker aplica reintentos/DLQ. No se presenta precio o stock simulado como comercial real ni se inventa irradiación. [Postmortem](POSTMORTEM.md).
 
 ## Operación y observabilidad
 
@@ -47,7 +52,7 @@ Prometheus mide rutas normalizadas, latencia, errores, caché, outbox, workers y
 
 ## Límites externos
 
-Contrato M2M 1.0.1 de Clínica permanece intacto, sin precio. Render Free aloja esa capacidad Go sin estado; no aloja las bases durables de la aplicación completa. La capacidad ya se publicó por HTTPS mediante un túnel desde la PC, con claves dedicadas entregadas al usuario por separado. El proceso corre en https://renewable-consumo-v1.onrender.com, verificado por HTTPS y contrato; los túneles de la PC son accesos distintos. La comprobación desde el backend de Clínica queda a cargo de ese grupo por indicación del usuario. Su cold start puede superar 1.2 s/5 s. El vendedor sigue simulado por autorización del equipo, pendiente de contrato real; eso no acredita la integración entre grupos que exige el enunciado. [Despliegue](DESPLIEGUE-GRATUITO.md).
+Contrato M2M 1.0.1 de Clínica permanece intacto, sin precio. Render Free aloja esa capacidad Go sin estado; no aloja las bases durables de la aplicación completa. La capacidad ya se publicó por HTTPS mediante un túnel desde la PC, con claves dedicadas entregadas al usuario por separado. El proceso corre en https://renewable-consumo-v1.onrender.com, verificado por HTTPS y contrato; los túneles de la PC son accesos distintos. La comprobación desde el backend de Clínica queda a cargo de ese grupo por indicación del usuario. Su cold start puede superar 1.2 s/5 s. El vendedor real es Comparador de Proveedores 1.1.0 y fue probado desde Solar. Se conservan referencias técnicas locales de 450/550 W y superficies didácticas; las otras fichas requieren especificaciones técnicas adecuadas. La conexión entregada por el grupo es HTTP y exige una excepción explícita para su IP acordada; las credenciales no salen al navegador. [Despliegue](DESPLIEGUE-GRATUITO.md).
 
 Las decisiones y comparaciones con todos los prácticos se conservan en [D1–D13](adr/README.md) y [matriz de clases](CLASES-PRACTICAS.md). Los resultados ejecutados se distinguen de estos límites en [verificación](VERIFICACION-FINAL.md).
 
@@ -61,3 +66,20 @@ El usuario autorizó un origen en su PC. La publicación M2M usa Gateway/Consumo
 La web también está publicada, con autorización explícita del usuario: https://conditional-wan-server-learning.trycloudflare.com. Otro proyecto de dos contenedores usa Nginx de 32 MiB y cloudflared de 64 MiB. Nginx marca la cookie de refresh como Secure, preserva Host/Origin y bloquea rutas técnicas; reutiliza el gateway y sus servicios/bases, sin modificar código de aplicación. El túnel web pertenece solo a su red; Nginx conecta además con la red del gateway. No monta credenciales ni abre puertos adicionales. Cuatro casos de navegador HTTPS y la sonda de sesión aprobaron. [Operación y evidencia](PUBLICACION-WEB.md).
 
 Este acceso web y la publicación M2M local anterior son independientes. El túnel M2M local está detenido; la web continúa requiriendo PC/Docker/red y su hostname puede cambiar al reiniciar. El despliegue M2M cloud ya está verificado en https://renewable-consumo-v1.onrender.com, sin cuentas ni bases privadas. [Configuración y evidencia](DESPLIEGUE-GRATUITO.md).
+
+
+<a id="limitaciones-deuda"></a>
+
+## Limitaciones y deuda técnica aceptada — 11/11/2026
+
+- La aplicación completa depende de la PC/Docker y de sus volúmenes. La URL web de Quick Tunnel es temporal; el M2M de Render es un despliegue separado, sin SQL/broker.
+- Render Free puede superar el presupuesto del consumidor al reactivarse; las pruebas calientes no son un SLA. La comprobación desde Clínica sigue a cargo de ese grupo.
+- El tramo Solar–proveedor usa HTTP por la URL entregada. Cambiar a HTTPS y retirar la excepción cuando el proveedor lo publique. Las claves permanecen fuera del repositorio.
+- HSP, superficie efectiva y fichas locales son referencias didácticas; no hay irradiación por coordenadas ni garantía de autonomía. Los cinco SKUs comerciales no equivalen a cinco fichas técnicas verificadas.
+- Idempotencia y outbox garantizan efectos locales coherentes; el transporte admite duplicados y no es exactly-once. No se dispone de réplicas de bases ni de alta disponibilidad del host.
+- La sincronización ordinaria del índice busca atraso ≤5 s en condiciones saludables. Tras pérdida completa del índice se usa Mongo mientras se reconstruye; el ensayo previo observó 29.407 s. Los precios externos se consultan al proveedor y no se congelan.
+- Buckets de cuota y circuitos son locales por proceso. La unidad M2M debe conservar una instancia mientras no exista coordinación distribuida de cuota. La búsqueda comercial enriquece hasta 1000 coincidencias técnicas dentro del plazo, un límite de esta implementación.
+- Jaeger usa memoria, Loki tiene retención limitada y las alertas no envían notificaciones externas. Los datos y secretos precisan copia de seguridad; no se comprobó recuperación ante pérdida física de volúmenes.
+- El código de la integración y de esta revisión está en el árbol local; hay que revisarlo e incorporarlo a main antes de entregar. El hash del Word debe ser el commit final publicado, no el desplegado antiguo de Render.
+
+[Verificación vigente](VERIFICACION-FINAL.md), [configuración](CONFIGURACION.md) y [decisiones con contexto/alternativas](adr/README.md).

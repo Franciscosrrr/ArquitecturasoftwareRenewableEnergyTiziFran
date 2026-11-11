@@ -1,0 +1,24 @@
+{
+  "contract_asset_tests": {
+    "executed": 2,
+    "passed": 2
+  },
+  "solar_examples": [
+    {
+      "file": "docs/contracts/solar-v1/examples/respuesta.json",
+      "valid": true
+    },
+    {
+      "file": "docs/contracts/solar-v1/examples/respuesta-proveedor-real.json",
+      "valid": true
+    },
+    {
+      "file": "docs/contracts/solar-v1/examples/respuesta-respaldo-simulado.json",
+      "valid": true
+    },
+    {
+      "file": "docs/contracts/solar-v1/examples/solicitud.json",
+      "valid": true
+    }
+  ]
+}

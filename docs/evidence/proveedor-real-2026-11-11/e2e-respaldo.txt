@@ -1,0 +1,15 @@
+ Container renewable-energy-entrega2-verificar-e2e-run-e9cb8c3a473f Creating 
+ Container renewable-energy-entrega2-verificar-e2e-run-e9cb8c3a473f Created 
+
+Running 4 tests using 1 worker
+
+[1/4] [escritorio] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+[2/4] [escritorio] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles
+[3/4] [movil] › cuenta.spec.js:75:1 › cuenta, guardado, estudio e historial inmutable
+[4/4] [movil] › proveedor.spec.js:38:1 › procedencia comercial real y respaldo simulado visibles
+  4 passed (29.9s)
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

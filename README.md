@@ -1,10 +1,10 @@
 # Renewable Energy — Arquitectura de Software 2026
 
-> Estado 09/11/2026: [API M2M en Render](https://renewable-consumo-v1.onrender.com/openapi.json), contrato 1.0.1 verificado, y [web completa por Cloudflare](https://conditional-wan-server-learning.trycloudflare.com). La API Render no depende de la PC; la web sí. [Operación, pruebas y cold start](docs/DESPLIEGUE-GRATUITO.md).
+> Estado 11/11/2026: [API M2M en Render](https://renewable-consumo-v1.onrender.com/openapi.json), contrato 1.0.1 verificado, y [web completa por Cloudflare](https://boring-eclipse-copying-did.trycloudflare.com). La API Render no depende de la PC; la web sí. [Operación, pruebas y cold start](docs/DESPLIEGUE-GRATUITO.md).
 
-Calculadora de consumo y estudios solares con acceso invitado, guardados propios y administración. Tiziano Nicolas (2407889) y Francisco Skrie (2423159), UCC. [Repositorio](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran). Comisión **A1**.
+Calculadora de consumo y estudios solares con acceso invitado, guardados propios y administración. Tiziano Nicolas (2407889) y Francisco Skrie (2423159), UCC. [Repositorio](https://github.com/Franciscosrrr/ArquitecturasoftwareRenewableEnergyTiziFran). Comisión **A1**. JTP: **Nicolás Rodríguez**.
 
-El entorno completo implementa Usuarios, Consumo, Electrodomésticos y Solar, Gateway Go, MySQL privados, MongoDB, RabbitMQ, Meilisearch, Valkey, dos réplicas Solar y observabilidad. La capacidad de Clínica mantiene OpenAPI **1.0.1** sin precio. El vendedor solar es **simulado**, autorizado por el equipo mientras falta su contrato real. La web está publicada por HTTPS mediante su túnel desde la PC. La capacidad M2M está desplegada en Render Free, independiente de la PC y con claves propias. La publicación M2M local anterior quedó detenida y el entorno final-dev obsoleto se retiró, conservando datos. [Estado de despliegue](docs/DESPLIEGUE-GRATUITO.md).
+El entorno completo implementa Usuarios, Consumo, Electrodomésticos y Solar, Gateway Go, MySQL privados, MongoDB, RabbitMQ, Meilisearch, Valkey, dos réplicas Solar y observabilidad. La capacidad de Clínica mantiene OpenAPI **1.0.1** sin precio. El vendedor solar real es **Comparador de Proveedores 1.1.0**, integrado por SKU y cantidad; ante una falla se utilizan paneles simulados identificados. [Contrato, configuración y límites](docs/contracts/comparador-proveedores-v1.1.0/README.md). La web está publicada por HTTPS mediante su túnel desde la PC. La capacidad M2M está desplegada en Render Free, independiente de la PC y con claves propias. La publicación M2M local anterior quedó detenida y el entorno final-dev obsoleto se retiró, conservando datos. [Estado de despliegue](docs/DESPLIEGUE-GRATUITO.md).
 
 ## Arranque único
 
@@ -51,7 +51,7 @@ Ejemplo: 30 días, cuatro lámparas de 10 W×5 h/día; una heladera de 150 W×24
 sh scripts/verify.sh
 ```
 
-Ejecuta Go, integración real y Chromium escritorio/móvil en secuencia. [Resultados y condiciones](docs/VERIFICACION-FINAL.md), [evidencia](docs/evidence/final-2026-11-09/README.md), [postmortem](docs/POSTMORTEM.md) y [carga](docs/CARGA-FINAL.md). Para ejecutar la sonda voluntaria de fallas desde el host se requiere Python: `python tests/fault_final.py`; detiene temporalmente dependencias de este proyecto y las recupera incluso si falla una aserción. No es parte del arranque normal.
+Ejecuta Go, integración real y Chromium escritorio/móvil en secuencia. [Resultados y condiciones](docs/VERIFICACION-FINAL.md), [evidencia actual](docs/evidence/proveedor-real-2026-11-11/README.md), [postmortem](docs/POSTMORTEM.md) y [carga](docs/CARGA-FINAL.md). La sonda histórica de fallas del 09/11 presupone modo simulado y el destino interno del simulador; no debe interpretarse como ensayo del proveedor real. Para ejecutarla en ese escenario desde el host se requiere Python: `python tests/fault_final.py`; detiene temporalmente dependencias de este proyecto y las recupera incluso si falla una aserción. No es parte del arranque normal.
 
 ## Documentación vigente
 
@@ -60,7 +60,9 @@ Ejecuta Go, integración real y Chromium escritorio/móvil en secuencia. [Result
 - [Contrato M2M 1.0.1](docs/contracts/README.md), [cuenta/guardados/administración](docs/contracts/private-v1/README.md), [eventos](docs/contracts/events/v1/README.md).
 - [Despliegue M2M en Render y distinción respecto del túnel](docs/DESPLIEGUE-GRATUITO.md), [observabilidad](docs/OBSERVABILITY.md), [recursos](docs/RECURSOS-LOCALES.md).
 
-Las entregas 1/2 y sus evidencias se conservan como historia. Falta recibir y probar la API del vendedor real; la simulación no acredita esa integración entre grupos. La API M2M está publicada temporalmente por Cloudflare Quick Tunnel desde la PC autorizada; véase [publicación y continuidad](docs/PUBLICACION-CLINICA.md). Las claves dedicadas se entregaron al usuario por separado para compartirlas por privado. La PC, Docker y la red deben permanecer activos; Quick Tunnel no garantiza continuidad ni una URL fija al reiniciar. Render Free está operativo en https://renewable-consumo-v1.onrender.com y puede exceder los presupuestos de 1.2 s/5 s en frío; usar sus claves propias, entregadas por separado.
+Las entregas 1/2 y sus evidencias se conservan como historia. Clínica utiliza la URL Render entregada y sus claves privadas; su integración desde el backend consumidor debe comprobarla ese grupo. La publicación M2M local antigua está detenida. El contrato 1.0.1 permanece congelado y Render Free puede exceder 1.2 s/5 s al reactivarse.
+
+Documentación completa: [índice y vigencia](docs/README.md), [configuración](docs/CONFIGURACION.md), [guía de comentarios](docs/DOCUMENTACION-CODIGO.md) y [cierre de entrega](docs/ENTREGA.md). La nueva integración solar se configura en el backend; un clon sin su clave usa el simulador y lo identifica. Nunca publicar `.env` ni `.runtime`.
 
 ## Mejora de experiencia de cliente — 2026-11-09
 
@@ -69,4 +71,4 @@ Las entregas 1/2 y sus evidencias se conservan como historia. Falta recibir y pr
 
 ## Página local por Cloudflare
 
-[Web pública verificada](https://conditional-wan-server-learning.trycloudflare.com), independiente de la URL M2M de Clínica. El usuario autorizó la publicación completa. Sin cambios de código de aplicación; mantiene las mismas cuentas y datos. Pruebas HTTPS y cuatro casos de navegador en escritorio/móvil aprobados. [Operación y límites](docs/PUBLICACION-WEB.md): scripts/publicar-web.ps1 iniciar|estado|detener. La PC/Docker/red deben permanecer activos y el hostname temporal puede cambiar al recrear el túnel.
+[Web pública verificada](https://boring-eclipse-copying-did.trycloudflare.com), independiente de la URL M2M de Clínica. El usuario autorizó la publicación completa. La entrada HTTPS mantiene las mismas cuentas y datos del entorno local. El proveedor real y el respaldo fueron verificados en 14 y 4 casos de navegador respectivamente, además de la sonda HTTPS actual. [Operación y límites](docs/PUBLICACION-WEB.md): scripts/publicar-web.ps1 iniciar|estado|detener. La PC/Docker/red deben permanecer activos y el hostname temporal puede cambiar al reiniciar el túnel. La URL enlazada es la observada el 11/11; consultar el script para obtener la actual.

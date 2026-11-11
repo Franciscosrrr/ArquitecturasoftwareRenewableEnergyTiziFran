@@ -130,9 +130,9 @@ func (c *Client) Quote(ctx context.Context, watts int64) (domain.Quote, error) {
  *
  * @method QuoteModel
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {int64} watts - Valor de watts requerido por la operación.
- * @param {string} sku - Valor de sku requerido por la operación.
- * @returns {domain.Quote, error} Resultado de la operación; error si no puede completarse.
+ * @param {int64} watts - Potencia objetivo de la instalación, expresada en W.
+ * @param {string} sku - Identificador del modelo de panel que debe cotizarse sin sustituciones.
+ * @returns {domain.Quote, error} Oferta del modelo exacto o error de stock, dependencia o contrato.
  */
 func (c *Client) QuoteModel(ctx context.Context, watts int64, sku string) (domain.Quote, error) {
 	return c.quote(ctx, watts, sku)
@@ -143,9 +143,9 @@ func (c *Client) QuoteModel(ctx context.Context, watts int64, sku string) (domai
  *
  * @method quote
  * @param {context.Context} ctx - Contexto cancelable y presupuesto de la operación.
- * @param {int64} watts - Valor de watts requerido por la operación.
- * @param {string} sku - Valor de sku requerido por la operación.
- * @returns {domain.Quote, error} Resultado de la operación; error si no puede completarse.
+ * @param {int64} watts - Potencia objetivo de la instalación, expresada en W.
+ * @param {string} sku - Identificador del modelo de panel que debe cotizarse sin sustituciones.
+ * @returns {domain.Quote, error} Oferta comercial validada o error controlado por stock, contrato o circuito.
  */
 func (c *Client) quote(ctx context.Context, watts int64, sku string) (domain.Quote, error) {
 	c.mu.Lock()
