@@ -32,3 +32,8 @@ Según la ficha recibida, se entrega un único documento por equipo y se elimina
 Clínica utiliza Render y sus claves privadas; su API puede reactivarse lentamente y no depende de la PC. La web completa requiere PC, Docker y red. Consultar la URL observada del túnel con `scripts/publicar-web.ps1 estado`; puede cambiar al reiniciarse. Mantener los volúmenes y `.env`; `scripts/compose.ps1 stop` conserva datos. No utilizar `down -v` para preparar la exposición.
 
 [Índice documental](README.md), [pruebas actuales](VERIFICACION-FINAL.md), [configuración](CONFIGURACION.md) y [limitaciones](ARCHITECTURE.md).
+
+
+## Datos de presentación
+
+La preparación del 11/11 conserva únicamente al administrador y 2407889@ucc.edu.ar y sus datos. [Limpieza y comprobaciones](LIMPIEZA-ENTREGA.md). Las pruebas ejecutables siguen disponibles; volverán a crear sus datos sintéticos si se ejecutan. Limpiar después, fuera de la ejecución de las suites.

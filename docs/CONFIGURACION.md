@@ -105,3 +105,8 @@ Esta tabla relaciona nombres de configuración encontrados en el código y Compo
 | `WEB_DIR` | No | [gateway/cmd/server/server.go](../gateway/cmd/server/server.go) |
 
 [Publicación Render](DESPLIEGUE-GRATUITO.md), [entrada web y cookies HTTPS](PUBLICACION-WEB.md), [observabilidad](OBSERVABILITY.md) y [capacidad/costos](RECURSOS-LOCALES.md).
+
+
+## Preparar las bases para presentar
+
+Después de ejecutar pruebas, consultar [limpieza de entrega](LIMPIEZA-ENTREGA.md). La herramienta opcional retira restos generados y conserva las pruebas ejecutables; requiere Python 3 solo para ese mantenimiento. Los respaldos privados permanecen en .runtime y no se publican.

@@ -18,7 +18,7 @@ Se contrastaron el enunciado, la documentación vigente y el código actual. Se 
 
 La [evidencia procesable](evidence/documentacion-2026-11-11/resumen.json) registra conteos, resultados y alcance. Se revisan declaraciones nombradas de producción y pruebas con AST de Go/Python y parser JavaScript/JSX. También se comprueban referencias locales, versiones, ejemplos JSON y la integridad del contrato compartido.
 
-Cobertura: 244 funciones Go y 8 métodos de interfaces, 68 tipos Go documentados, 37 unidades nombradas JavaScript y 106 unidades Python (93 funciones y 13 clases). La comprobación final no detectó faltantes de JSDoc en ese alcance, enlaces locales o anclas rotas, ni valores de credenciales locales en los archivos compartibles revisados. Las firmas Go conservaron sus parámetros y retornos. Aprobaron los dos controles de integridad/referencias de contratos y los cuatro ejemplos de solicitud/respuesta Solar. [Validación de ejemplos](evidence/documentacion-2026-11-11/contratos-ejemplos.json).
+Cobertura: 244 funciones Go y 8 métodos de interfaces, 68 tipos Go documentados, 37 unidades nombradas JavaScript y 123 unidades Python (109 funciones y 14 clases), incluida la herramienta de limpieza y sus pruebas. La comprobación final no detectó faltantes de JSDoc en ese alcance, enlaces locales o anclas rotas, ni valores de credenciales locales en los archivos compartibles revisados. Las firmas Go conservaron sus parámetros y retornos. Aprobaron los dos controles de integridad/referencias de contratos y los cuatro ejemplos de solicitud/respuesta Solar. [Validación de ejemplos](evidence/documentacion-2026-11-11/contratos-ejemplos.json).
 
 Los callbacks inline se revisan como parte de sus operaciones contenedoras; no se afirma que cada lambda tenga un JSDoc propio. Los comentarios de tipos y paquetes describen responsabilidades y no sustituyen un contrato de operación. Los Markdown generados de trazas/errores y las evidencias inmutables se conservan como registros, sin corregir retrospectivamente sus resultados.
 
@@ -28,6 +28,6 @@ Se verificaron D1–D13: un archivo canónico por número y presencia de context
 
 ## Límites y cierre
 
-No se certifica que la explicación textual sustituya pruebas de ejecución. Las verificaciones de negocio del proveedor real, respaldo, navegador y carga conservan sus fechas y escenarios. Los paquetes vacíos de diseño se identifican como tales, sin presentarlos como capas ejecutables adicionales. Los ensayos antiguos de fallas que detenían el simulador requieren su escenario original y no acreditan una caída del proveedor real.
+No se certifica que la explicación textual sustituya pruebas de ejecución. Las verificaciones de negocio del proveedor real, respaldo, navegador y carga conservan sus fechas y escenarios. La [preparación de entrega](LIMPIEZA-ENTREGA.md) retiró nueve paquetes vacíos no importados y los restos de datos sintéticos; conserva las suites y sus fixtures necesarios. La actualización se registra en el ADR D2 existente. Los ensayos antiguos de fallas que detenían el simulador requieren su escenario original y no acreditan una caída del proveedor real.
 
 Los nuevos cambios siguen locales hasta revisar e integrar la entrega en main. La ficha Word debe completarse con los integrantes, JTP, grupo proveedor ya confirmado y el hash final publicado. Mantener las claves fuera de Git.

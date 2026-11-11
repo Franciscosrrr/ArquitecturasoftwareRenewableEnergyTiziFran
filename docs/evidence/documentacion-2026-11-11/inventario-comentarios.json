@@ -2672,6 +2672,48 @@
       "issues": []
     },
     {
+      "file": "tests/test_cleanup.py",
+      "name": "fixture",
+      "kind": "FunctionDef",
+      "line": 12,
+      "issues": []
+    },
+    {
+      "file": "tests/test_cleanup.py",
+      "name": "CleanupSelection",
+      "kind": "ClassDef",
+      "line": 23,
+      "issues": []
+    },
+    {
+      "file": "tests/test_cleanup.py",
+      "name": "test_default_only_removes_generated_accounts_and_unused_fixtures",
+      "kind": "FunctionDef",
+      "line": 31,
+      "issues": []
+    },
+    {
+      "file": "tests/test_cleanup.py",
+      "name": "test_final_only_is_explicit_and_requires_both_protected_accounts",
+      "kind": "FunctionDef",
+      "line": 45,
+      "issues": []
+    },
+    {
+      "file": "tests/test_cleanup.py",
+      "name": "test_fingerprint_detects_changes_to_preserved_data",
+      "kind": "FunctionDef",
+      "line": 59,
+      "issues": []
+    },
+    {
+      "file": "tests/test_cleanup.py",
+      "name": "test_sql_literals_do_not_interpolate_user_text",
+      "kind": "FunctionDef",
+      "line": 77,
+      "issues": []
+    },
+    {
       "file": "tests/test_comparator_integration.py",
       "name": "CommercialIntegration",
       "kind": "ClassDef",
@@ -3243,6 +3285,83 @@
       "name": "walk",
       "kind": "FunctionDef",
       "line": 392,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "docker",
+      "kind": "FunctionDef",
+      "line": 17,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "sql",
+      "kind": "FunctionDef",
+      "line": 34,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "mongo",
+      "kind": "FunctionDef",
+      "line": 50,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "snapshot",
+      "kind": "FunctionDef",
+      "line": 64,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "strings",
+      "kind": "FunctionDef",
+      "line": 83,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "plan",
+      "kind": "FunctionDef",
+      "line": 107,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "fingerprint",
+      "kind": "FunctionDef",
+      "line": 134,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "literals",
+      "kind": "FunctionDef",
+      "line": 163,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "backup",
+      "kind": "FunctionDef",
+      "line": 175,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "dependencies",
+      "kind": "FunctionDef",
+      "line": 192,
+      "issues": []
+    },
+    {
+      "file": "scripts/limpiar-datos-prueba.py",
+      "name": "main",
+      "kind": "FunctionDef",
+      "line": 261,
       "issues": []
     }
   ]

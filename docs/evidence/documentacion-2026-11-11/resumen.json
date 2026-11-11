@@ -11,13 +11,13 @@
     "inline_callbacks_reviewed_in_context": 139
   },
   "python": {
-    "units": 106,
-    "functions": 93,
-    "classes": 13
+    "units": 123,
+    "functions": 109,
+    "classes": 14
   },
   "documentation_issues": [],
-  "markdown_files_inventoried": 72,
-  "markdown_files_link_checked": 69,
+  "markdown_files_inventoried": 73,
+  "markdown_files_link_checked": 70,
   "broken_local_links": [],
   "unresolved_markdown_anchors": [],
   "adrs": [

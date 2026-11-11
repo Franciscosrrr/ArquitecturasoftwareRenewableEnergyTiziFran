@@ -1,0 +1,31 @@
+{
+  "fecha": "2026-11-11T15:44:39.517952+00:00",
+  "eliminados": {
+    "usuarios": 61,
+    "equipos": 9,
+    "paneles": 10
+  },
+  "usuarios_finales": [
+    {
+      "email": "admin@renewable.local",
+      "rol": "ADMINISTRADOR"
+    },
+    {
+      "email": "2407889@ucc.edu.ar",
+      "rol": "USUARIO"
+    }
+  ],
+  "equipos_finales": 6,
+  "paneles_finales": 2,
+  "datos_conservados_sin_cambios": true,
+  "derivados": {
+    "indices": [
+      "catalogo",
+      "paneles"
+    ],
+    "colas_limpiadas": [
+      "solar.estudios.dlq"
+    ],
+    "colas_conservadas": []
+  }
+}

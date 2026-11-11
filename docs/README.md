@@ -30,6 +30,7 @@ Revisión: 11/11/2026. Los documentos siguientes describen el código actual. Lo
 | Formato de comentarios y alcance de su revisión | [Documentación de código](DOCUMENTACION-CODIGO.md) |
 | Resultado de esta auditoría | [Revisión documental](REVISION-DOCUMENTACION-2026-11-11.md) |
 | Rama principal, hash y ficha Word | [Cierre de entrega](ENTREGA.md) |
+| Retirar restos de pruebas antes de presentar | [Limpieza de entrega](LIMPIEZA-ENTREGA.md) |
 
 ## Contratos y versiones
 

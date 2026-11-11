@@ -1,0 +1,16 @@
+{
+  "usuarios": [
+    {
+      "email": "2407889@ucc.edu.ar",
+      "rol": "USUARIO"
+    },
+    {
+      "email": "admin@renewable.local",
+      "rol": "ADMINISTRADOR"
+    }
+  ],
+  "equipos": 6,
+  "paneles": 2,
+  "admin_login_correcto": true,
+  "restos_visibles_de_ensayos": 0
+}
